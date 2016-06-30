@@ -1,0 +1,119 @@
+contract Prediction {
+        
+//  address public admin;
+    bytes32 public descr;    
+    uint public deadline;   
+    (uint, uint) totBet;
+    boot cl;
+    address[] claimers;
+    boot win;
+    
+
+
+    /* data structure to hold information about bettors */
+    struct Bet {
+        uint amtBet;
+        bool side;
+    }
+        
+    mapping(address => Bet) bets;
+    mapping(address => (uint)) payouts;
+    event claim(_side);
+    event conflicted_claim();
+    
+    /*  at initialization, setup the prediction */
+    function Prediction()  { 
+         
+        descr = _descr;
+        bets[msg.sender] = Bet( msg.value / 2, true);
+        totBet = (bets[msg.sender].amtBet, 0);        
+        deadline = _deadline;
+        conflict = false;
+        return descr;
+    } 
+
+    
+
+    function bet(bool _side) returns (bytes32 response) {
+        if (now < deadline && msg.value > 1 ether) {
+	        int amtBet = msg.value / 2 ;
+            bool side = _side;
+            if (amtBet * 2 != msg.value) throw;                  
+            bets[msg.sender] = Bet(amtBet, side);          
+            if (side = true) totBet =+ (amtBet,0);     
+            else if (side = false) totBet =+ (0, amtBet);
+            return "success";
+         }   
+         else throw;
+         
+    }
+        
+    /* list claims after deadline */
+
+     
+    
+
+    function claim() returns (bytes32 response) {
+        if (!bets[msg.sender] || msg.value || claimers[msg.sender]) throw;
+        if (now > deadline) {
+            
+            claimers.push(msg.sender)                  
+              
+            if (claimers.length = 1) { 
+                claimdl = now + 1 day;                
+                cl = bets[msg.sender].side
+                claim(cl);
+            }
+            return "success"    
+        }
+        return "Deadline not reached yet";        
+    }
+    
+    
+    function resolveConflict(bool _side) {
+        if (msg.sender = admin && conflict = true) win = _side; conflict = false;        
+    } 
+
+    /* parse claims */
+    function() {
+        if (msg.value) throw;        
+        if (now > claimdl) {
+            if (!win) {            
+                for (i=1; i<claimers.length; i++) {    
+                    if (bets[claimers[i]].side != cl) conflict = true; conflicted_claim();
+                }                  
+                            
+                if (conflict == false) win = cl;
+            }        
+        
+            else if (win && bets[msg.sender]) payout(msg.sender,win);
+        }
+    }
+    
+    
+    
+    function internal payout(address sender , _win) {
+        bet = bets[sender];
+        payout = payouts[sender];
+        
+        if !payout {
+            if bet.side = _win {
+                (tr, fa) = totBet
+                if (_win = true)  payout = (tr + fa)*bet.amtBet/tr + bet.amtBet;
+                else if (_win = false) payout = (tr + fa)*bet.amtBet/fa + bet.amtBet;
+            }
+        
+            else if bet.side != _win {
+                if claimers[sender] payout = 0;
+                else payout = bet.amtBet;
+                payouts[sender] = 0;
+            } 
+        }
+        
+        if (!sender.send(payout)) payouts[sender] = payout;
+    }
+    
+}                    
+      
+ 
+
