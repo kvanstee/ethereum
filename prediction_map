@@ -9,12 +9,11 @@ contract Prediction {
     bool win;
     bool conflict;
     
-    struct TotBet { uint tru; uint fal;}
-
     /* data structure to hold information about bettors */
     
     struct Bet {uint amtBet; bool side;}
-        
+    struct TotBet { uint tru; uint fal;}
+    
     mapping(address => Bet) bets;
     mapping(address => uint) payouts;
     event claim();
@@ -25,19 +24,18 @@ contract Prediction {
          
         descr = _descr;
         Bet bet = bets[msg.sender];
-        bet.amtBet =  (msg.value / 2);
-        bet.side = true;
-        TotBet.tru = bet.amtBet;       
+        bet.amtBet = msg.value/2; bet.side = true;
+        TotBet(bet.amtBet, 0);       
         deadline = _deadline;
         bool conflict = false;
-        return  descr;
+        //return "success!"; 
     } 
 
     
 
     function bet(bool _side) returns (bytes32 response) {
         if (now < deadline && msg.value > 1 ether) {
-	        int amtBet = msg.value / 2 ;
+	        uint amtBet = msg.value/2 ;
             bool side = _side;
             if (amtBet * 2 != msg.value) throw;                  
             bets[msg.sender] = Bet(amtBet, side);          
