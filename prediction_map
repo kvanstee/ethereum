@@ -12,35 +12,35 @@ contract Prediction {
     /* data structure to hold information about bettors */
     
     struct Bet {uint amtBet; bool side;}
-    struct TotBet { uint tru; uint fal;}
+    uint[] tb = new uint[](2);
     
     mapping(address => Bet) bets;
     mapping(address => uint) payouts;
     event claim();
-    event conflicted_claim();
+    event conflicting_claim();
+    //event announce_win(win);
+    //event setUp(Bet);
     
     /*  at initialization, setup the prediction */
+    
     function Prediction(bytes32 _descr, uint _deadline) { 
-         
         descr = _descr;
         Bet bet = bets[msg.sender];
         bet.amtBet = msg.value/2; bet.side = true;
-        TotBet(bet.amtBet, 0);       
+        tb[0] = bet.amtBet; tb[1] = 0;       
         deadline = _deadline;
         bool conflict = false;
-        //return "success!"; 
     } 
-
-    
 
     function bet(bool _side) returns (bytes32 response) {
         if (now < deadline && msg.value > 1 ether) {
 	        uint amtBet = msg.value/2 ;
             bool side = _side;
-            if (amtBet * 2 != msg.value) throw;                  
+            if (amtBet * 2 != msg.value) throw;
+            if (side == true) tb[0] =+ amtBet;     
+            else if (side == false) tb[1] =+ amtBet;
             bets[msg.sender] = Bet(amtBet, side);          
-            if (side == true) TotBet.tru =+ amtBet;     
-            else if (side == false) TotBet.fal =+ amtBet;
+            
             return "success";
          }   
          else throw;
@@ -69,44 +69,45 @@ contract Prediction {
     } 
 
     /* parse claims */
+    bool lock = false;
     function() {
-        if (msg.value >0) throw;        
+        if (msg.value >0 && !lock) throw;        
         if (now > claimdl) {
-            if (!win) {            
-                for (uint i=1; i<claimers.length; i++) {    
-                    if (bets[claimers[i]].side != cl) conflict = true; conflicted_claim();
-                }                  
-                            
-                if (conflict == false) win = cl;
-            }        
-        
-            else if (win && bets[msg.sender]) payout(msg.sender,win);
+            if (!win) {
+                bool cl = bets[claimers[0]].side;
+                for (uint i=1; i<claimers.length; i++) {
+                    if (bets[claimers[i]].side != cl) { 
+                        conflict = true; 
+                        conflicting_claim();
+                        return;
+                    }    
+                }
+                if (conflict == false) {
+                    win = cl;
+                }
+            }
         }
+    lock = true;
     }
     
-    
-    
-    function  payout(address sender , bool win) {
-        bet = bets[sender];
-        payout = payouts[sender];
-        uint tbt = TotBet.tru;
-        uint tbf = TotBet.fal;
-        
-        if (!payout) {
+    function  payout() {
+        if (!conflict) {
+            address sender = msg.sender;
+            Bet bet = bets[sender];
+            uint tbt = tb[0];
+            uint tbf = tb[1];
             if (bet.side = win) {
-                
-                if (win = true)  payout = (tbt + tbf)*bet.amtBet/tbt + bet.amtBet;
-                else if (win = false) payout = (tbt + tbf)*bet.amtBet/tbf + bet.amtBet;
+                if (win = true)  payouts[sender] = (tbt + tbf)*bet.amtBet/tbt + bet.amtBet;
+                else if (win = false) payouts[sender] = (tbt + tbf)*bet.amtBet/tbf + bet.amtBet;
             }
-        
             else if (bet.side != win) {
-                if (claimers[sender]) payout = 0;
-                else payout = bet.amtBet;
-                payouts[sender] = 0;
-            } 
+                //if (claimers[ != 0) payout = 0;
+                payouts[sender] = bet.amtBet;
+            }
         }
-        
-        if (!sender.send(payout)) payouts[sender] = payout;
+        uint po = payouts[sender];
+        payouts[sender] = 0;
+        if (!sender.send(po)) payouts[sender] = po;
     }
     
 }                    
