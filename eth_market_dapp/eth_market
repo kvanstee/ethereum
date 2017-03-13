@@ -1,0 +1,70 @@
+pragma solidity ^0.4.0;
+
+contract sellEth {
+    uint public weiForSale;
+    uint public weiPurchased;
+    uint public price;    
+    address public seller;
+    address public buyer;
+    enum State { Open, Pending, Inactive }
+    State public state;
+ 
+    function sellEth(uint _price) payable {
+        seller = msg.sender;
+        weiForSale = msg.value / 2;
+        price = _price;
+        if (2 * weiForSale != this.balance) throw;
+        state = State.Open;
+    }
+
+    modifier require(bool _condition) { if (!_condition) throw; _; }
+    modifier onlyBuyer() { if (msg.sender != buyer) throw; _; }
+    modifier onlySeller() { if (msg.sender != seller) throw;  _; }
+    modifier inState(State _state) { if (state != _state) throw;  _; }
+    
+    event aborted();
+    event newBalance(uint balance)
+    event newPrice(uint price);
+    event purchaseConfirmed(uint value);
+    event cashReceived(uint cents);
+
+    function abort() onlySeller inState(State.Open) {
+        aborted();
+        state = State.Open;
+        if (!selfdestruct(seller)) throw;
+    }
+
+    function changePrice(uint newPrice) onlySeller inState(State.Open) {
+        price = newPrice;
+    }
+
+    function confirmPurchase() inState(State.Open) require(msg.value < weiForSale) payable {
+        weiPurchased = msg.value;
+        purchaseConfirmed(weiPurchased);
+        buyer = msg.sender;
+        state = State.Pending;
+    }
+
+    function confirmReceived(uint cents) onlySeller inState(State.Pending) {
+        cashReceived(cents);
+        state = State.Inactive;
+        if (cents*price <= weiPurchased) {if (!buyer.send(cents*price)) throw;}
+        if (cents*price > weiPurchased) {if (!buyer.send(weiPurchased)) throw;}
+        weiForSale = this.balance/2;
+        if (weiForSale*price >= 5000) state = State.Open;
+    }
+    
+    function addEther() onlySeller {
+        if (state == State.Open || state = State.Inactive) {  
+            newBalance(this.balance);
+            ethForSale = this.balance;
+            state = State.Open;
+        }
+    }
+
+    function get_stats() returns (uint _balance, uint _weiForSale, State _state) { 
+        return (this.balance, ethForSale, state);
+    }
+}
+
+    
