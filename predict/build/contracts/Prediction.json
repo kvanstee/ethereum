@@ -4,6 +4,19 @@
     {
       "constant": false,
       "inputs": [],
+      "name": "get_isclaim",
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [],
       "name": "pay",
       "outputs": [],
       "payable": false,
@@ -14,6 +27,19 @@
       "inputs": [],
       "name": "sd",
       "outputs": [],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [],
+      "name": "get_isconflict",
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool"
+        }
+      ],
       "payable": false,
       "type": "function"
     },
@@ -32,6 +58,32 @@
     },
     {
       "constant": false,
+      "inputs": [],
+      "name": "get_tbf",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [],
+      "name": "get_tbt",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": false,
       "inputs": [
         {
           "name": "_side",
@@ -46,37 +98,21 @@
     {
       "constant": false,
       "inputs": [],
-      "name": "get_stat",
-      "outputs": [
-        {
-          "name": "",
-          "type": "uint256"
-        },
-        {
-          "name": "",
-          "type": "uint256"
-        },
-        {
-          "name": "",
-          "type": "bool"
-        },
-        {
-          "name": "",
-          "type": "bool"
-        },
-        {
-          "name": "",
-          "type": "uint256"
-        }
-      ],
+      "name": "abortContract",
+      "outputs": [],
       "payable": false,
       "type": "function"
     },
     {
       "constant": false,
       "inputs": [],
-      "name": "abortContract",
-      "outputs": [],
+      "name": "get_bal",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ],
       "payable": false,
       "type": "function"
     },
@@ -165,7 +201,7 @@
       "type": "event"
     }
   ],
-  "unlinked_binary": "0x60606040818152600a60005560018054600160a060020a031916738472dc97deeae78f04f9c8470ee70ecb8df0009c179055806107f28339810160405280516020909101515b600382905533600160a060020a03166000908152600960205260408120346001808301829055825460ff1916178255600290046006556007919091555b600880546201000060b060020a0319166201000033600160a060020a031602179055603c820242016002555b5050505b610731806100c16000396000f300606060405236156100675763ffffffff60e060020a6000350416631b9265b8811461007957806321abb9a814610088578063523afb0d146100975780636f195111146100a657806371cf91d2146100ba57806384f12bfe146100f4578063b5ffd81714610103575b34610000576100775b610000565b565b005b3461000057610077610112565b005b3461000057610077610321565b005b6100776004351515610366565b005b346100005761007760043515156104ad565b005b34610000576100c761053a565b60408051958652602086019490945291151584840152151560608401526080830152519081900360a00190f35b3461000057610077610566565b005b34610000576100776105c4565b005b600160a060020a03331660009081526009602052604081206001015481908190151561013d57610000565b600854610100900460ff16158015610156575060055442115b15610319575050600160a060020a0333908116600090815260096020526040902060085460ff161515600114156101935780600101549250610294565b6004546001805474ff0000000000000000000000000000000000000000191660a060020a60ff9384161515810291909117918290558354910482161515911615151415610251576001805460a060020a900460ff16151514156102165760065460075481156100005704600201600282600101548115610000570402925061024b565b60015460a060020a900460ff16151561024b576007546006548115610000570460020160028260010154811561000057040292505b5b610294565b600154815460ff908116151560a060020a9092041615151461029457600281015460ff161515600114156102885760009250610294565b60018101546002900492505b5b5b5b60006001820155821561031957604051600160a060020a0383169084156108fc029085906000818181858888f1935050505015156102d457610000565b60408051600160a060020a03841681526020810185905281517f8c7266189e70b5cd087ce48a7584fc21aa294c0757e6acaacf897ea450641b90929181900390910190a15b5b5b5b505050565b600554610708014211801561034a575060085433600160a060020a039081166201000090920416145b1561007557600854620100009004600160a060020a0316ff5b5b565b600060006000600254421080156103845750670de0b6b3a764000034115b156100705750600160a060020a0333166000908152600960205260409020600181015484935015156103b8573491506103d6565b805460ff161515831515146103cc57610000565b3481600101540191505b600183151514156103f15760068054600234040190556103fd565b60078054600234040190555b60408051606081018252841515815260208082018581526000838501818152600160a060020a033316825260098452908590209351845490151560ff19918216178555915160018501555160029093018054931515939091169290921790915560065460075483519182529181019190915281517f457fdd819a6b6781321c571e0ae8a64d2997590d75c2af7b7ee685649e7edf9a929181900390910190a16104a6565b610000565b5b50505050565b600554421180156104cc575060015433600160a060020a039081169116145b80156104e5575060085460ff6101009091041615156001145b15610070576004805460ff19168215151790556008805461ff00191690556040517f321e3fce9473f472a9107b71b1bbaca179ce7a0f0ab0aa3a33581819ea239cf090600090a1610536565b610000565b5b50565b60065460075460045460085460ff9182169161010090910416600160a060020a033016315b9091929394565b60055442118015610585575060015433600160a060020a039081169116145b801561059e575060085460ff6101009091041615156001145b15610070576008805461ff001960ff19909116600117169055610075565b610000565b5b565b600160a060020a03331660009081526009602052604090206001015415156105eb57610000565b60025442111561007057600160a060020a0333166000908152600960205260409020600201805460ff1916600117905560055415156106935760008054603c02420160055533600160a060020a0316815260096020908152604091829020546004805460ff191660ff92831615151790819055835191161515815291517f2d81a78edcc75b49bfffadd7b07df83caf4425518582256da4d278381c8bf12b9281900390910190a15b600454600160a060020a03331660009081526009602052604090205460ff908116151591161515146106f8576040517f49e8f7e0db65e08a4ed6c3c73c3014bb06c563e9541af386e04795832ac67bfa90600090a16008805461ff0019166101001790555b610075565b610000565b5b5600a165627a7a72305820b079bc8a5f5a0570981015cd0cdd7627c0f7a26b3a8da091aa9958116992f7410029",
+  "unlinked_binary": "0x60606040818152600560005560018054600160a060020a0319167303cea83f1ca0e7a7d351412db08612d387847f08179055806108788339810160405280516020909101515b600382905533600160a060020a03166000908152600960205260408120346001808301829055825460ff1916178255600290046006556007919091555b600880546201000060b060020a0319166201000033600160a060020a031602179055603c820242016002555b5050505b6107b7806100c16000396000f300606060405236156100935763ffffffff60e060020a60003504166312be468081146100a55780631b9265b8146100c657806321abb9a8146100d55780632f86b0ac146100e4578063523afb0d1461010557806354aa705014610114578063685f2fd7146101335780636f1951111461015257806384f12bfe14610166578063b55587e314610175578063b5ffd81714610194575b34610000576100a35b610000565b565b005b34610000576100b26101a3565b604080519115158252519081900360200190f35b34610000576100a36101ad565b005b34610000576100a36103a7565b005b34610000576100b26103ec565b604080519115158252519081900360200190f35b6100a360043515156103fb565b005b3461000057610121610542565b60408051918252519081900360200190f35b3461000057610121610549565b60408051918252519081900360200190f35b34610000576100a36004351515610550565b005b34610000576100a36105dd565b005b346100005761012161063b565b60408051918252519081900360200190f35b34610000576100a361064a565b005b60045460ff165b90565b600160a060020a0333166000908152600960205260408120600101548190819015806101da575060055442105b156101e457610000565b600854610100900460ff16151561039f575050600160a060020a0333908116600090815260096020526040902060085460ff1615156001141561022d578060010154925061031a565b6004546001805474ff0000000000000000000000000000000000000000191660a060020a60ff93841615158102919091179182905583549104821615159116151514156102d7576001805460a060020a900460ff16151514156102b0576006546007548115610000570460020160028260010154811561000057040292506102d2565b6007546006548115610000570460020160028260010154811561000057040292505b61031a565b600154815460ff908116151560a060020a9092041615151461031a57600281015460ff1615156001141561030e576000925061031a565b60018101546002900492505b5b5b5b60006001820155821561039f57604051600160a060020a0383169084156108fc029085906000818181858888f19350505050151561035a57610000565b60408051600160a060020a03841681526020810185905281517f8c7266189e70b5cd087ce48a7584fc21aa294c0757e6acaacf897ea450641b90929181900390910190a15b5b5b5b505050565b60055461012c01421180156103d0575060085433600160a060020a039081166201000090920416145b156100a157600854620100009004600160a060020a0316ff5b5b565b600854610100900460ff165b90565b600060006000600254421080156104195750670de0b6b3a764000034115b1561009c5750600160a060020a03331660009081526009602052604090206001810154849350151561044d5734915061046b565b805460ff1615158315151461046157610000565b3481600101540191505b60018315151415610486576006805460023404019055610492565b60078054600234040190555b60408051606081018252841515815260208082018581526000838501818152600160a060020a033316825260098452908590209351845490151560ff19918216178555915160018501555160029093018054931515939091169290921790915560065460075483519182529181019190915281517f457fdd819a6b6781321c571e0ae8a64d2997590d75c2af7b7ee685649e7edf9a929181900390910190a161053b565b610000565b5b50505050565b6007545b90565b6006545b90565b6005544211801561056f575060015433600160a060020a039081169116145b8015610588575060085460ff6101009091041615156001145b1561009c576004805460ff19168215151790556008805461ff00191690556040517f321e3fce9473f472a9107b71b1bbaca179ce7a0f0ab0aa3a33581819ea239cf090600090a16105d9565b610000565b5b50565b600554421180156105fc575060015433600160a060020a039081169116145b8015610615575060085460ff6101009091041615156001145b1561009c576008805461ff001960ff199091166001171690556100a1565b610000565b5b565b600160a060020a033016315b90565b600160a060020a033316600090815260096020526040902060010154151561067157610000565b60025442111561009c57600160a060020a0333166000908152600960205260409020600201805460ff1916600117905560055415156107195760008054603c02420160055533600160a060020a0316815260096020908152604091829020546004805460ff191660ff92831615151790819055835191161515815291517f2d81a78edcc75b49bfffadd7b07df83caf4425518582256da4d278381c8bf12b9281900390910190a15b600454600160a060020a03331660009081526009602052604090205460ff9081161515911615151461077e576040517f49e8f7e0db65e08a4ed6c3c73c3014bb06c563e9541af386e04795832ac67bfa90600090a16008805461ff0019166101001790555b6100a1565b610000565b5b5600a165627a7a72305820b837ce67bab0df481fbc13f370807e1543490a54158049690f980e087ab112bb0029",
   "networks": {
     "1487998734890": {
       "events": {
@@ -621,8 +657,918 @@
       "links": {},
       "address": "0x0a66f81fe87621af417c9eeaa4a1b09e9c5f319c",
       "updated_at": 1488499710266
+    },
+    "1489388883652": {
+      "events": {
+        "0x2d81a78edcc75b49bfffadd7b07df83caf4425518582256da4d278381c8bf12b": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "name": "cl",
+              "type": "bool"
+            }
+          ],
+          "name": "claim",
+          "type": "event"
+        },
+        "0x49e8f7e0db65e08a4ed6c3c73c3014bb06c563e9541af386e04795832ac67bfa": {
+          "anonymous": false,
+          "inputs": [],
+          "name": "conflicting_claim",
+          "type": "event"
+        },
+        "0x457fdd819a6b6781321c571e0ae8a64d2997590d75c2af7b7ee685649e7edf9a": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "name": "tbt",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "name": "tbf",
+              "type": "uint256"
+            }
+          ],
+          "name": "newBet",
+          "type": "event"
+        },
+        "0x321e3fce9473f472a9107b71b1bbaca179ce7a0f0ab0aa3a33581819ea239cf0": {
+          "anonymous": false,
+          "inputs": [],
+          "name": "conflict_resolved",
+          "type": "event"
+        },
+        "0x8c7266189e70b5cd087ce48a7584fc21aa294c0757e6acaacf897ea450641b90": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "name": "sender",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "name": "payout",
+              "type": "uint256"
+            }
+          ],
+          "name": "paid",
+          "type": "event"
+        }
+      },
+      "links": {},
+      "address": "0x11aaf366213871dced93c1a68d95a6b3ddca6221",
+      "updated_at": 1489396370590
+    },
+    "1489396622971": {
+      "events": {
+        "0x2d81a78edcc75b49bfffadd7b07df83caf4425518582256da4d278381c8bf12b": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "name": "cl",
+              "type": "bool"
+            }
+          ],
+          "name": "claim",
+          "type": "event"
+        },
+        "0x49e8f7e0db65e08a4ed6c3c73c3014bb06c563e9541af386e04795832ac67bfa": {
+          "anonymous": false,
+          "inputs": [],
+          "name": "conflicting_claim",
+          "type": "event"
+        },
+        "0x457fdd819a6b6781321c571e0ae8a64d2997590d75c2af7b7ee685649e7edf9a": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "name": "tbt",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "name": "tbf",
+              "type": "uint256"
+            }
+          ],
+          "name": "newBet",
+          "type": "event"
+        },
+        "0x321e3fce9473f472a9107b71b1bbaca179ce7a0f0ab0aa3a33581819ea239cf0": {
+          "anonymous": false,
+          "inputs": [],
+          "name": "conflict_resolved",
+          "type": "event"
+        },
+        "0x8c7266189e70b5cd087ce48a7584fc21aa294c0757e6acaacf897ea450641b90": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "name": "sender",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "name": "payout",
+              "type": "uint256"
+            }
+          ],
+          "name": "paid",
+          "type": "event"
+        }
+      },
+      "links": {},
+      "address": "0x1553154cfe24b72b709f2032e983a5167fb915eb",
+      "updated_at": 1489396684776
+    },
+    "1489476369147": {
+      "events": {
+        "0x2d81a78edcc75b49bfffadd7b07df83caf4425518582256da4d278381c8bf12b": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "name": "cl",
+              "type": "bool"
+            }
+          ],
+          "name": "claim",
+          "type": "event"
+        },
+        "0x49e8f7e0db65e08a4ed6c3c73c3014bb06c563e9541af386e04795832ac67bfa": {
+          "anonymous": false,
+          "inputs": [],
+          "name": "conflicting_claim",
+          "type": "event"
+        },
+        "0x457fdd819a6b6781321c571e0ae8a64d2997590d75c2af7b7ee685649e7edf9a": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "name": "tbt",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "name": "tbf",
+              "type": "uint256"
+            }
+          ],
+          "name": "newBet",
+          "type": "event"
+        },
+        "0x321e3fce9473f472a9107b71b1bbaca179ce7a0f0ab0aa3a33581819ea239cf0": {
+          "anonymous": false,
+          "inputs": [],
+          "name": "conflict_resolved",
+          "type": "event"
+        },
+        "0x8c7266189e70b5cd087ce48a7584fc21aa294c0757e6acaacf897ea450641b90": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "name": "sender",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "name": "payout",
+              "type": "uint256"
+            }
+          ],
+          "name": "paid",
+          "type": "event"
+        }
+      },
+      "links": {},
+      "address": "0x844d8ce20d1a378628809ed9d2e52183e293a37d",
+      "updated_at": 1489476775564
+    },
+    "1489561455824": {
+      "events": {
+        "0x2d81a78edcc75b49bfffadd7b07df83caf4425518582256da4d278381c8bf12b": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "name": "cl",
+              "type": "bool"
+            }
+          ],
+          "name": "claim",
+          "type": "event"
+        },
+        "0x49e8f7e0db65e08a4ed6c3c73c3014bb06c563e9541af386e04795832ac67bfa": {
+          "anonymous": false,
+          "inputs": [],
+          "name": "conflicting_claim",
+          "type": "event"
+        },
+        "0x457fdd819a6b6781321c571e0ae8a64d2997590d75c2af7b7ee685649e7edf9a": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "name": "tbt",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "name": "tbf",
+              "type": "uint256"
+            }
+          ],
+          "name": "newBet",
+          "type": "event"
+        },
+        "0x321e3fce9473f472a9107b71b1bbaca179ce7a0f0ab0aa3a33581819ea239cf0": {
+          "anonymous": false,
+          "inputs": [],
+          "name": "conflict_resolved",
+          "type": "event"
+        },
+        "0x8c7266189e70b5cd087ce48a7584fc21aa294c0757e6acaacf897ea450641b90": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "name": "sender",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "name": "payout",
+              "type": "uint256"
+            }
+          ],
+          "name": "paid",
+          "type": "event"
+        }
+      },
+      "links": {},
+      "address": "0x5ef8dcba780ddc9acfaf957a7fc3ee5acc91fc14",
+      "updated_at": 1489561622174
+    },
+    "1489565064610": {
+      "events": {
+        "0x2d81a78edcc75b49bfffadd7b07df83caf4425518582256da4d278381c8bf12b": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "name": "cl",
+              "type": "bool"
+            }
+          ],
+          "name": "claim",
+          "type": "event"
+        },
+        "0x49e8f7e0db65e08a4ed6c3c73c3014bb06c563e9541af386e04795832ac67bfa": {
+          "anonymous": false,
+          "inputs": [],
+          "name": "conflicting_claim",
+          "type": "event"
+        },
+        "0x457fdd819a6b6781321c571e0ae8a64d2997590d75c2af7b7ee685649e7edf9a": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "name": "tbt",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "name": "tbf",
+              "type": "uint256"
+            }
+          ],
+          "name": "newBet",
+          "type": "event"
+        },
+        "0x321e3fce9473f472a9107b71b1bbaca179ce7a0f0ab0aa3a33581819ea239cf0": {
+          "anonymous": false,
+          "inputs": [],
+          "name": "conflict_resolved",
+          "type": "event"
+        },
+        "0x8c7266189e70b5cd087ce48a7584fc21aa294c0757e6acaacf897ea450641b90": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "name": "sender",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "name": "payout",
+              "type": "uint256"
+            }
+          ],
+          "name": "paid",
+          "type": "event"
+        }
+      },
+      "links": {},
+      "address": "0x408aad4758fd2a80963d88fc550b9ab4ba3112b3",
+      "updated_at": 1489565537575
+    },
+    "1489711287263": {
+      "events": {
+        "0x2d81a78edcc75b49bfffadd7b07df83caf4425518582256da4d278381c8bf12b": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "name": "cl",
+              "type": "bool"
+            }
+          ],
+          "name": "claim",
+          "type": "event"
+        },
+        "0x49e8f7e0db65e08a4ed6c3c73c3014bb06c563e9541af386e04795832ac67bfa": {
+          "anonymous": false,
+          "inputs": [],
+          "name": "conflicting_claim",
+          "type": "event"
+        },
+        "0x457fdd819a6b6781321c571e0ae8a64d2997590d75c2af7b7ee685649e7edf9a": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "name": "tbt",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "name": "tbf",
+              "type": "uint256"
+            }
+          ],
+          "name": "newBet",
+          "type": "event"
+        },
+        "0x321e3fce9473f472a9107b71b1bbaca179ce7a0f0ab0aa3a33581819ea239cf0": {
+          "anonymous": false,
+          "inputs": [],
+          "name": "conflict_resolved",
+          "type": "event"
+        },
+        "0x8c7266189e70b5cd087ce48a7584fc21aa294c0757e6acaacf897ea450641b90": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "name": "sender",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "name": "payout",
+              "type": "uint256"
+            }
+          ],
+          "name": "paid",
+          "type": "event"
+        }
+      },
+      "links": {},
+      "address": "0x5b967b7c22242e8b4afd816f046e636871bf9718",
+      "updated_at": 1489713205968
+    },
+    "1489741929234": {
+      "events": {
+        "0x2d81a78edcc75b49bfffadd7b07df83caf4425518582256da4d278381c8bf12b": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "name": "cl",
+              "type": "bool"
+            }
+          ],
+          "name": "claim",
+          "type": "event"
+        },
+        "0x49e8f7e0db65e08a4ed6c3c73c3014bb06c563e9541af386e04795832ac67bfa": {
+          "anonymous": false,
+          "inputs": [],
+          "name": "conflicting_claim",
+          "type": "event"
+        },
+        "0x457fdd819a6b6781321c571e0ae8a64d2997590d75c2af7b7ee685649e7edf9a": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "name": "tbt",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "name": "tbf",
+              "type": "uint256"
+            }
+          ],
+          "name": "newBet",
+          "type": "event"
+        },
+        "0x321e3fce9473f472a9107b71b1bbaca179ce7a0f0ab0aa3a33581819ea239cf0": {
+          "anonymous": false,
+          "inputs": [],
+          "name": "conflict_resolved",
+          "type": "event"
+        },
+        "0x8c7266189e70b5cd087ce48a7584fc21aa294c0757e6acaacf897ea450641b90": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "name": "sender",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "name": "payout",
+              "type": "uint256"
+            }
+          ],
+          "name": "paid",
+          "type": "event"
+        }
+      },
+      "links": {},
+      "address": "0x8ae458c5a87d96f662be8d089a46f562b0429588",
+      "updated_at": 1489742206836
+    },
+    "1489888153811": {
+      "events": {
+        "0x2d81a78edcc75b49bfffadd7b07df83caf4425518582256da4d278381c8bf12b": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "name": "cl",
+              "type": "bool"
+            }
+          ],
+          "name": "claim",
+          "type": "event"
+        },
+        "0x49e8f7e0db65e08a4ed6c3c73c3014bb06c563e9541af386e04795832ac67bfa": {
+          "anonymous": false,
+          "inputs": [],
+          "name": "conflicting_claim",
+          "type": "event"
+        },
+        "0x457fdd819a6b6781321c571e0ae8a64d2997590d75c2af7b7ee685649e7edf9a": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "name": "tbt",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "name": "tbf",
+              "type": "uint256"
+            }
+          ],
+          "name": "newBet",
+          "type": "event"
+        },
+        "0x321e3fce9473f472a9107b71b1bbaca179ce7a0f0ab0aa3a33581819ea239cf0": {
+          "anonymous": false,
+          "inputs": [],
+          "name": "conflict_resolved",
+          "type": "event"
+        },
+        "0x8c7266189e70b5cd087ce48a7584fc21aa294c0757e6acaacf897ea450641b90": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "name": "sender",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "name": "payout",
+              "type": "uint256"
+            }
+          ],
+          "name": "paid",
+          "type": "event"
+        }
+      },
+      "links": {},
+      "address": "0xf3a6658258b19238f026d75c0444f8d581837c34",
+      "updated_at": 1489888451242
+    },
+    "1489890702244": {
+      "events": {
+        "0x2d81a78edcc75b49bfffadd7b07df83caf4425518582256da4d278381c8bf12b": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "name": "cl",
+              "type": "bool"
+            }
+          ],
+          "name": "claim",
+          "type": "event"
+        },
+        "0x49e8f7e0db65e08a4ed6c3c73c3014bb06c563e9541af386e04795832ac67bfa": {
+          "anonymous": false,
+          "inputs": [],
+          "name": "conflicting_claim",
+          "type": "event"
+        },
+        "0x457fdd819a6b6781321c571e0ae8a64d2997590d75c2af7b7ee685649e7edf9a": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "name": "tbt",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "name": "tbf",
+              "type": "uint256"
+            }
+          ],
+          "name": "newBet",
+          "type": "event"
+        },
+        "0x321e3fce9473f472a9107b71b1bbaca179ce7a0f0ab0aa3a33581819ea239cf0": {
+          "anonymous": false,
+          "inputs": [],
+          "name": "conflict_resolved",
+          "type": "event"
+        },
+        "0x8c7266189e70b5cd087ce48a7584fc21aa294c0757e6acaacf897ea450641b90": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "name": "sender",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "name": "payout",
+              "type": "uint256"
+            }
+          ],
+          "name": "paid",
+          "type": "event"
+        }
+      },
+      "links": {},
+      "address": "0x2ee7d1f04236634e1d68be2e9efc5d6046e37458",
+      "updated_at": 1489890804760
+    },
+    "1489904115698": {
+      "events": {
+        "0x2d81a78edcc75b49bfffadd7b07df83caf4425518582256da4d278381c8bf12b": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "name": "cl",
+              "type": "bool"
+            }
+          ],
+          "name": "claim",
+          "type": "event"
+        },
+        "0x49e8f7e0db65e08a4ed6c3c73c3014bb06c563e9541af386e04795832ac67bfa": {
+          "anonymous": false,
+          "inputs": [],
+          "name": "conflicting_claim",
+          "type": "event"
+        },
+        "0x457fdd819a6b6781321c571e0ae8a64d2997590d75c2af7b7ee685649e7edf9a": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "name": "tbt",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "name": "tbf",
+              "type": "uint256"
+            }
+          ],
+          "name": "newBet",
+          "type": "event"
+        },
+        "0x321e3fce9473f472a9107b71b1bbaca179ce7a0f0ab0aa3a33581819ea239cf0": {
+          "anonymous": false,
+          "inputs": [],
+          "name": "conflict_resolved",
+          "type": "event"
+        },
+        "0x8c7266189e70b5cd087ce48a7584fc21aa294c0757e6acaacf897ea450641b90": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "name": "sender",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "name": "payout",
+              "type": "uint256"
+            }
+          ],
+          "name": "paid",
+          "type": "event"
+        }
+      },
+      "links": {},
+      "address": "0xbf01267d688d916e09914230c46971d7bc3b2c76",
+      "updated_at": 1489904213081
+    },
+    "1490174767532": {
+      "events": {
+        "0x2d81a78edcc75b49bfffadd7b07df83caf4425518582256da4d278381c8bf12b": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "name": "cl",
+              "type": "bool"
+            }
+          ],
+          "name": "claim",
+          "type": "event"
+        },
+        "0x49e8f7e0db65e08a4ed6c3c73c3014bb06c563e9541af386e04795832ac67bfa": {
+          "anonymous": false,
+          "inputs": [],
+          "name": "conflicting_claim",
+          "type": "event"
+        },
+        "0x457fdd819a6b6781321c571e0ae8a64d2997590d75c2af7b7ee685649e7edf9a": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "name": "tbt",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "name": "tbf",
+              "type": "uint256"
+            }
+          ],
+          "name": "newBet",
+          "type": "event"
+        },
+        "0x321e3fce9473f472a9107b71b1bbaca179ce7a0f0ab0aa3a33581819ea239cf0": {
+          "anonymous": false,
+          "inputs": [],
+          "name": "conflict_resolved",
+          "type": "event"
+        },
+        "0x8c7266189e70b5cd087ce48a7584fc21aa294c0757e6acaacf897ea450641b90": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "name": "sender",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "name": "payout",
+              "type": "uint256"
+            }
+          ],
+          "name": "paid",
+          "type": "event"
+        }
+      },
+      "links": {},
+      "address": "0x6143dfc02c292215adfc89ca223ea64848b09bc0",
+      "updated_at": 1490176394599
+    },
+    "1490238344197": {
+      "events": {
+        "0x2d81a78edcc75b49bfffadd7b07df83caf4425518582256da4d278381c8bf12b": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "name": "cl",
+              "type": "bool"
+            }
+          ],
+          "name": "claim",
+          "type": "event"
+        },
+        "0x49e8f7e0db65e08a4ed6c3c73c3014bb06c563e9541af386e04795832ac67bfa": {
+          "anonymous": false,
+          "inputs": [],
+          "name": "conflicting_claim",
+          "type": "event"
+        },
+        "0x457fdd819a6b6781321c571e0ae8a64d2997590d75c2af7b7ee685649e7edf9a": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "name": "tbt",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "name": "tbf",
+              "type": "uint256"
+            }
+          ],
+          "name": "newBet",
+          "type": "event"
+        },
+        "0x321e3fce9473f472a9107b71b1bbaca179ce7a0f0ab0aa3a33581819ea239cf0": {
+          "anonymous": false,
+          "inputs": [],
+          "name": "conflict_resolved",
+          "type": "event"
+        },
+        "0x8c7266189e70b5cd087ce48a7584fc21aa294c0757e6acaacf897ea450641b90": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "name": "sender",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "name": "payout",
+              "type": "uint256"
+            }
+          ],
+          "name": "paid",
+          "type": "event"
+        }
+      },
+      "links": {},
+      "address": "0x48f4321e41a5953d985292facda4c0e8416fc108",
+      "updated_at": 1490238972586
+    },
+    "1490436404042": {
+      "events": {
+        "0x2d81a78edcc75b49bfffadd7b07df83caf4425518582256da4d278381c8bf12b": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "name": "cl",
+              "type": "bool"
+            }
+          ],
+          "name": "claim",
+          "type": "event"
+        },
+        "0x49e8f7e0db65e08a4ed6c3c73c3014bb06c563e9541af386e04795832ac67bfa": {
+          "anonymous": false,
+          "inputs": [],
+          "name": "conflicting_claim",
+          "type": "event"
+        },
+        "0x457fdd819a6b6781321c571e0ae8a64d2997590d75c2af7b7ee685649e7edf9a": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "name": "tbt",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "name": "tbf",
+              "type": "uint256"
+            }
+          ],
+          "name": "newBet",
+          "type": "event"
+        },
+        "0x321e3fce9473f472a9107b71b1bbaca179ce7a0f0ab0aa3a33581819ea239cf0": {
+          "anonymous": false,
+          "inputs": [],
+          "name": "conflict_resolved",
+          "type": "event"
+        },
+        "0x8c7266189e70b5cd087ce48a7584fc21aa294c0757e6acaacf897ea450641b90": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "name": "sender",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "name": "payout",
+              "type": "uint256"
+            }
+          ],
+          "name": "paid",
+          "type": "event"
+        }
+      },
+      "links": {},
+      "address": "0x992c925ef0ea3c151ad933f05947d8b2330a744a",
+      "updated_at": 1490438353249
+    },
+    "1490600505078": {
+      "events": {
+        "0x2d81a78edcc75b49bfffadd7b07df83caf4425518582256da4d278381c8bf12b": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "name": "cl",
+              "type": "bool"
+            }
+          ],
+          "name": "claim",
+          "type": "event"
+        },
+        "0x49e8f7e0db65e08a4ed6c3c73c3014bb06c563e9541af386e04795832ac67bfa": {
+          "anonymous": false,
+          "inputs": [],
+          "name": "conflicting_claim",
+          "type": "event"
+        },
+        "0x457fdd819a6b6781321c571e0ae8a64d2997590d75c2af7b7ee685649e7edf9a": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "name": "tbt",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "name": "tbf",
+              "type": "uint256"
+            }
+          ],
+          "name": "newBet",
+          "type": "event"
+        },
+        "0x321e3fce9473f472a9107b71b1bbaca179ce7a0f0ab0aa3a33581819ea239cf0": {
+          "anonymous": false,
+          "inputs": [],
+          "name": "conflict_resolved",
+          "type": "event"
+        },
+        "0x8c7266189e70b5cd087ce48a7584fc21aa294c0757e6acaacf897ea450641b90": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "name": "sender",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "name": "payout",
+              "type": "uint256"
+            }
+          ],
+          "name": "paid",
+          "type": "event"
+        }
+      },
+      "links": {},
+      "address": "0x0e5f1788f15e39aa5e5e4ddc96fde97132858ba7",
+      "updated_at": 1490602443966
     }
   },
   "schema_version": "0.0.5",
-  "updated_at": 1488499710266
+  "updated_at": 1490602443966
 }

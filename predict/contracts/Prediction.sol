@@ -2,8 +2,8 @@ pragma solidity ^0.4.0;
 
 contract Prediction {
 
-    uint claimtime = 10; //mins
-    address admin = 0x8472dc97deeae78f04f9c8470ee70ecb8df0009c;
+    uint claimtime = 5; //mins
+    address admin = 0x03cea83f1ca0e7a7d351412db08612d387847f08;
     bool win;
     uint deadline;
     bytes32 descr;
@@ -54,7 +54,12 @@ contract Prediction {
         else throw;
     }
 
-    function get_stat() returns (uint, uint, bool, bool, uint) {return (tbt, tbf, cl, conflict, this.balance);}
+    //function get_stat() returns (uint, uint, bool, bool, uint) {return (tbt, tbf, cl, conflict, this.balance);}
+    function get_tbt() returns (uint) {return(tbt);}
+    function get_tbf() returns (uint) {return(tbf);}
+    function get_isclaim() returns (bool) {return cl;}
+    function get_isconflict() returns(bool) {return conflict;}
+    function get_bal() returns (uint) {return this.balance;}
 
     function claimWin() {
         if (bettors[msg.sender].account == 0) throw;
@@ -91,8 +96,8 @@ contract Prediction {
     }
 
     function pay() {
-        if (bettors[msg.sender].account == 0) throw;
-        if (conflict == false && now > claimdl) {
+        if (bettors[msg.sender].account == 0 || now < claimdl) throw;
+        if (conflict == false) {
             uint payout;
             address sender = msg.sender;
             Bettor bettor = bettors[sender];
@@ -101,7 +106,7 @@ contract Prediction {
                 win = cl;
                 if (bettor.side == win) {
                     if (win == true) payout = (bettor.account/2)*(tbf/tbt + 2);
-                    else if (win == false) payout = (bettor.account/2)*(tbt/tbf + 2);
+                    else  payout = (bettor.account/2)*(tbt/tbf + 2);
                 }
                 else if (bettor.side != win) {
                     if (bettor.claimer == true) payout = 0;
@@ -112,6 +117,6 @@ contract Prediction {
             if (payout != 0) {if (!sender.send(payout)) throw; else paid(sender, payout);}
         }
     }
-    function sd() { if (now > claimdl + 30 minutes && msg.sender == maker) selfdestruct(maker);}
+    function sd() { if (now > claimdl + 5 minutes && msg.sender == maker) selfdestruct(maker);}
     function() { throw;}
 }
