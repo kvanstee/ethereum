@@ -6,33 +6,27 @@ contract Sell_eth {
     address seller;
     struct Buyer {uint amount; uint price; bool pending;}
     mapping(address => Buyer) buyers;
+
+    modifier onlySeller() { if (msg.sender != seller) throw;  _; }
     
- 
+    event newWeiForSale(uint indexed wei_for_sale);
+    event newPrice(uint indexed nprice);
+    event purchaseConfirmed(address indexed _buyer, uint value, uint price);
+    event cashReceived(address indexed rec_buyer);
+
     function Sell_eth(uint _price) payable {
         seller = msg.sender;
         price = _price;
         weiForSale = msg.value / 2;
-//        if (weiForSale/price < 5000) throw;
         newWeiForSale(weiForSale);
         newPrice(price);
-    }
-
-    modifier onlySeller() { if (msg.sender != seller) throw;  _; }
-    
-    event newWeiForSale(uint wei_for_sale);
-    event newPrice(uint price);
-    event purchaseConfirmed(address _buyer, uint value, uint price);
-    event cashReceived(address rec_buyer);
-
-    function changePrice(uint newPrice) onlySeller {
-        price = newPrice;
     }
 
     function purchase() payable {
         if (msg.value > weiForSale || (msg.value/price)%5000 != 0) throw;
         purchaseConfirmed(msg.sender, msg.value, price);
         buyers[msg.sender] = Buyer (msg.value, price, true);
-        weiForSale -= buyers[msg.sender].amount;
+        weiForSale -= msg.value;
         newWeiForSale(weiForSale);
     }
 
@@ -43,13 +37,22 @@ contract Sell_eth {
         rec_buyer.pending = false;
         uint amt = rec_buyer.amount;
         rec_buyer.amount = 0;
-        if (amt != 0) {if (!addr_buyer.send(amt)) throw;}
+        if (!addr_buyer.send(2*amt)) throw;
     }
     
     function addEther() onlySeller payable {  
             weiForSale += msg.value/2;
             newWeiForSale(weiForSale);
     }
+
+    function changePrice(uint new_price) onlySeller {
+        price = new_price;
+        newPrice(price);
+    }
+   
+   function get_cont_bal() returns(uint balance) {
+     return this.balance;
+   }
 }
 
     
