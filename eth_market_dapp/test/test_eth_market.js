@@ -1,70 +1,86 @@
+
+
+window.addEventListener('load', function() {
+  // Supports Metamask and Mist, and other wallets that provide 'web3'.
+  if (typeof web3 !== 'undefined') {
+    // Use the Mist/wallet provider.
+    window.web3 = new Web3(web3.currentProvider);
+  } else {
+    // No web3 detected. Show an error to the user or use Infura: https://infura.io/
+  }
+});
+
 var Sell_eth = artifacts.require("./Sell_eth.sol");
+var Buy_eth = artifacts.require("./Buy_eth.sol");
 
 contract('Sell_eth', function(accounts) {
   eth = web3.eth;
   var a = accounts;
-  var amt = [0, 1, 2, 3, 4];
+  var amt1 = web3.toWei(1, "ether");
+  var amt2 = web3.toWei(2, "ether");
+  var amt3 = web3.toWei(3, "ether");
+  var amt4 = web3.toWei(4, "ether");
   var selleth;
-  var expect  = require("chai").expect;  
+  var buyeth;
+  var expect = require("chai").expect;  
+  var one_eth = web3.toWei(1, "ether");
+  var price = one_eth/7000; // wei per smallest currency unit (eg. cent)
 
-  it("should set up the sale contract", function(done) {
-      Sell_eth.new( 142857142857142, {from: a[1], value: web3.toWei(amt[4], "ether")}).then(function(instance) {
+  it("should set up the sale contract", function() {
+    return Sell_eth.new(price, {from: a[1], value: amt4}).then(function(instance) {
       selleth = Sell_eth.at(instance.address);
-      selleth.newWeiForSale({'wei_for_sale': 2000000000000000000}, function(error, result) {
-        selleth.get_cont_bal.call().then(function(error, bal) {
-          if (!error && bal.toNumber != 0) expect(bal.toNumber).to.equal(web3.toWei(amt[4]));
-        });
+      selleth.allEvents(function(error, result) {console.log(result)}); 
+      return selleth.get_cont_bal.call().then(function(bal) { 
+        assert.equal(bal.toNumber(), amt4, "should be 4 ether in contract's account");
       });
-      selleth.newPrice({'nPrice': 142857142857142}, function(error, result) {
-        if (!error && result != null) assert.isOk(result);
-      });
-      done();
     });
   }); 
+  
+  it("should confirm purchase of ether", function() {
+    selleth.purchase({from: a[2], value: price*5000}).then(function() {
+      selleth.get_cont_bal.call().then(function(bal) {
+        assert.equal(bal.toNumber(), 4714285714285714000, "balance should be 4.7 ether");
+      });
+    });
+  });
+  
+//  it("should confirm another purchase of ether", function(done) {
+     
 
-  it("should confirm purchase of ether", function(done) {
-    selleth.purchase({from: a[2], value: 142857142857142*5000});
-    selleth.purchaseConfirmed({'_buyer': a[2]}, function(error, result) {
-      if (!error && result != null) {
-        expect(result.args.value.toNumber()).to.equal(142857142857142*5000);
-        expect(result.args.price.toNumber()).to.equal(142857142857142);
-      };
+  it("should confirm receipt of cash", function() {
+    selleth.confirmReceived(a[2], {from:a[1]}).then(function() {
+      selleth.get_cont_bal.call().then(function(error, bal) { 
+        assert.equal(bal.toNumber(), 3285714285714285600, "contract balance should decrease by 2*volume");
+      });
     });
-    selleth.newWeiForSale({'wei_for_sale': 1285714285714290000}, function(error, result) {
-      if (!error && result != null) assert.isOk(result);
+  });
+  
+  it("should increase weiForSale by 2 ether", function() {
+    selleth.addEther({from:a[1], value: amt4}).then(function() {
+      selleth.get_cont_bal.call().then(function(bal) { 
+        assert.equal(bal.toNumber(), 7285714285714285600, "balance should be 4 ether more"); 
+      });
     });
+  });
+  
+/*  it("should change the price", function(done) {
+    selleth.changePrice(one_eth/6000, {from:a[1]});
+    selleth.newPrice({'nPrice': one_eth/6000}, {from: a[1]}, function(error, result) {
+      assert.isOk(result);
+      price = result.args.nPrice.toNumber;
+      console.log("new price: " + price);
+    });
+    done();
+  });
+
+  it("should terminate the contract", function(done) {
+    selleth.retr_funds({from: a[1]});
     selleth.get_cont_bal.call().then(function(error, bal) {
-      if (!error && bal.toNumber != 0) expect(bal.toNumber).to.equal(web3.toWei(amt[4]).toNumber + 142857142857142*5000);
+      expect(bal).to.equal(0);
     });
     done();
+    console.log("balance: " + this.balance);
   });
-  
-  it("should confirm receipt of cash", function(done) {
-    selleth.confirmReceived(a[2], {from:a[1]});
-    selleth.cashReceived({'_buyer': a[2]}, function(error, result) {
-      if (!error && result !=null) assert.isOk(result);
-    });
-    selleth.get_cont_bal.call().then(function(error, bal) {
-      if (!error && bal.toNumber != 0) expect(bal.toNumber).to.equal(web3.toWei(amt[4]).toNumber - 142857142857142*5000);
-    });
-    done();
-  });
-  
-  it("should increase weiForSale by 2 ether", function(done) {
-    selleth.addEther({from:a[1], value: web3.toWei(amt[4])});
-    selleth.newWeiForSale({'wei_for_sale': 3285714285714290000 }, {from: a[1]}, function(error, result) {
-        if (!error && result != null) assert.isOk(result);
-    });
-    done();
-  });
-  
-  it("should change the price", function(done) {
-    selleth.changePrice(152857142857142, {from:a[1]});
-    selleth.newPrice({'nPrice': 152857142857142}, function(error, result) {
-      if (!error && result != null) assert.isOk(result);
-    });
-    done();
-  });
+*/
 })
-
 

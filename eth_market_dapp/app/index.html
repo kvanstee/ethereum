@@ -29,25 +29,38 @@
   </div>
   <br><br>
   
-  <div id="contract_functions">
+  <div id="contract_functions" bgcolor="blue">
     <br><label for="address">Contract Address:</label><input type="text" id="address"></input>
-  
-  <div id="enter_contract">
+
+  <div id="enter_contract" bgcolor="lightyellow">
     <br><label for="val">Select Value(AUD):</label><select  id="val" selected><option value="50">50</option><option value="100">100</option><option value="150">150</option><option value="500">500</option></select>
     <br><br><button id="send" onclick="App.buy()" href="#">Buy Ether from this Contract</button>
   </div>
 
-  <div id="change_price">
-  <br><label for="newprice">New Price:</label><input type="text" id="nprice"></input>
-  <br><br><button id="send" onclick="App.change_price()" href="#">Change Price</button>
+  <div id="cash_received">
+  <br><label for="payment received">Address of buyer:</label><input type="text" id="rec_address"></input>
+  <br><br><button  onclick="App.payment_received()" href="#">Payment received</button>
   </div>
 
-  <div id="add_ether">
+  <div id="change_price">
+  <br><label for="newprice">New Price:</label><input type="text" id="nprice"></input>
+  <br><br><button  onclick="App.change_price()" href="#">Change Price</button>
+  </div>
+
+  <div>
   <br><label for="addether">Add Ether:</label><input type="text" id="add_ether"></input>
-  <br><br><button id="send" onclick="App.add_ether()" href="#">Add Ether to contract</button>
+  <br><br><button  onclick="App.addether()" href="#">Add Ether to contract</button>
   </div>
+  
+  <div id="term_contract">
+  <br><br><button  onclick="App.term_contract()" href="#">terminate contract</button>
   </div>
-  <span id="status"></span>
+
+  </div>
+
+  
+
+  <span id="status" bgcolor="lightblue"></span>
   <br>
   <span class="hint"><strong>Hint:</strong> open the browser developer console to view any errors and warnings.</span>
 </body>

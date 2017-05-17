@@ -11,8 +11,8 @@ contract Sell_eth {
     
     event newWeiForSale(uint indexed wei_for_sale);
     event newPrice(uint indexed nprice);
-    event purchaseConfirmed(address indexed _buyer, uint value, uint price);
-    event cashReceived(address indexed rec_buyer);
+    event purchaseConfirmed(address  _buyer, uint value, uint price);
+    event cashReceived(address rec_buyer);
 
     function Sell_eth(uint _price) payable {
         seller = msg.sender;
@@ -23,7 +23,7 @@ contract Sell_eth {
     }
 
     function purchase() payable {
-        if (msg.value > weiForSale || (msg.value/price)%5000 != 0) throw;
+        if (buyers[msg.sender].pending == true || msg.value > weiForSale || (msg.value/price)%5000 != 0) throw;
         purchaseConfirmed(msg.sender, msg.value, price);
         buyers[msg.sender] = Buyer (msg.value, price, true);
         weiForSale -= msg.value/2;
@@ -50,13 +50,13 @@ contract Sell_eth {
         newPrice(price);
     }
    
-    function get_cont_bal() returns(uint balance) {
+    function get_cont_bal() returns(uint bal) {
         return this.balance;
     }
 
     function retr_funds() onlySeller {
-      if (this.balance < 2*weiForSale) selfdestruct(seller);
+      if (this.balance > 2*weiForSale) throw;
+      selfdestruct(seller);
     }
 }
 
-    
