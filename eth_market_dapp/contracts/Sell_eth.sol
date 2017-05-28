@@ -1,4 +1,4 @@
-pragma solidity ^0.4.0;
+pragma solidity ^0.4.4;
 
 contract Sell_eth {
     uint weiForSale;
@@ -50,8 +50,12 @@ contract Sell_eth {
         newPrice(price);
     }
    
-    function get_cont_bal() returns(uint bal) {
-        return this.balance;
+    function get_wei_for_sale() returns(uint) {
+        return weiForSale;
+    }
+
+   function get_price() returns(uint) {
+        return price;
     }
 
     function retr_funds() onlySeller {
