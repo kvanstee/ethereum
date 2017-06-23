@@ -1,53 +1,56 @@
 pragma solidity ^0.4.4;
 
+import "./Sell_eth.sol";
+
 contract Orders {
 
-  address[] instOfSellOrders;
-  address[] instOfBuyOrders;
-  address owner;
-  address order;
-  
+  address[] SellOrders;
+  address[] BuyOrders;
+//  address owner;  
 //  function Orders() {owner = msg.sender;}
   
-  function addSellOrder(address _contract) {
-     instOfSellOrders.push(_contract);
+  function newSellOrder(uint price) payable returns(address) {
+    address order = (new Sell_eth).value(msg.value)(price, msg.sender);
+    SellOrders.push(order);
+    return order;
   }
-  
-  function removeSellOrder(address _address)  returns(address) {
-    for (uint i = 0; i<instOfSellOrders.length; i++){
-      if (instOfSellOrders[i] == _address) {
+
+  function removeSellOrder(address _address) {
+    for (uint i = 0; i<SellOrders.length; i++){
+      if (SellOrders[i] == _address) {
         uint index = i;
-        for (uint x = index; x<instOfSellOrders.length; x++) {
-          instOfSellOrders[x] = instOfSellOrders[x+1];
+        for (uint x = index; x<SellOrders.length-1; x++) {
+          SellOrders[x] = SellOrders[x+1];
         }
       }    
     }
-    delete instOfSellOrders[instOfSellOrders.length-1];
-    instOfSellOrders.length--;
+    delete SellOrders[SellOrders.length-1];
+    SellOrders.length--;
   }
  
   function addBuyOrder(address _contract) {
-    instOfBuyOrders.push(_contract);
+    BuyOrders.push(_contract);
   }
   
-  function removeBuyOrder(address _address)  returns(address) {
-    for (uint i = 0; i<instOfBuyOrders.length; i++){
-      if (instOfBuyOrders[i] == _address) {
+  function removeBuyOrder(address _address) {
+    for (uint i = 0; i<BuyOrders.length; i++){
+      if (BuyOrders[i] == _address) {
         uint index = i;
-        for (uint x = index; x<instOfBuyOrders.length; x++) {
-          instOfBuyOrders[x] = instOfBuyOrders[x+1];
+        for (uint x = index; x<BuyOrders.length; x++) {
+          BuyOrders[x] = BuyOrders[x+1];
         }
       }    
     }
-    delete instOfBuyOrders[instOfBuyOrders.length-1];
-    instOfBuyOrders.length--;
+    delete BuyOrders[BuyOrders.length-1];
+    BuyOrders.length--;
   }
 
   function getSellOrders() returns(address[]) {
-    return instOfSellOrders;
+    return SellOrders;
   }
 
   function getBuyOrders() returns(address[]) {
-    return instOfBuyOrders;
+    return BuyOrders;
   }
-}
+}  
+  
