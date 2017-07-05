@@ -14,14 +14,13 @@ contract Buy_eth {
     event saleConfirmed(address indexed _seller, uint value, uint price);
     event cashReceived(address indexed _seller);
 
-    function Buy_eth(uint _price) payable {
-        buyer = msg.sender;
+    function Buy_eth(uint _price, address _buyer) payable {
+        buyer = _buyer;
         price = _price;
         weiToBuy = msg.value;
         newWeiToBuy(weiToBuy);
         newPrice(price);
     }
-
     function sell() payable {
         if (msg.value/2 > weiToBuy || (msg.value/2/price)%5000 != 0) throw;
         uint amt = msg.value/2;
@@ -45,13 +44,6 @@ contract Buy_eth {
         weiToBuy += msg.value;
         newWeiToBuy(weiToBuy);
     }
-
-    function buy_less(uint amount) onlyBuyer payable {
-        weiToBuy -= amount;
-        if (!buyer.send(amount)) throw;
-        newWeiToBuy(weiToBuy);
-    }
-
     function changePrice(uint new_price) onlyBuyer {
         price = new_price;
         newPrice(price);
@@ -61,9 +53,23 @@ contract Buy_eth {
         return this.balance;
     }
 
+    function get_price() returns(uint price) {
+        return price;
+    }
+
+    function get_wei_to_buy() returns(uint) {
+        return weiToBuy;
+    }
+
+    function get_values() returns(uint, uint) {
+        return (weiToBuy, price);
+    }
+
+    function get_buyer() returns(address) {
+        return buyer;
+    }
+
     function terminate_contract() onlyBuyer payable {
         if (this.balance < weiToBuy) selfdestruct(buyer);
     }
 }
-
-    

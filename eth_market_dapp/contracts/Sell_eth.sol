@@ -61,6 +61,10 @@ contract Sell_eth {
          return (weiForSale, price);
     }
 
+    function get_seller() returns(address) {
+        return seller;
+    }    
+
     function retr_funds() onlySeller {
       if (this.balance > 2*weiForSale) throw;
       selfdestruct(seller);

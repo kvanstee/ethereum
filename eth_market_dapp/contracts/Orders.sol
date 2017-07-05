@@ -1,6 +1,7 @@
 pragma solidity ^0.4.4;
 
 import "./Sell_eth.sol";
+import "./Buy_eth.sol";
 
 contract Orders {
 
@@ -12,6 +13,12 @@ contract Orders {
   function newSellOrder(uint price) payable returns(address) {
     address order = (new Sell_eth).value(msg.value)(price, msg.sender);
     SellOrders.push(order);
+    return order;
+  }
+
+  function newBuyOrder(uint price) payable returns(address) {
+    address order = (new Buy_eth).value(msg.value)(price, msg.sender);
+    BuyOrders.push(order);
     return order;
   }
 
@@ -36,7 +43,7 @@ contract Orders {
     for (uint i = 0; i<BuyOrders.length; i++){
       if (BuyOrders[i] == _address) {
         uint index = i;
-        for (uint x = index; x<BuyOrders.length; x++) {
+        for (uint x = index; x<BuyOrders.length-1; x++) {
           BuyOrders[x] = BuyOrders[x+1];
         }
       }    
