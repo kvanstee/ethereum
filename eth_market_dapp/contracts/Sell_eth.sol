@@ -17,8 +17,6 @@ contract Sell_eth {
         seller = _seller;
         price = _price;
         weiForSale = msg.value / 2;
-        newWeiForSale(weiForSale);
-        newPrice(price);
     }
     
     function purchase() payable {
@@ -31,12 +29,12 @@ contract Sell_eth {
 
     function confirmReceived(address addr_buyer) onlySeller payable {
         Buyer rec_buyer = buyers[addr_buyer];
-        cashReceived(addr_buyer);
         if (rec_buyer.pending != true) throw;
         rec_buyer.pending = false;
         uint amt = rec_buyer.amount;
         rec_buyer.amount = 0;
         if (!addr_buyer.send(2*amt)) throw;
+        cashReceived(addr_buyer);
     }
 
     function addEther() onlySeller payable {

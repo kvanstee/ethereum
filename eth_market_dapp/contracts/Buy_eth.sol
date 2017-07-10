@@ -11,20 +11,18 @@ contract Buy_eth {
     
     event newWeiToBuy(uint indexed wei_to_buy);
     event newPrice(uint indexed nprice);
-    event saleConfirmed(address indexed _seller, uint value, uint price);
+    event salePending(address indexed _seller, uint value, uint price);
     event cashReceived(address indexed _seller);
 
     function Buy_eth(uint _price, address _buyer) payable {
         buyer = _buyer;
         price = _price;
         weiToBuy = msg.value;
-        newWeiToBuy(weiToBuy);
-        newPrice(price);
     }
     function sell() payable {
-        if (msg.value/2 > weiToBuy || (msg.value/2/price)%5000 != 0) throw;
+        if (msg.value/2 > weiToBuy || (msg.value/2/price)%5000 != 0 || sellers[msg.sender].pending == true) throw;
         uint amt = msg.value/2;
-        saleConfirmed(msg.sender, amt, price);
+        salePending(msg.sender, amt, price);
         sellers[msg.sender] = Seller (amt, price, true);
         weiToBuy -= amt;
         newWeiToBuy(weiToBuy);
@@ -32,12 +30,12 @@ contract Buy_eth {
 
     function confirmReceived() payable {
         Seller seller = sellers[msg.sender];
-        cashReceived(msg.sender);
         if (seller.pending != true) throw;
         seller.pending = false;
         uint amt = seller.amount;
         seller.amount = 0;
         if (!msg.sender.send(amt)) throw;
+        cashReceived(msg.sender);
     }
     
     function buy_more() onlyBuyer payable {  
