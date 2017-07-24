@@ -2,11 +2,19 @@ const path = require('path');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 module.exports = {
-  entry: './app/javascripts/app.js',
+  entry: [
+    './app/javascripts/app.js',
+    //'webpack-dev-server/client?localhost:8080'
+  ],
   output: {
     path: path.resolve(__dirname, 'build'),
     filename: 'app.js'
   },
+  devServer: {
+    host: "localhost", // Your Computer Name
+    port: 8080
+  },
+
   plugins: [
     // Copy our app's index.html to the build folder.
     new CopyWebpackPlugin([

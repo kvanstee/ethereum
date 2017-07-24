@@ -1,26 +1,30 @@
 pragma solidity ^0.4.4;
 
+import "./Orders.sol";
+
 contract Sell_eth {
+    Orders orders;
     uint weiForSale;
     uint price; //wei per smallest currency unit (eg. cent)
     address seller;
     struct Buyer {uint amount; uint price; bool pending;}
     mapping(address => Buyer) buyers;
-    modifier onlySeller() { if (msg.sender != seller) throw;  _; }
+    modifier onlySeller() { require(msg.sender == seller);  _; }
 
     event newWeiForSale(uint indexed wei_for_sale);
     event newPrice(uint indexed nprice);
     event purchasePending(address  _buyer, uint value, uint price);
     event cashReceived(address rec_buyer);
 
-    function Sell_eth(uint _price, address _seller) payable {
+    function Sell_eth(uint _price, address _seller, address _orders) payable {
+	orders = Orders(_orders);
         seller = _seller;
         price = _price;
         weiForSale = msg.value / 2;
     }
     
     function purchase() payable {
-        if (buyers[msg.sender].pending == true || msg.value > weiForSale || (msg.value/price)%5000 != 0) throw;
+        require(buyers[msg.sender].pending == false && (msg.value/price)%5000 == 0);
         purchasePending(msg.sender, msg.value, price);
         buyers[msg.sender] = Buyer (msg.value, price, true);
         weiForSale -= msg.value/2;
@@ -28,12 +32,12 @@ contract Sell_eth {
     }
 
     function confirmReceived(address addr_buyer) onlySeller payable {
-        Buyer rec_buyer = buyers[addr_buyer];
-        if (rec_buyer.pending != true) throw;
+        Buyer storage rec_buyer = buyers[addr_buyer];
+        if (rec_buyer.pending != true) revert();
         rec_buyer.pending = false;
         uint amt = rec_buyer.amount;
         rec_buyer.amount = 0;
-        if (!addr_buyer.send(2*amt)) throw;
+        addr_buyer.transfer(2*amt);
         cashReceived(addr_buyer);
     }
 
@@ -59,12 +63,13 @@ contract Sell_eth {
          return (weiForSale, price);
     }
 
-    function get_seller() returns(address) {
+    function get_seller() constant returns(address) {
         return seller;
     }    
 
     function retr_funds() onlySeller {
-      if (this.balance > 2*weiForSale) throw;
+      orders.removeSellOrder(this);
+      require(this.balance <= 2*weiForSale);
       selfdestruct(seller);
     }
 }        

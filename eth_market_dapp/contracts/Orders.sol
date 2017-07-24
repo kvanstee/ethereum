@@ -7,19 +7,22 @@ contract Orders {
 
   address[] SellOrders;
   address[] BuyOrders;
-//  address owner;  
-//  function Orders() {owner = msg.sender;}
-  
-  function newSellOrder(uint price) payable returns(address) {
-    address order = (new Sell_eth).value(msg.value)(price, msg.sender);
+  //address owner;  
+  //function Orders() {owner = msg.sender;}
+
+  event new_sell_order(address _from, address addr);
+  event new_buy_order(address _from, address addr);
+   
+  function newSellOrder(uint price) payable {
+    address order =(new Sell_eth).value(msg.value)(price, msg.sender, this);
+    new_sell_order(msg.sender, order);    
     SellOrders.push(order);
-    return order;
   }
 
-  function newBuyOrder(uint price) payable returns(address) {
-    address order = (new Buy_eth).value(msg.value)(price, msg.sender);
+  function newBuyOrder(uint price) payable {
+    address order =(new Buy_eth).value(msg.value)(price, msg.sender, this);
+    new_buy_order(msg.sender, order);
     BuyOrders.push(order);
-    return order;
   }
 
   function removeSellOrder(address _address) {
@@ -33,10 +36,6 @@ contract Orders {
     }
     delete SellOrders[SellOrders.length-1];
     SellOrders.length--;
-  }
- 
-  function addBuyOrder(address _contract) {
-    BuyOrders.push(_contract);
   }
   
   function removeBuyOrder(address _address) {
