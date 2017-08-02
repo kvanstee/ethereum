@@ -25,15 +25,15 @@ contract Sell_eth {
     
     function purchase() payable {
         require(buyers[msg.sender].pending == false && (msg.value/price)%5000 == 0);
-        purchasePending(msg.sender, msg.value, price);
         buyers[msg.sender] = Buyer (msg.value, price, true);
         weiForSale -= msg.value/2;
         newWeiForSale(weiForSale);
+        purchasePending(msg.sender, msg.value, price);
     }
 
     function confirmReceived(address addr_buyer) onlySeller payable {
         Buyer storage rec_buyer = buyers[addr_buyer];
-        if (rec_buyer.pending != true) revert();
+        require(rec_buyer.pending == true);
         rec_buyer.pending = false;
         uint amt = rec_buyer.amount;
         rec_buyer.amount = 0;

@@ -40,7 +40,8 @@ contract Buy_eth {
         seller.amount = 0;
         msg.sender.transfer(amt);
         cashReceived(msg.sender);
-        newWeiToBuy(weiToBuy + 2*amt);
+        weiToBuy += 2*amt;
+        newWeiToBuy(weiToBuy);
     }
     
     function retreive_eth(uint vol) onlyBuyer payable {  
@@ -74,7 +75,7 @@ contract Buy_eth {
     }
 
     function terminate_contract() onlyBuyer payable {
-        require(this.balance < weiToBuy); 
+        require(this.balance <= weiToBuy); 
 	orders.removeBuyOrder(this);
         selfdestruct(buyer);
     }

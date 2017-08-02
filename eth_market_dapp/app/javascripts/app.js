@@ -24,7 +24,7 @@ window.App = {
     Sell_eth.setProvider(web3.currentProvider);
     Buy_eth.setProvider(web3.currentProvider);
     Orders.setProvider(web3.currentProvider);
-    // retreive Buy and Sell order values from contracts
+    // retrieve Buy and Sell order values from contracts
     Orders.deployed().then(function(instance) {
       instance.getSellOrders.call().then(function(addresses) {
         if (addresses.length != 0) {
@@ -36,7 +36,6 @@ window.App = {
                 var price = res[1];
                 //populate sell order contract table
                 self.populate_row_cells("sell_orders", inst.address, price, volume);
-                self.catchSellEvents(inst.address);
               });
             });
           };
@@ -52,13 +51,12 @@ window.App = {
                 var price = res[1];
                 //populate buy order table
                 self.populate_row_cells("buy_orders", inst.address, price, volume);
-                self.catchBuyEvents(inst.address);
               });
             });
           };
         };
       });
-      // catch new order(contract) calculate table cell values
+      // catch new order(contract) events and calculate table cell values
       instance.allEvents(function(err, result) {
         if (err == null) {
           switch (result.event) {
@@ -67,13 +65,12 @@ window.App = {
               var price = 1e16/document.getElementById("ask_price").value;
               var volume = price*100*document.getElementById("ask_value").value;
               self.populate_row_cells("sell_orders", addr, price, volume);
-              self.catchSellEvents(addr);
+              break;
             case "new_buy_order":
               var addr = result.args.addr;
               var price = 1e16/document.getElementById("bid_price").value;
               var volume = price*100*document.getElementById("bid_value").value;
               self.populate_row_cells("buy_orders", addr, price, volume);
-              self.catchBuyEvents(addr);
           }
         }
       });
@@ -141,6 +138,8 @@ window.App = {
               self.setStatus("sale by: " + result.args._seller + ", a volume of: " + result.args.value/2 + ", at price of: " + result.args.price);
               break;
             case "cashReceived":
+              var vol = result.args.volume;
+              var price = parseFloat(contr[0].innerHTML);
               self.setStatus("cash received from: " + result.args.rec_seller + ", ether sent to buyer");
           };
         };
@@ -159,40 +158,54 @@ window.App = {
     contr[1].innerHTML = (_volume/1e18).toFixed(8);
     contr[2].innerHTML = (_volume/_price/100).toFixed(2);
     document.getElementById(_orders).append(contract);
-    //Catch contract events
-    if (_orders == "sell_orders") self.catchSellEvents(_addr);
-    if (_orders == "buy_orders") self.catchBuyEvents(_addr);
-    ////CLICK EVENT////
+    if (_orders == "sell_orders") {self.catchSellEvents(_addr)}
+    else if (_orders == "buy_orders") {self.catchBuyEvents(_addr)};
+
+    ////CLICK ON TABLE ROW EVENT////
     contract.addEventListener("click", function () {
-      document.getElementById("rec_address").value = '';
-      document.getElementById("nprice").value = '';
-      document.getElementById("add_ether").value = '';
-      if (_orders == "sell_orders") {
-        document.getElementById("selected_sell_address").value = contract.id;
-        document.getElementById("selectSellAddr").className = 'show';
-        document.getElementById("new_sell_contract").className = 'hidden';
-        // see if user is seller
-        Sell_eth.at(_addr).then(function(inst) {
-          inst.get_seller.call().then(function(res) {
-            if (res == web3.eth.accounts[0]) {document.getElementById("contract_functions").className = 'show'
-             } else {document.getElementById("buy_ether").className = 'show'}
-          });
-        });
-      } else if (_orders == "buy_orders") {
-        document.getElementById("selected_buy_address").value = contract.id;
-        document.getElementById("selectBuyAddr").className = 'show';
-        document.getElementById("new_buy_contract").className = 'hidden';
-        // see if user is buyer
-        Buy_eth.at(_addr).then(function(inst) {
-          inst.get_buyer.call().then(function(res) {
-            if (res == web3.eth.accounts[0]) {document.getElementById("contract_functions").className = 'show'}
-            else {document.getElementById("sell_ether").className = 'show'}
-          });
-        });
-      }
+      //give row "selected" classname
       var selected = document.getElementsByClassName('selected');
       if (selected[0]) selected[0].className = '';
       contract.className = 'selected';
+
+      if (_orders == "sell_orders") {
+        document.getElementById("receiving_address").value = '';
+        document.getElementById("new_sell_price").value = '';
+        document.getElementById("add_ether").value = '';
+        document.getElementById("selected_sell_address").value = contract.id;
+        document.getElementById("selectSellAddr").className = 'show';
+        document.getElementById("new_sell_contract").className = 'hidden';
+        // see if user is seller and load appropriate div
+        Sell_eth.at(_addr).then(function(inst) {
+          inst.get_seller.call().then(function(res) {
+            if (res == web3.eth.accounts[0]) {
+              document.getElementById("sell_contract_functions").className = 'show';
+              document.getElementById("buy_ether").className = 'hidden';
+            } else {
+              document.getElementById("buy_ether").className = 'show';
+              document.getElementById("sell_contract_functions").className = 'hidden';
+            };
+          });
+        });
+      } else if (_orders == "buy_orders") {
+        document.getElementById("new_buy_price").value = '';
+        document.getElementById("remove_ether").value = '';
+        document.getElementById("selected_buy_address").value = contract.id;
+        document.getElementById("selectBuyAddr").className = 'show';
+        document.getElementById("new_buy_contract").className = 'hidden';
+        // see if user is buyer and load appropriate div
+        Buy_eth.at(_addr).then(function(inst) {
+          inst.get_buyer.call().then(function(res) {
+            if (res == web3.eth.accounts[0]) {
+              document.getElementById("buy_contract_functions").className = 'show';
+              document.getElementById("sell_ether").className = 'hidden';
+            } else {
+              document.getElementById("sell_ether").className = 'show'
+              document.getElementById("buy_contract_functions").className = 'hidden';
+            };
+          });
+        });
+      };
     });
   },
 
@@ -232,7 +245,7 @@ window.App = {
     var volume = document.getElementById("ask_value").value*100*price;
     Orders.deployed().then(function(inst) {
       inst.newSellOrder(price, {from: web3.eth.accounts[0], value: 2*volume, gas:1000000}).then(function(res) { 
-          self.setStatus("sell order contract deployed" );
+          self.setStatus("sell order contract deployed" + res );
       });
     });
   },
@@ -240,12 +253,12 @@ window.App = {
   //buy from the selected contract
   buy: function() {
     var self = this;
-   var address = document.getElementById("selected_sell_address").value;
+    var address = document.getElementById("selected_sell_address").value;
     var contr = Sell_eth.at(address);
     var price = 1e16/parseFloat(document.getElementById(address).getElementsByTagName("td")[0].innerHTML);
     var volume = document.getElementById("sell_val").value*100*price;
     contr.purchase({from: web3.eth.accounts[0], value: volume, gas: 900000}).then(function(er, result) {
-      if (!er)  self.setStatus("success! ");
+      if (!er)  self.setStatus("success! " + result);
     });
   },
 
@@ -266,43 +279,56 @@ window.App = {
     var self = this;
     var address = document.getElementById("selected_buy_address").value;
     var contr = Buy_eth.at(address);
-    var price = parseInt(1e16/document.getElementById(address).getElementsByTagName("td")[0].innerHTML);
+    var price = 1e16/parseFloat(document.getElementById(address).getElementsByTagName("td")[0].innerHTML);
     var volume = document.getElementById("buy_val").value*100*price;
     contr.sell({from: web3.eth.accounts[0], value: 2*volume, gas: 900000}).then(function(er, res) {
       if (!er) self.setStatus("success! ");
     });
   },
 
-  payment_received: function(order) {
+   sell_order_payment_received: function() {
     self = this;
-    var rec_address = document.getElementById("rec_address").value;
-    var address = document.getElementById("selected_buy_address").value;
-    var contr = order.at(address);
+    var rec_address = document.getElementById("receiving_address").value;
+    var address = document.getElementById("selected_sell_address").value;
+    var contr = Sell_eth.at(address);
     contr.confirmReceived(rec_address, {from: web3.eth.accounts[0]}).then(function(result) {
-      self.setStatus("purchase + deposit sent to " + rec_address);
+      self.setStatus("purchase + deposit sent to " + receiving_address);
+    });
+  },
+
+  buy_order_payment_received: function() {
+    self = this;
+    var address = document.getElementById("selected_buy_address").value;
+    var contr = Buy_eth.at(address);
+    contr.confirmReceived({from:web3.eth.accounts[0]}).then(function() {
+      self.setStatus("deposit returned to " + web3.eth.accounts[0]);
     });
   },
 
   change_price: function() {
     var contr = document.getElementsByClassName("selected")[0];
-    var address = contr.id; console.log(contr.parentNode.id);
-    if (contr.parentNode.id == "sell_orders") var contract = Sell_eth.at(address);
-    if (contr.parentNode.id == "buy_orders") var contract = Buy_eth.at(address); 
-    var nprice = parseInt(1e16/document.getElementById("nprice").value);
+    var address = contr.id;
+    if (contr.parentNode.id == "sell_orders") {
+      var contract = Sell_eth.at(address);
+      var nprice = parseInt(1e16/document.getElementById("new_sell_price").value);
+    }
+    if (contr.parentNode.id == "buy_orders") {
+      var contract = Buy_eth.at(address);
+      var nprice = parseInt(1e16/document.getElementById("new_buy_price").value);
+    }
     contract.changePrice(nprice, {from: web3.eth.accounts[0]}).then(function() {
       self.setStatus("contract at address: " + address + " has changed price to: " + 1e16/nprice);
     });
-  },  
+	  },
 
   add_ether: function() {
     var self = this;
     var contr = document.getElementsByClassName("selected")[0];
     var addr = contr.id;
-    if (contr.parentNode.id == "sell_orders") var contract = Sell_eth.at(addr);
-    if (contr.parentNode.id == "buy_orders") self.setStatus("cannot add ether to Buy contract");
-    var volume = document.getElementById("add_ether").value;
-    contract.addEther({from: web3.eth.accounts[0], value: web3.toWei(volume, "ether")}).then(function() {
-     self.setStatus(volume + " ether added to contract at " + address);
+    var contract = Sell_eth.at(addr);
+    var volume = (document.getElementById("add_ether").value)*1e18;
+    contract.addEther({from: web3.eth.accounts[0], value: volume }).then(function() {
+     self.setStatus(volume + " ether added to contract at " + addr);
     });
   },
 
@@ -310,10 +336,9 @@ window.App = {
     var self = this;
     var contr = document.getElementsByClassName("selected")[0];
     var addr = contr.id;
-    if (contr.parentNode.id == "sell_orders") self.setStatus("cannot remove ether from Sell contract");
-    if (contr.parentNode.id == "buy_orders") contract = Buy_eth.at(addr);
-    var volume = document.getElementById("remove_ether").value;
-    contract.retreive_eth({from: web3.eth.accounts[0], value: web3.toWei(volume, "ether")}).then(function(res) {
+    var contract = Buy_eth.at(addr);
+    var volume = parseFloat(document.getElementById("remove_ether").value)*1e18;
+    contract.retreive_eth({from: web3.eth.accounts[0], value: volume}).then(function(res) {
      self.setStatus(volume + " ether added to contract at " + address);
     });
   },
@@ -322,15 +347,25 @@ window.App = {
     var self = this;
     var contr = document.getElementsByClassName("selected")[0];
     var addr = contr.id;
-    if (contr.parentNode.id == "sell_orders") var order = "Sell_eth";
-    if (contr.parentNode.id == "buy_orders") var order = "Buy_eth";
-    order.at(addr).then(function(instance) {
-      instance.retr_funds({from: web3.eth.accounts[0]}).then(function(res) {
+    var order;
+    if (contr.parentNode.id == "sell_orders") {
+      Sell_eth.at(addr).then(function(instance) {
+        instance.retr_funds({from: web3.eth.accounts[0]}).then(function(res) {
           self.setStatus("contract terminated, funds returned.");
           var contract = document.getElementById(instance.address);
           contract.parentNode.removeChild(contract);
+        });
       });
-    });
+    }
+    else if (contr.parentNode.id == "buy_orders") {
+      Buy_eth.at(addr).then(function(instance) {
+        instance.terminate_contract({from: web3.eth.accounts[0]}).then(function(res) {
+          self.setStatus("contract terminated, funds returned.");
+          var contract = document.getElementById(instance.address);
+          contract.parentNode.removeChild(contract);
+        });
+      });
+    };
   },
 },
 
