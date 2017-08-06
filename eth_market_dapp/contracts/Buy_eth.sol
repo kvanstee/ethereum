@@ -12,10 +12,10 @@ contract Buy_eth {
 
     modifier onlyBuyer() { require(msg.sender == buyer);  _; }
     
-    event newWeiToBuy(uint indexed wei_to_buy);
-    event newPrice(uint indexed nprice);
-    event salePending(address indexed _seller, uint value, uint price);
-    event cashReceived(address indexed _seller);
+    event NewWeiToBuy(uint indexed wei_to_buy);
+    event NewPrice(uint indexed nprice);
+    event SalePending(address indexed _seller, uint value, uint price);
+    event CashReceived(address indexed _seller);
 
     function Buy_eth(uint _price, address _buyer, address _orders) payable {
 	orders = Orders(_orders);
@@ -26,10 +26,10 @@ contract Buy_eth {
     function sell() payable {
         require((msg.value/2/price)%5000 == 0 && sellers[msg.sender].pending == false);
         uint amt = msg.value/2;
-        salePending(msg.sender, amt, price);
+        SalePending(msg.sender, amt, price);
         sellers[msg.sender] = Seller (amt, price, true);
         weiToBuy -= amt;
-        newWeiToBuy(weiToBuy);
+        NewWeiToBuy(weiToBuy);
     }
 
     function confirmReceived() payable {
@@ -39,19 +39,19 @@ contract Buy_eth {
         uint amt = seller.amount;
         seller.amount = 0;
         msg.sender.transfer(amt);
-        cashReceived(msg.sender);
+        CashReceived(msg.sender);
         weiToBuy += 2*amt;
-        newWeiToBuy(weiToBuy);
+        NewWeiToBuy(weiToBuy);
     }
     
     function retreive_eth(uint vol) onlyBuyer payable {  
         require(vol < weiToBuy-price*5000);
         buyer.transfer(vol);
-        newWeiToBuy(weiToBuy - vol);
+        NewWeiToBuy(weiToBuy - vol);
     }
     function changePrice(uint new_price) onlyBuyer {
         price = new_price;
-        newPrice(price);
+        NewPrice(price);
     }
    
     function get_cont_bal() returns(uint balance) {

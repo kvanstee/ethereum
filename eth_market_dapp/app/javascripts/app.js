@@ -321,24 +321,24 @@ window.App = {
     });
 	  },
 
-  add_ether: function() {
+  add_Ether: function() {
     var self = this;
     var contr = document.getElementsByClassName("selected")[0];
     var addr = contr.id;
     var contract = Sell_eth.at(addr);
-    var volume = (document.getElementById("add_ether").value)*1e18;
+    var volume = parseInt(document.getElementById("add_ether").value)*1e18); console.log(volume);
     contract.addEther({from: web3.eth.accounts[0], value: volume }).then(function() {
      self.setStatus(volume + " ether added to contract at " + addr);
     });
   },
 
-  remove_ether: function() {
+  remove_Ether: function() {
     var self = this;
     var contr = document.getElementsByClassName("selected")[0];
     var addr = contr.id;
     var contract = Buy_eth.at(addr);
     var volume = parseFloat(document.getElementById("remove_ether").value)*1e18;
-    contract.retreive_eth({from: web3.eth.accounts[0], value: volume}).then(function(res) {
+    contract.retreive_eth(volume, {from: web3.eth.accounts[0]}).then(function(res) {
      self.setStatus(volume + " ether added to contract at " + address);
     });
   },

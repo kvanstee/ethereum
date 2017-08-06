@@ -11,10 +11,10 @@ contract Sell_eth {
     mapping(address => Buyer) buyers;
     modifier onlySeller() { require(msg.sender == seller);  _; }
 
-    event newWeiForSale(uint indexed wei_for_sale);
-    event newPrice(uint indexed nprice);
-    event purchasePending(address  _buyer, uint value, uint price);
-    event cashReceived(address rec_buyer);
+    event NewWeiForSale(uint indexed wei_for_sale);
+    event NewPrice(uint indexed nprice);
+    event PurchasePending(address  _buyer, uint value, uint price);
+    event CashReceived(address rec_buyer);
 
     function Sell_eth(uint _price, address _seller, address _orders) payable {
 	orders = Orders(_orders);
@@ -27,8 +27,8 @@ contract Sell_eth {
         require(buyers[msg.sender].pending == false && (msg.value/price)%5000 == 0);
         buyers[msg.sender] = Buyer (msg.value, price, true);
         weiForSale -= msg.value/2;
-        newWeiForSale(weiForSale);
-        purchasePending(msg.sender, msg.value, price);
+        NewWeiForSale(weiForSale);
+        PurchasePending(msg.sender, msg.value, price);
     }
 
     function confirmReceived(address addr_buyer) onlySeller payable {
@@ -38,17 +38,17 @@ contract Sell_eth {
         uint amt = rec_buyer.amount;
         rec_buyer.amount = 0;
         addr_buyer.transfer(2*amt);
-        cashReceived(addr_buyer);
+        CashReceived(addr_buyer);
     }
 
     function addEther() onlySeller payable {
         weiForSale += msg.value/2;
-        newWeiForSale(weiForSale);
+        NewWeiForSale(weiForSale);
     }
 
     function changePrice(uint new_price) onlySeller {
         price = new_price;
-        newPrice(price);
+        NewPrice(price);
     }
 
     function get_price() returns(uint) {
@@ -68,8 +68,8 @@ contract Sell_eth {
     }    
 
     function retr_funds() onlySeller {
-      orders.removeSellOrder(this);
       require(this.balance <= 2*weiForSale);
+      orders.removeSellOrder(this);
       selfdestruct(seller);
     }
 }        

@@ -36,15 +36,15 @@
       </div>
       <! CONTRACT FUNCTIONS  !>
       <div id="buy_contract_functions" class="hidden">        
-        <span id="change_price">
-          <label for="newprice">New Price:</label><input type="text" id="new_buy_price">
+        <span>
+          <label>New Price:</label><input type="text" id="new_buy_price">
           <button  onclick="App.change_price()" href="#">Change Price</button><br>
         </span>
-        <span id="remove_ether">
+        <span>
           <label>Remove Ether:</label><input type="text" id="remove_ether">
-          <button  onclick="App.remove_ether()" href="#">Remove ether from contract</button><br>
+          <button  onclick="App.remove_Ether()" href="#">Remove ether from contract</button><br>
         </span>
-        <span id="term_contract">
+        <span>
           <button  onclick="App.terminate_contract()" href="#">terminate contract</button>
         </span>
       </div>  
@@ -77,19 +77,19 @@
       </div>
       
       <div id="sell_contract_functions" class="hidden">
-        <span id="change_price">
-          <label for="newprice">New Price:</label><input type="text" id="new_sell_price">
+        <span>
+          <label>New Price:</label><input type="text" id="new_sell_price">
           <button  onclick="App.change_price()" href="#">Change Price</button><br>
         </span>
-        <span id="add_ether">
+        <span>
           <label>Add Ether:</label><input type="text" id="add_ether">
-          <button  onclick="App.add_ether()" href="#">Add Ether to contract</button><br>
+           <button  onclick="App.add_Ether()" href="#">Add Ether to contract</button><br>
         </span>
-        <span id="cash_received">
-          <label for="payment received">Address of buyer:</label><input type="text" id="receiving_address">
+        <span>
+          <label>Address of buyer:</label><input type="text" id="receiving_address">
           <button  onclick="App.sell_order_payment_received()" href="#">Payment received</button>
         </span>
-        <span id="term_contract">
+        <span>
           <button  onclick="App.terminate_contract()" href="#">terminate contract</button><br>
         </span>
       </div>
