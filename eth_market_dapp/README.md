@@ -1,4 +1,5 @@
-#eth_market_dapp
+# eth_market_dapp
+
 This is a currency exchange for ether. The other currency can be any other national currency. There are 3 contracts: a base contract 'Orders', a sell order contract 'Sell_eth' and a buy order contract 'Buy_eth'. Each new sell or buy order will generate a separate contract that is controlled by the contract initiator. 
 
 The deal is a returnable security deposit of the order amount must be included. Thus if a sell order is initiated, twice the value of the order will be sent to the contract. A buyer will send the value of her order(in multiples of $50) to the sell contract as a security deposit, send the cash to the seller who will confirm receipt of the money which will send 2 times the buy value to the buyer. A buy order is similar but only the order amount is sent on contract initiation. A seller will send 2 times the desired amount to the contract half of which will be returned to the seller when he confirms receipt of the cash. A contract can not be terminated whilst a transaction is pending.
