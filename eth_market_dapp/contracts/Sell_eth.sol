@@ -9,11 +9,11 @@ contract Sell_eth {
     address seller;
     struct Buyer {uint amount; uint price; bool pending;}
     mapping(address => Buyer) buyers;
-    modifier onlySeller() { require(msg.sender == seller);  _; }
+    modifier onlySeller() {require(msg.sender == seller);  _;}
 
     event NewWeiForSale(uint indexed wei_for_sale);
     event NewPrice(uint indexed nprice);
-    event PurchasePending(address  _buyer, uint value, uint price);
+    event PurchasePending(address  _buyer, uint value, uint _price);
     event CashReceived(address rec_buyer);
 
     function Sell_eth(uint _price, address _seller, address _orders) payable {
@@ -24,7 +24,7 @@ contract Sell_eth {
     }
     
     function purchase() payable {
-        require(buyers[msg.sender].pending == false && (msg.value/price)%5000 == 0);
+        require(msg.value != 0 && buyers[msg.sender].pending == false && (msg.value/price)%5000 == 0);
         buyers[msg.sender] = Buyer (msg.value, price, true);
         weiForSale -= msg.value/2;
         NewWeiForSale(weiForSale);
@@ -55,12 +55,12 @@ contract Sell_eth {
       return price;
     }
 
-   function get_wei_for_sale() returns(uint) {
-      return weiForSale;
+    function get_wei_for_sale() returns(uint) {
+        return weiForSale;
     }
 
-    function get_values() constant returns(uint, uint) {
-         return (weiForSale, price);
+    function get_vars() returns(uint, uint) {
+        return (weiForSale, price);
     }
 
     function get_seller() constant returns(address) {
@@ -68,10 +68,12 @@ contract Sell_eth {
     }    
 
     function retr_funds() onlySeller {
-      require(this.balance <= 2*weiForSale);
-      orders.removeSellOrder(this);
-      selfdestruct(seller);
+        require(this.balance <= weiForSale);
+        orders.removeSellOrder(this);
+        selfdestruct(seller);
     }
+
+   function() {throw;}
 }        
     
         

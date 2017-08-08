@@ -31,7 +31,7 @@ window.App = {
           for (var i=0; i<addresses.length; i++) {
             var addr = addresses[i];
             Sell_eth.at(addr).then(function(inst) {
-              inst.get_values.call().then(function(res) {
+              inst.get_vars.call().then(function(res) {
                 var volume = res[0];
                 var price = res[1];
                 //populate sell order contract table
@@ -46,7 +46,7 @@ window.App = {
           for (var i=0; i<addresses.length; i++) {
             var addr = addresses[i];
             Buy_eth.at(addr).then(function(inst) {
-              inst.get_values.call().then(function(res) {
+              inst.get_vars.call().then(function(res) {
                 var volume = res[0];
                 var price = res[1];
                 //populate buy order table
@@ -60,13 +60,13 @@ window.App = {
       instance.allEvents(function(err, result) {
         if (err == null) {
           switch (result.event) {
-            case "new_sell_order":
-              var addr = result.args.addr;
+            case "NewSellOrder":
+              var addr = result.args.addr; console.log(addr);
               var price = 1e16/document.getElementById("ask_price").value;
               var volume = price*100*document.getElementById("ask_value").value;
               self.populate_row_cells("sell_orders", addr, price, volume);
               break;
-            case "new_buy_order":
+            case "NewBuyOrder":
               var addr = result.args.addr;
               var price = 1e16/document.getElementById("bid_price").value;
               var volume = price*100*document.getElementById("bid_value").value;
@@ -91,22 +91,22 @@ window.App = {
       instance.allEvents(function(err, result) {
         if (err == null) {
           switch (result.event) {
-            case "newWeiForSale":
+            case "NewWeiForSale":
               var price = parseFloat(contr[0].innerHTML);
               var volume = result.args.wei_for_sale/1e18;
               contr[1].innerHTML = volume.toFixed(8);
               contr[2].innerHTML = (volume*price).toFixed(2);
               break;
-            case "newPrice":
+            case "NewPrice":
               var volume = parseFloat(contr[1].innerHTML);
               var price = 1e16/result.args.nprice;
               contr[0].innerHTML = price.toFixed(2);
               contr[2].innerHTML = (volume*price).toFixed(2);
               break;
-            case "purchasePending":
-              self.setStatus("purchase by: " + result.args._buyer + ", a volume of: " + result.args.value + ", at price of: " + result.args.price);
+            case "PurchasePending":
+              self.setStatus("purchase by: " + result.args._buyer + ", a volume of: " + result.args.value + ", at price of: " + result.args._price);
               break;
-            case "cashReceived":
+            case "CashReceived":
               self.setStatus("cash received from: " + result.args.rec_buyer + ", ether sent to buyer");
           };
         };
@@ -122,22 +122,22 @@ window.App = {
       instance.allEvents(function(err, result) {
         if (err == null) {
           switch (result.event) {
-            case "newWeiToBuy":
+            case "NewWeiToBuy":
               var price = parseFloat(contr[0].innerHTML);
               var volume = result.args.wei_to_buy/1e18;
               contr[1].innerHTML = volume.toFixed(8);
               contr[2].innerHTML = (volume*price).toFixed(2);
               break;
-            case "newPrice":
+            case "NewPrice":
               var volume = parseFloat(contr[1].innerHTML);
               var price = 1e16/result.args.nprice;
               contr[0].innerHTML = price.toFixed(2);
               contr[2].innerHTML = (volume*price).toFixed(2);
               break;
-            case "purchasePending":
-              self.setStatus("sale by: " + result.args._seller + ", a volume of: " + result.args.value/2 + ", at price of: " + result.args.price);
+            case "SalePending":
+              self.setStatus("sale by: " + result.args._seller + ", a volume of: " + result.args.value/2 + ", at price of: " + result.args._price);
               break;
-            case "cashReceived":
+            case "CashReceived":
               var vol = result.args.volume;
               var price = parseFloat(contr[0].innerHTML);
               self.setStatus("cash received from: " + result.args.rec_seller + ", ether sent to buyer");
@@ -321,25 +321,25 @@ window.App = {
     });
 	  },
 
-  add_Ether: function() {
+  add_ether: function() {
     var self = this;
     var contr = document.getElementsByClassName("selected")[0];
     var addr = contr.id;
     var contract = Sell_eth.at(addr);
-    var volume = parseInt(document.getElementById("add_ether").value)*1e18); console.log(volume);
+    var volume = parseInt(document.getElementById("add_ether").value*1e18);
     contract.addEther({from: web3.eth.accounts[0], value: volume }).then(function() {
      self.setStatus(volume + " ether added to contract at " + addr);
     });
   },
 
-  remove_Ether: function() {
+  remove_ether: function() {
     var self = this;
     var contr = document.getElementsByClassName("selected")[0];
     var addr = contr.id;
     var contract = Buy_eth.at(addr);
-    var volume = parseFloat(document.getElementById("remove_ether").value)*1e18;
+    var volume = parseInt(document.getElementById("remove_ether").value*1e18);
     contract.retreive_eth(volume, {from: web3.eth.accounts[0]}).then(function(res) {
-     self.setStatus(volume + " ether added to contract at " + address);
+     self.setStatus(volume + " ether removed from contract at " + addr);
     });
   },
 
