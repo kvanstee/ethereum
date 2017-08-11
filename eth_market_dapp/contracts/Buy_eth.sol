@@ -46,9 +46,11 @@ contract Buy_eth {
     
     function retreive_eth(uint vol) onlyBuyer payable {  
         require(vol < weiToBuy-price*5000);
+        weiToBuy -= vol;
         buyer.transfer(vol);
-        NewWeiToBuy(weiToBuy - vol);
+        NewWeiToBuy(weiToBuy);
     }
+
     function changePrice(uint new_price) onlyBuyer {
         price = new_price;
         NewPrice(price);
@@ -76,7 +78,7 @@ contract Buy_eth {
 
    function terminate_contract() onlyBuyer payable {
         require(this.balance <= weiToBuy);
-	orders.removeBuyOrder(this);
+	orders.removeBuyOrder();
         selfdestruct(buyer);
     }
 

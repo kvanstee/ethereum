@@ -346,11 +346,11 @@ window.App = {
   terminate_contract: function() {
     var self = this;
     var contr = document.getElementsByClassName("selected")[0];
-    var addr = contr.id;
+    var addr = contr.id;console.log(addr);
     var order;
     if (contr.parentNode.id == "sell_orders") {
       Sell_eth.at(addr).then(function(instance) {
-        instance.retr_funds({from: web3.eth.accounts[0]}).then(function(res) {
+        instance.retr_funds({from: web3.eth.accounts[0], gas:500000}).then(function(res) {
           self.setStatus("contract terminated, funds returned.");
           var contract = document.getElementById(instance.address);
           contract.parentNode.removeChild(contract);

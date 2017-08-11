@@ -25,10 +25,9 @@ contract Orders {
     BuyOrders.push(order);
   }
 
-  function removeSellOrder(address _address) {
-    require(Sell_eth(_address).get_seller() == msg.sender);
+  function removeSellOrder() {  
     for (uint i = 0; i<SellOrders.length; i++){
-      if (SellOrders[i] == _address) {
+      if (SellOrders[i] == msg.sender) {
         uint index = i;
         for (uint x = index; x<SellOrders.length-1; x++) {
           SellOrders[x] = SellOrders[x+1];
@@ -39,10 +38,9 @@ contract Orders {
     SellOrders.length--;
   }
   
-  function removeBuyOrder(address _address) {
-    require(Buy_eth(_address).get_buyer() == msg.sender);
+  function removeBuyOrder() {
     for (uint i = 0; i<BuyOrders.length; i++){
-      if (BuyOrders[i] == _address) {
+      if (BuyOrders[i] == msg.sender) {
         uint index = i;
         for (uint x = index; x<BuyOrders.length-1; x++) {
           BuyOrders[x] = BuyOrders[x+1];

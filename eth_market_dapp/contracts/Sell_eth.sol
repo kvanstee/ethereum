@@ -67,13 +67,13 @@ contract Sell_eth {
         return seller;
     }    
 
-    function retr_funds() onlySeller {
-        require(this.balance <= weiForSale);
-        orders.removeSellOrder(this);
+    function retr_funds() onlySeller payable {
+        require(this.balance <= 2*weiForSale);
+        orders.removeSellOrder();
         selfdestruct(seller);
     }
 
-   function() {throw;}
+    function() {throw;}
 }        
     
         
