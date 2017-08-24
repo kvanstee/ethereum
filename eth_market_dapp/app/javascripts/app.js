@@ -158,6 +158,7 @@ window.App = {
     contr[1].innerHTML = (_volume/1e18).toFixed(8);
     contr[2].innerHTML = (_volume/_price/100).toFixed(2);
     document.getElementById(_orders).append(contract);
+    self.sortTable(_orders);
     if (_orders == "sell_orders") {self.catchSellEvents(_addr)}
     else if (_orders == "buy_orders") {self.catchBuyEvents(_addr)};
 
@@ -237,7 +238,8 @@ window.App = {
       };
     };
   },
-
+  //var sellval; //= document.getElementById("sell_val").value; //dropdown sell_val box
+  //var buyval; //= document.getElementById("buy_val").value;  //dropdown buy_val box
   //Add a new sell order in the form of an individual contract
   setup_sell: function() {
     var self = this;
@@ -256,7 +258,7 @@ window.App = {
     var address = document.getElementById("selected_sell_address").value;
     var contr = Sell_eth.at(address);
     var price = 1e16/parseFloat(document.getElementById(address).getElementsByTagName("td")[0].innerHTML);
-    var volume = document.getElementById("sell_val").value*100*price;
+    var volume = document.getElementById("sell_val").value*100*price; console.log(volume);
     contr.purchase({from: web3.eth.accounts[0], value: volume, gas: 600000}).then(function(err, res) {
       if (!err)  self.setStatus("transaction successful!");
     });
@@ -280,7 +282,7 @@ window.App = {
     var address = document.getElementById("selected_buy_address").value;
     var contr = Buy_eth.at(address);
     var price = 1e16/parseFloat(document.getElementById(address).getElementsByTagName("td")[0].innerHTML);
-    var volume = document.getElementById("buy_val").value*100*price;
+    var volume = document.getElementById("buy_val").value*100*price; console.log(volume);
     contr.sell({from: web3.eth.accounts[0], value: 2*volume, gas: 600000}).then(function(err, res) {
       if (!err) self.setStatus("transaction successful!");
     });

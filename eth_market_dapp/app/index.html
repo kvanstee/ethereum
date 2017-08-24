@@ -30,8 +30,8 @@
         <label>Contract Address:</label><input size="400" type="text" id="selected_buy_address">
       </div><br>
       <div id="sell_ether" class="hidden" bgcolor="lightyellow">
-        <label>Select Value(AUD):</label><select  id="sell_val"><option value="50" selected>50</option><option value="100">100</option><option value="200">200</option><option value="500">500</option><option value="1000">1000</option></select>
-        <br><button onclick="App.sell()" href="#">Sell Ether to this Contract</button><br>
+        <label>Select Value(AUD):</label><select  id="sell_val"><option value="" disabled selected="selected">Select</option><option value="50">50</option><option value="100">100</option><option value="200">200</option><option value="500">500</option><option value="1000">1000</option></select>
+	        <br><button onclick="App.sell()">Sell Ether to this Contract</button><br>
         <button onclick="App.buy_order_payment_received()" href="#">Payment Received</button>
       </div>
       <! CONTRACT FUNCTIONS  !>
@@ -72,8 +72,8 @@
         <label>Contract Address:</label><input size="400" type="text" id="selected_sell_address">
       </div><br>
       <div id="buy_ether" class="hidden" bgcolor="lightyellow">
-        <label>Select Value(AUD):</label><select  id="buy_val"><option value="50" selected>50</option><option value="100">100</option><option value="200">200</option><option value="500">500</option><option value="1000">1000</option></select><br>
-        <button onclick="App.buy()" href="#">Buy Ether from this Contract</button>
+        <label>Select Value(AUD):</label><select  id="buy_val"><option value="" disabled selected="selected">Select</option><option value="50">50</option><option value="100">100</option><option value="200">200</option><option value="500">500</option><option value="1000">1000</option></select><br>
+        <button onclick="App.buy()">Buy Ether from this Contract</button>
       </div>
       
       <div id="sell_contract_functions" class="hidden">
