@@ -15,7 +15,6 @@ var Sell_eth = contract(selleth_artifacts);
 var Buy_eth = contract(buyeth_artifacts);
 var Orders = contract(orders_artifacts);
 
-//var orders;
 window.App = {
 
   start: function() {
@@ -39,6 +38,7 @@ window.App = {
               });
             });
           };
+          self.sortTable("sell_orders");
         };
       });
       instance.getBuyOrders.call().then(function(addresses) {
@@ -54,6 +54,7 @@ window.App = {
               });
             });
           };
+          self.sortTable("buy_orders");
         };
       });
       // catch new order(contract) events and calculate table cell values
@@ -75,7 +76,7 @@ window.App = {
         }
       });
     });
-//    self.sortTable("sell_orders");
+    self.sortTable("sell_orders");
   },
 
   setStatus: function(message) {
@@ -104,10 +105,14 @@ window.App = {
               contr[2].innerHTML = (volume*price).toFixed(2);
               break;
             case "PurchasePending":
-              self.setStatus("purchase pending by: " + result.args._buyer + ", a volume of: " + result.args.value/1e18.toFixed(8) + ", at price of: " + 1e16/result.args._price.toFixed(2));
+              if (result.args._seller == web3.eth.accounts[0]) {
+                self.setStatus("purchase pending; buyer: " + result.args._buyer + ",volume: " + result.args.value/1e18.toFixed(8) + ",price: " + 1e16/result.args._price.toFixed(2));
+              }
               break;
             case "CashReceived":
-              self.setStatus("cash received from: " + result.args.rec_buyer + ", ether sent to buyer");
+              if (web3.eth.accounts[0] == result.args.rec_buyer) {
+              self.setStatus("cash received, ether sent to your account");
+            }
           };
         };
       });
@@ -135,12 +140,18 @@ window.App = {
               contr[2].innerHTML = (volume*price).toFixed(2);
               break;
             case "SalePending":
-              self.setStatus("sale pending by: " + result.args._seller + ", a volume of: " + result.args.value/2e18.toFixed(8) + ", at price of: " + 1e16/result.args._price.toFixed(2));
+              if (result.args._buyer == web3.eth.accounts[0]) {
+                self.setStatus("sale pending; seller: " + result.args._seller + ",volume: " + result.args.value/2e18.toFixed(8) + ",price: " + 1e16/result.args._price.toFixed(2));
+              }
               break;
             case "CashReceived":
               var vol = result.args.volume;
               var price = parseFloat(contr[0].innerHTML);
-              self.setStatus("cash received from: " + result.args.receiving_seller + ", ether sent to buyer");
+             if (web3.eth.accounts[0] == result.args._seller) {
+                 self.setStatus("deposit returned to your account");
+             } else  if (web3.eth.accounts[0] == result.args._buyer) {
+                 self.serStatus("payment received; new WeiToBuy");
+             };
           };
         };
       });
@@ -219,17 +230,24 @@ window.App = {
       rows = table.getElementsByTagName("tr");
       /*Loop through all table rows (except the
       first, which contains table headers):*/
-      for (i = 0; i < rows.length; i++) { 
+      for (i = 0; i < rows.length-1; i++) {
         shouldSwitch = false;
         /*Get the two elements you want to compare,
         one from current row and one from the next:*/
         x = rows[i].getElementsByTagName("td")[0];
         y = rows[i + 1].getElementsByTagName("td")[0];
         //check if the two rows should switch place:
-        if (x.innerHTML.toNumber() > y.innerHTML.toNumber()) {
-          //if so, mark as a switch and break the loop:
-          shouldSwitch= true;
-          break;
+        if (_table == "buy_orders") {
+          if (parseFloat(x.innerHTML) < parseFloat(y.innerHTML)) {
+            //if so, mark as a switch and break the loop:
+            shouldSwitch= true;
+            break;
+          }
+        } else if (_table == "sell_orders") {
+          if (parseFloat(x.innerHTML) > parseFloat(y.innerHTML)) {
+            shouldSwitch= true;
+            break;
+          }
         }
       }
       if (shouldSwitch) {
@@ -238,8 +256,7 @@ window.App = {
       };
     };
   },
-  //var sellval; //= document.getElementById("sell_val").value; //dropdown sell_val box
-  //var buyval; //= document.getElementById("buy_val").value;  //dropdown buy_val box
+
   //Add a new sell order in the form of an individual contract
   setup_sell: function() {
     var self = this;
@@ -258,8 +275,8 @@ window.App = {
     var address = document.getElementById("selected_sell_address").value;
     var contr = Sell_eth.at(address);
     var price = 1e16/parseFloat(document.getElementById(address).getElementsByTagName("td")[0].innerHTML);
-    var volume = document.getElementById("sell_val").value*100*price; console.log(volume);
-    contr.purchase({from: web3.eth.accounts[0], value: volume, gas: 600000}).then(function(err, res) {
+    var volume = document.getElementById("buy_val").value*100*price;
+    contr.purchase({from:web3.eth.accounts[0], value:volume, gas:600000}).then(function(err, res) {
       if (!err)  self.setStatus("transaction successful!");
     });
   },
@@ -282,7 +299,7 @@ window.App = {
     var address = document.getElementById("selected_buy_address").value;
     var contr = Buy_eth.at(address);
     var price = 1e16/parseFloat(document.getElementById(address).getElementsByTagName("td")[0].innerHTML);
-    var volume = document.getElementById("buy_val").value*100*price; console.log(volume);
+    var volume = document.getElementById("sell_val").value*100*price;
     contr.sell({from: web3.eth.accounts[0], value: 2*volume, gas: 600000}).then(function(err, res) {
       if (!err) self.setStatus("transaction successful!");
     });
@@ -314,14 +331,16 @@ window.App = {
       var contract = Sell_eth.at(address);
       var nprice = parseInt(1e16/document.getElementById("new_sell_price").value);
     }
-    if (contr.parentNode.id == "buy_orders") {
+    else if (contr.parentNode.id == "buy_orders") {
       var contract = Buy_eth.at(address);
       var nprice = parseInt(1e16/document.getElementById("new_buy_price").value);
     }
-    contract.changePrice(nprice, {from: web3.eth.accounts[0]}).then(function(err, res) {
-      if (!err) self.setStatus("contract at address: " + address + " has changed price to: " + 1e16/nprice.toFixed(2));
+    contract.changePrice(nprice, {from: web3.eth.accounts[0]}).then(function() {
+      self.setStatus("selected contract has changed price to: " + (1e16/nprice).toFixed(2));
+      //self.sortTable(contr.parentNode.id);
     });
-	  },
+    self.sortTable(contr.parentNode.id);
+  },
 
   add_ether: function() {
     var self = this;

@@ -7,48 +7,55 @@ contract Sell_eth {
     uint weiForSale;
     uint price; //wei per smallest currency unit (eg. cent)
     address seller;
-    struct Buyer {uint amount; uint price; bool pending;}
+    struct Buyer {uint amount; uint price;}
     mapping(address => Buyer) buyers;
+    uint8 pending;
     modifier onlySeller() {require(msg.sender == seller);  _;}
 
-    event NewWeiForSale(uint indexed wei_for_sale);
-    event NewPrice(uint indexed nprice);
-    event PurchasePending(address  _buyer, uint value, uint _price);
-    event CashReceived(address rec_buyer);
+    event LogNewWeiForSale(uint indexed wei_for_sale);
+    event LogNewPrice(uint indexed nprice);
+    event LogPurchasePending(address _seller, address  _buyer, uint value, uint _price);
+    event LogCashReceived(address rec_buyer);
 
     function Sell_eth(uint _price, address _seller, address _orders) payable {
-	orders = Orders(_orders);
+        orders = Orders(_orders);
         seller = _seller;
         price = _price;
+        pending = 0;
         weiForSale = msg.value / 2;
     }
     
     function purchase() payable {
-        require(msg.value != 0 && buyers[msg.sender].pending == false && (msg.value/price)%5000 == 0);
-        buyers[msg.sender] = Buyer (msg.value, price, true);
+        require(buyers[msg.sender].amount == 0);
+        require(msg.value > 0 && msg.value < weiForSale && (msg.value/price)%5000 == 0);
+        buyers[msg.sender] = Buyer (msg.value, price);
         weiForSale -= msg.value/2;
-        NewWeiForSale(weiForSale);
-        PurchasePending(msg.sender, msg.value, price);
+        pending += 1;
+        LogNewWeiForSale(weiForSale);
+        LogPurchasePending(seller, msg.sender, msg.value, price);
     }
 
     function confirmReceived(address addr_buyer) onlySeller payable {
-        Buyer storage rec_buyer = buyers[addr_buyer];
-        require(rec_buyer.pending == true);
-        rec_buyer.pending = false;
-        uint amt = rec_buyer.amount;
-        rec_buyer.amount = 0;
-        addr_buyer.transfer(2*amt);
-        CashReceived(addr_buyer);
+        Buyer storage buyer = buyers[addr_buyer];
+        require(buyer.amount > 0 && pending > 0);
+        uint amt = buyer.amount;
+        buyer.amount = 0;
+        if (!addr_buyer.send(2*amt)) {
+          buyer.amount = amt;
+          return;
+        }
+        pending -= 1;
+        LogCashReceived(addr_buyer);
     }
 
     function addEther() onlySeller payable {
         weiForSale += msg.value/2;
-        NewWeiForSale(weiForSale);
+        LogNewWeiForSale(weiForSale);
     }
 
     function changePrice(uint new_price) onlySeller {
         price = new_price;
-        NewPrice(price);
+        LogNewPrice(price);
     }
 
     function get_price() returns(uint) {

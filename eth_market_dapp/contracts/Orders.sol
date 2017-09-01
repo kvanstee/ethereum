@@ -10,18 +10,20 @@ contract Orders {
   //address owner;  
   //function Orders() {owner = msg.sender;}
 
-  event NewSellOrder(address _from, address addr);
-  event NewBuyOrder(address _from, address addr);
+  event LogNewSellOrder(address _from, address addr);
+  event LogNewBuyOrder(address _from, address addr);
    
   function newSellOrder(uint price) payable {
+    require(msg.value/2 > price*5000);
     address order =(new Sell_eth).value(msg.value)(price, msg.sender, this);
-    NewSellOrder(msg.sender, order);    
+    LogNewSellOrder(msg.sender, order);    
     SellOrders.push(order);
   }
 
   function newBuyOrder(uint price) payable {
+    require(msg.value > price*5000);
     address order =(new Buy_eth).value(msg.value)(price, msg.sender, this);
-    NewBuyOrder(msg.sender, order);
+    LogNewBuyOrder(msg.sender, order);
     BuyOrders.push(order);
   }
 
