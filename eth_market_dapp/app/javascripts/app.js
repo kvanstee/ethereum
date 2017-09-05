@@ -36,6 +36,9 @@ window.App = {
                 //populate sell order contract table
                 self.populate_row_cells("sell_orders", inst.address, price, volume);
               });
+              inst.has_pending.call().then(function(res) {
+                if (res == true) document.getElementById(inst.address).className = pending;
+              });
             });
           };
           self.sortTable("sell_orders");
@@ -52,6 +55,9 @@ window.App = {
                 //populate buy order table
                 self.populate_row_cells("buy_orders", inst.address, price, volume);
               });
+              inst.has_pending.call().then(function(res) {
+                if (res == true) document.getElementById(inst.address).className = pending;
+              });
             });
           };
           self.sortTable("buy_orders");
@@ -61,13 +67,13 @@ window.App = {
       instance.allEvents(function(err, result) {
         if (err == null) {
           switch (result.event) {
-            case "NewSellOrder":
+            case "LogNewSellOrder":
               var addr = result.args.addr;
               var price = 1e16/document.getElementById("ask_price").value;
               var volume = price*100*document.getElementById("ask_value").value;
               self.populate_row_cells("sell_orders", addr, price, volume);
               break;
-            case "NewBuyOrder":
+            case "LogNewBuyOrder":
               var addr = result.args.addr;
               var price = 1e16/document.getElementById("bid_price").value;
               var volume = price*100*document.getElementById("bid_value").value;
@@ -92,24 +98,25 @@ window.App = {
       instance.allEvents(function(err, result) {
         if (err == null) {
           switch (result.event) {
-            case "NewWeiForSale":
+            case "LogNewWeiForSale":
               var price = parseFloat(contr[0].innerHTML);
               var volume = result.args.wei_for_sale/1e18;
               contr[1].innerHTML = volume.toFixed(8);
               contr[2].innerHTML = (volume*price).toFixed(2);
               break;
-            case "NewPrice":
-              var volume = parseFloat(contr[1].innerHTML);
+            case "LogNewPrice":
+              var volume = parseFloat(contr[0].innerHTML);
               var price = 1e16/result.args.nprice;
               contr[0].innerHTML = price.toFixed(2);
               contr[2].innerHTML = (volume*price).toFixed(2);
+              self.sortTable("sell_orders");
               break;
-            case "PurchasePending":
+            case "LogPurchasePending":
               if (result.args._seller == web3.eth.accounts[0]) {
                 self.setStatus("purchase pending; buyer: " + result.args._buyer + ",volume: " + result.args.value/1e18.toFixed(8) + ",price: " + 1e16/result.args._price.toFixed(2));
               }
               break;
-            case "CashReceived":
+            case "LogCashReceived":
               if (web3.eth.accounts[0] == result.args.rec_buyer) {
               self.setStatus("cash received, ether sent to your account");
             }
@@ -127,24 +134,25 @@ window.App = {
       instance.allEvents(function(err, result) {
         if (err == null) {
           switch (result.event) {
-            case "NewWeiToBuy":
+            case "LogNewWeiToBuy":
               var price = parseFloat(contr[0].innerHTML);
               var volume = result.args.wei_to_buy/1e18;
               contr[1].innerHTML = volume.toFixed(8);
               contr[2].innerHTML = (volume*price).toFixed(2);
               break;
-            case "NewPrice":
-              var volume = parseFloat(contr[1].innerHTML);
+            case "LogNewPrice":
+              var volume = parseFloat(contr[0].innerHTML);
               var price = 1e16/result.args.nprice;
               contr[0].innerHTML = price.toFixed(2);
               contr[2].innerHTML = (volume*price).toFixed(2);
+              self.sortTable("buy_orders");
               break;
-            case "SalePending":
+            case "LogSalePending":
               if (result.args._buyer == web3.eth.accounts[0]) {
                 self.setStatus("sale pending; seller: " + result.args._seller + ",volume: " + result.args.value/2e18.toFixed(8) + ",price: " + 1e16/result.args._price.toFixed(2));
               }
               break;
-            case "CashReceived":
+            case "LogCashReceived":
               var vol = result.args.volume;
               var price = parseFloat(contr[0].innerHTML);
              if (web3.eth.accounts[0] == result.args._seller) {
@@ -168,6 +176,7 @@ window.App = {
     contr[0].innerHTML = (1e16/_price).toFixed(2);
     contr[1].innerHTML = (_volume/1e18).toFixed(8);
     contr[2].innerHTML = (_volume/_price/100).toFixed(2);
+    ////Append new contract row
     document.getElementById(_orders).append(contract);
     self.sortTable(_orders);
     if (_orders == "sell_orders") {self.catchSellEvents(_addr)}
@@ -179,44 +188,51 @@ window.App = {
       var selected = document.getElementsByClassName('selected');
       if (selected[0]) selected[0].className = '';
       contract.className = 'selected';
-
       if (_orders == "sell_orders") {
         document.getElementById("receiving_address").value = '';
         document.getElementById("new_sell_price").value = '';
         document.getElementById("add_ether").value = '';
         document.getElementById("selected_sell_address").value = contract.id;
-        document.getElementById("selectSellAddr").className = 'show';
+        document.getElementById("selectSellAddr").className = 'shown';
         document.getElementById("new_sell_contract").className = 'hidden';
         // see if user is seller and load appropriate div
         Sell_eth.at(_addr).then(function(inst) {
-          inst.get_seller.call().then(function(res) {
-            if (res == web3.eth.accounts[0]) {
-              document.getElementById("sell_contract_functions").className = 'show';
+          inst.is_seller.call().then(function(res) {
+            if (res == true) {
+              document.getElementById("sell_contract_functions").className = 'shown';
               document.getElementById("buy_ether").className = 'hidden';
             } else {
-              document.getElementById("buy_ether").className = 'show';
+              document.getElementById("buy_ether").className = 'shown';
               document.getElementById("sell_contract_functions").className = 'hidden';
             };
           });
         });
+        document.getElementById("new_buy_contract").className = "shown";
+        document.getElementById("buy_contract_functions").className = "hidden";
+        document.getElementById("sell_ether").className = "hidden";
+        document.getElementById("selectBuyAddr").className = "hidden";
       } else if (_orders == "buy_orders") {
         document.getElementById("new_buy_price").value = '';
         document.getElementById("remove_ether").value = '';
         document.getElementById("selected_buy_address").value = contract.id;
-        document.getElementById("selectBuyAddr").className = 'show';
+        document.getElementById("selectBuyAddr").className = 'shown';
         document.getElementById("new_buy_contract").className = 'hidden';
         // see if user is buyer and load appropriate div
         Buy_eth.at(_addr).then(function(inst) {
-          inst.get_buyer.call().then(function(res) {
-            if (res == web3.eth.accounts[0]) {
-              document.getElementById("buy_contract_functions").className = 'show';
+          inst.is_buyer.call().then(function(res) {
+            if (res == true) {
+              document.getElementById("buy_contract_functions").className = 'shown';
               document.getElementById("sell_ether").className = 'hidden';
             } else {
-              document.getElementById("sell_ether").className = 'show'
+              document.getElementById("sell_ether").className = 'shown'
               document.getElementById("buy_contract_functions").className = 'hidden';
             };
           });
         });
+        document.getElementById("new_sell_contract").className = "shown";
+        document.getElementById("sell_contract_functions").className = "hidden";
+        document.getElementById("buy_ether").className = "hidden";
+        document.getElementById("selectSellAddr").className = "hidden";
       };
     });
   },
@@ -264,7 +280,7 @@ window.App = {
     var volume = document.getElementById("ask_value").value*100*price;
     Orders.deployed().then(function(inst) {
       inst.newSellOrder(price, {from: web3.eth.accounts[0], value: 2*volume, gas:600000}).then(function(err, res) { 
-          if (!err) self.setStatus("sell order contract deployed");
+          if (!err) console.log("sell order contract deployed");
       });
     });
   },
@@ -277,7 +293,7 @@ window.App = {
     var price = 1e16/parseFloat(document.getElementById(address).getElementsByTagName("td")[0].innerHTML);
     var volume = document.getElementById("buy_val").value*100*price;
     contr.purchase({from:web3.eth.accounts[0], value:volume, gas:600000}).then(function(err, res) {
-      if (!err)  self.setStatus("transaction successful!");
+      if (!err)  console.log("transaction successful!");
     });
   },
 
@@ -288,7 +304,7 @@ window.App = {
     var volume = document.getElementById("bid_value").value*100*price;
     Orders.deployed().then(function(inst) {
       inst.newBuyOrder(price, {from: web3.eth.accounts[0], value: volume, gas: 900000}).then(function(err, res) {
-          if (!err) self.setStatus("buy order contract deployed");
+          if (!err) console.log("buy order contract deployed");
       });
     });
   },
@@ -301,26 +317,26 @@ window.App = {
     var price = 1e16/parseFloat(document.getElementById(address).getElementsByTagName("td")[0].innerHTML);
     var volume = document.getElementById("sell_val").value*100*price;
     contr.sell({from: web3.eth.accounts[0], value: 2*volume, gas: 600000}).then(function(err, res) {
-      if (!err) self.setStatus("transaction successful!");
+      if (!err) console.log("transaction successful!");
     });
   },
 
    sell_order_payment_received: function() {
     self = this;
     var rec_address = document.getElementById("receiving_address").value;
-    var address = document.getElementById("selected_sell_address").value;
+    var address = document.getElementsByClassName("selected")[0].id;
     var contr = Sell_eth.at(address);
-    contr.confirmReceived(rec_address, {from: web3.eth.accounts[0]}).then(function(err, result) {
-      if (!err) self.setStatus("purchase + deposit sent to " + rec_address);
+    contr.confirmReceived(rec_address, {from: web3.eth.accounts[0]}).then(function(err, res) {
+      if (!err) console.log("purchase + deposit sent to " + rec_address);
     });
   },
 
   buy_order_payment_received: function() {
     self = this;
-    var address = document.getElementById("selected_buy_address").value;
+    var address = document.getElementsByClassName("selected")[0].id;
     var contr = Buy_eth.at(address);
     contr.confirmReceived({from:web3.eth.accounts[0]}).then(function(err, res) {
-      if (!err) self.setStatus("transaction successful; deposit returned to your account");
+      if (!err) console.log("transaction successful; deposit returned to your account");
     });
   },
 
@@ -335,11 +351,10 @@ window.App = {
       var contract = Buy_eth.at(address);
       var nprice = parseInt(1e16/document.getElementById("new_buy_price").value);
     }
-    contract.changePrice(nprice, {from: web3.eth.accounts[0]}).then(function() {
-      self.setStatus("selected contract has changed price to: " + (1e16/nprice).toFixed(2));
-      //self.sortTable(contr.parentNode.id);
+    contract.changePrice(nprice, {from: web3.eth.accounts[0]}).then(function(err, res) {
+      if (!err) console.log("selected contract has changed price to: " + (1e16/nprice).toFixed(2));
     });
-    self.sortTable(contr.parentNode.id);
+    //self.sortTable(contr.parentNode.id);
   },
 
   add_ether: function() {
@@ -349,7 +364,7 @@ window.App = {
     var contract = Sell_eth.at(addr);
     var volume = parseInt(document.getElementById("add_ether").value*1e18);
     contract.addEther({from: web3.eth.accounts[0], value: volume }).then(function(err, res) {
-     if (!err) self.setStatus(volume/1e18 + " ether added to contract at " + addr);
+     if (!err) console.log(volume/1e18 + " ether added to contract at " + addr);
     });
   },
 
@@ -360,7 +375,7 @@ window.App = {
     var contract = Buy_eth.at(addr);
     var volume = parseInt(document.getElementById("remove_ether").value*1e18);
     contract.retreive_eth(volume, {from: web3.eth.accounts[0]}).then(function(err, res) {
-     if (!err) self.setStatus(volume + " ether removed from contract at " + addr);
+     if (!err) console.log(volume + " ether removed from contract at " + addr);
      });
   },
 
@@ -372,7 +387,7 @@ window.App = {
     if (contr.parentNode.id == "sell_orders") {
       Sell_eth.at(addr).then(function(instance) {
         instance.retr_funds({from: web3.eth.accounts[0], gas:900000}).then(function() {
-            self.setStatus("contract terminated, funds returned to your account.");
+            console.log("contract terminated, funds returned to your account.");
             var contract = document.getElementById(addr);
             contract.parentNode.removeChild(contract);
         });
@@ -381,7 +396,7 @@ window.App = {
     else if (contr.parentNode.id == "buy_orders") {
       Buy_eth.at(addr).then(function(instance) {
         instance.terminate_contract({from: web3.eth.accounts[0]}).then(function() {
-            self.setStatus("contract terminated, funds returned.");
+            console.log("contract terminated, funds returned.");
             var contract = document.getElementById(instance.address);
             contract.parentNode.removeChild(contract);
         });

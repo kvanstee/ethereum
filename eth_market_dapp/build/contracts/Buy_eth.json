@@ -4,32 +4,6 @@
     {
       "constant": false,
       "inputs": [],
-      "name": "get_price",
-      "outputs": [
-        {
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "payable": false,
-      "type": "function"
-    },
-    {
-      "constant": true,
-      "inputs": [],
-      "name": "get_buyer",
-      "outputs": [
-        {
-          "name": "",
-          "type": "address"
-        }
-      ],
-      "payable": false,
-      "type": "function"
-    },
-    {
-      "constant": false,
-      "inputs": [],
       "name": "get_vars",
       "outputs": [
         {
@@ -55,19 +29,6 @@
     {
       "constant": false,
       "inputs": [],
-      "name": "get_wei_to_buy",
-      "outputs": [
-        {
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "payable": false,
-      "type": "function"
-    },
-    {
-      "constant": false,
-      "inputs": [],
       "name": "terminate_contract",
       "outputs": [],
       "payable": true,
@@ -83,6 +44,19 @@
     },
     {
       "constant": false,
+      "inputs": [],
+      "name": "has_pending",
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": false,
       "inputs": [
         {
           "name": "new_price",
@@ -91,6 +65,19 @@
       ],
       "name": "changePrice",
       "outputs": [],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [],
+      "name": "is_buyer",
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool"
+        }
+      ],
       "payable": false,
       "type": "function"
     },
@@ -126,10 +113,6 @@
       "type": "constructor"
     },
     {
-      "payable": false,
-      "type": "fallback"
-    },
-    {
       "anonymous": false,
       "inputs": [
         {
@@ -157,7 +140,7 @@
       "anonymous": false,
       "inputs": [
         {
-          "indexed": false,
+          "indexed": true,
           "name": "_buyer",
           "type": "address"
         },
@@ -193,7 +176,7 @@
       "type": "event"
     }
   ],
-  "unlinked_binary": "0x60606040526040516060806105f88339810160409081528151602083015191909201515b60008054600160a060020a03808416600160a060020a031992831617909255600380549285169290911691909117905560028390556005805460ff19169055346001555b5050505b61057e8061007a6000396000f3006060604052361561007d5763ffffffff60e060020a60003504166311f37ceb811461009357806312be97a1146100b5578063227b326d146100e1578063457100741461010a5780635c68479a1461011457806371b8fb011461013657806373fac6f014610140578063a2b40d191461014a578063d8e33d601461015f575b341561008557fe5b6100915b60006000fd5b565b005b341561009b57fe5b6100a361016c565b60408051918252519081900360200190f35b34156100bd57fe5b6100c5610173565b60408051600160a060020a039092168252519081900360200190f35b34156100e957fe5b6100f1610183565b6040805192835260208301919091528051918290030190f35b61009161018e565b005b341561011c57fe5b6100a36102cf565b60408051918252519081900360200190f35b6100916102d6565b005b610091610366565b005b341561015257fe5b610091600435610453565b005b6100916004356104a4565b005b6002545b90565b600354600160a060020a03165b90565b6001546002545b9091565b600160a060020a033316600090815260046020526040812054156101b25760006000fd5b6000341180156101c757506001546002345b04105b80156101ef57506002805461138891345b048115156101e257fe5b048115156101ec57fe5b06155b15156101fb5760006000fd5b6002345b60035460025460408051600160a060020a03938416815294909304602085018190528484019190915291519193503316917f4ad213fb6e3032a9d41d4bd82a9d895ecb023cd1968dca7e6894e7662fe34467919081900360600190a2604080518082018252828152600254602080830191825233600160a060020a03166000908152600490915283812092518355905160019283015581548490038083556005805460ff19811660ff91821690950116939093179092559151909160008051602061053383398151915291a25b50565b6001545b90565b60035433600160a060020a039081169116146102f25760006000fd5b60055460ff16156103035760006000fd5b600080546040805160e360020a630cab3c3f0281529051600160a060020a0390921692636559e1f89260048084019382900301818387803b151561034357fe5b6102c65a03f1151561035157fe5b5050600354600160a060020a03169050ff5b5b565b600160a060020a0333166000908152600460205260408120805490919081901180156103995750600554600060ff909116115b15156103a55760006000fd5b5080546000808355604051600160a060020a0333169183156108fc02918491818181858888f1935050505015156103de5780825561044f565b604051600160a060020a033316907f1e05a6a361c56da5734c297adbdd1d65035dbf31baa8a0fd110af39f26a7b82a90600090a2600180546002830201908190556005805460ff19811660ff9182166000190190911617905560405160008051602061053383398151915290600090a25b5050565b60035433600160a060020a0390811691161461046f5760006000fd5b600281905560405181907f8b3781c36bbc6b82b5fd7bc438ad241cec4db2920a51ecfeaca9dd406d176a5f90600090a25b5b50565b60035433600160a060020a039081169116146104c05760006000fd5b6002546113880260015403811015156104d95760006000fd5b600180548290039055600354604051600160a060020a039091169082156108fc029083906000818181858888f19350505050151561051357fe5b60015460405160008051602061053383398151915290600090a25b5b50560064dc90db4042609ed72aa03bf5c32686fe07c08c0682284e7f1c6f315a3660b3a165627a7a72305820097544f57eadf4e4de9562385ea36fb15e5df204c716bce8fae77371a36d6c500029",
+  "unlinked_binary": "0x60606040526040516060806106288339810160409081528151602083015191909201515b60008054600160a060020a03808416600160a060020a031992831617909255600380549285169290911691909117905560028390556005805460ff19169055346001555b5050505b6105ae8061007a6000396000f300606060405236156100725763ffffffff60e060020a600035041663227b326d8114610074578063457100741461009d57806371b8fb01146100a757806373fac6f0146100b157806381015b9c146100bb578063a2b40d19146100df578063b5560986146100f4578063d8e33d6014610118575bfe5b341561007c57fe5b610084610125565b6040805192835260208301919091528051918290030190f35b6100a5610130565b005b6100a561024e565b005b6100a56102de565b005b34156100c357fe5b6100cb6103ee565b604080519115158252519081900360200190f35b34156100e757fe5b6100a5600435610455565b005b34156100fc57fe5b6100cb6104a6565b604080519115158252519081900360200190f35b6100a56004356104d4565b005b6001546002545b9091565b600160a060020a033316600090815260046020526040812054156101545760006000fd5b60003411801561016957506001546002345b04105b801561019157506002805461138891345b0481151561018457fe5b0481151561018e57fe5b06155b151561019d5760006000fd5b6002345b600354600254604080519490930480855260208501919091528251909450600160a060020a03338116949216927f4ad213fb6e3032a9d41d4bd82a9d895ecb023cd1968dca7e6894e7662fe34467928290030190a333600160a060020a0316600090815260046020526040808220839055600180548490038082556005805460ff19811660ff91821690940116929092179091559051909160008051602061056383398151915291a25b50565b60035433600160a060020a0390811691161461026a5760006000fd5b60055460ff161561027b5760006000fd5b600080546040805160e360020a630cab3c3f0281529051600160a060020a0390921692636559e1f89260048084019382900301818387803b15156102bb57fe5b6102c65a03f115156102c957fe5b5050600354600160a060020a03169050ff5b5b565b600160a060020a033316600090815260046020526040812054819011801561030d5750600554600060ff909116115b15156103195760006000fd5b50600160a060020a033316600081815260046020526040808220805490839055905190929183156108fc02918491818181858888f19350505050151561037957600160a060020a033316600090815260046020526040902081905561024b565b604051600160a060020a033316907f1e05a6a361c56da5734c297adbdd1d65035dbf31baa8a0fd110af39f26a7b82a90600090a2600180546002830201908190556005805460ff19811660ff9182166000190190911617905560405160008051602061056383398151915290600090a25b5b50565b60035460009033600160a060020a039081169116141561042557600554600060ff909116111561042057506001610450565b610450565b600160a060020a033316600090815260046020526040812054111561044c57506001610450565b5060005b5b5b90565b60035433600160a060020a039081169116146104715760006000fd5b600281905560405181907f8b3781c36bbc6b82b5fd7bc438ad241cec4db2920a51ecfeaca9dd406d176a5f90600090a25b5b50565b60035460009033600160a060020a039081169116141561044c57506001610450565b506000610450565b5b90565b60035433600160a060020a039081169116146104f05760006000fd5b6002546113880260015403811015156105095760006000fd5b600180548290039055600354604051600160a060020a039091169082156108fc029083906000818181858888f19350505050151561054357fe5b60015460405160008051602061056383398151915290600090a25b5b50560064dc90db4042609ed72aa03bf5c32686fe07c08c0682284e7f1c6f315a3660b3a165627a7a723058207f9de0bd6f53f147b9c958fc22f9f1207ad570d85ca1800aeacb4a218c0b91fa0029",
   "networks": {
     "4": {
       "events": {
@@ -312,11 +295,74 @@
           ],
           "name": "CashReceived",
           "type": "event"
+        },
+        "0x64dc90db4042609ed72aa03bf5c32686fe07c08c0682284e7f1c6f315a3660b3": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "wei_to_buy",
+              "type": "uint256"
+            }
+          ],
+          "name": "LogNewWeiToBuy",
+          "type": "event"
+        },
+        "0x8b3781c36bbc6b82b5fd7bc438ad241cec4db2920a51ecfeaca9dd406d176a5f": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "nprice",
+              "type": "uint256"
+            }
+          ],
+          "name": "LogNewPrice",
+          "type": "event"
+        },
+        "0x4ad213fb6e3032a9d41d4bd82a9d895ecb023cd1968dca7e6894e7662fe34467": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "_buyer",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "name": "_seller",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "name": "value",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "name": "_price",
+              "type": "uint256"
+            }
+          ],
+          "name": "LogSalePending",
+          "type": "event"
+        },
+        "0x1e05a6a361c56da5734c297adbdd1d65035dbf31baa8a0fd110af39f26a7b82a": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "_seller",
+              "type": "address"
+            }
+          ],
+          "name": "LogCashReceived",
+          "type": "event"
         }
       },
       "links": {},
-      "address": "0x75d9e752ca592a6abf9c1128dc6df38194b2763f",
-      "updated_at": 1503710074930
+      "address": "0x8ff395373daa817943e9fc50ee3fbde2a8dda3e8",
+      "updated_at": 1504602345481
     },
     "1491866132387": {
       "events": {
@@ -9218,8 +9264,498 @@
       "links": {},
       "address": "0x28c0fa2b876b10eb2af6c1c757467471279e4cd7",
       "updated_at": 1504246246610
+    },
+    "1504437902974": {
+      "events": {
+        "0x64dc90db4042609ed72aa03bf5c32686fe07c08c0682284e7f1c6f315a3660b3": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "wei_to_buy",
+              "type": "uint256"
+            }
+          ],
+          "name": "LogNewWeiToBuy",
+          "type": "event"
+        },
+        "0x8b3781c36bbc6b82b5fd7bc438ad241cec4db2920a51ecfeaca9dd406d176a5f": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "nprice",
+              "type": "uint256"
+            }
+          ],
+          "name": "LogNewPrice",
+          "type": "event"
+        },
+        "0x4ad213fb6e3032a9d41d4bd82a9d895ecb023cd1968dca7e6894e7662fe34467": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "name": "_buyer",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "name": "_seller",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "name": "value",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "name": "_price",
+              "type": "uint256"
+            }
+          ],
+          "name": "LogSalePending",
+          "type": "event"
+        },
+        "0x1e05a6a361c56da5734c297adbdd1d65035dbf31baa8a0fd110af39f26a7b82a": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "_seller",
+              "type": "address"
+            }
+          ],
+          "name": "LogCashReceived",
+          "type": "event"
+        }
+      },
+      "links": {},
+      "address": "0x4ebf8abdac29567b07724ac64c3d237236ec9153",
+      "updated_at": 1504437937324
+    },
+    "1504438330186": {
+      "events": {
+        "0x64dc90db4042609ed72aa03bf5c32686fe07c08c0682284e7f1c6f315a3660b3": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "wei_to_buy",
+              "type": "uint256"
+            }
+          ],
+          "name": "LogNewWeiToBuy",
+          "type": "event"
+        },
+        "0x8b3781c36bbc6b82b5fd7bc438ad241cec4db2920a51ecfeaca9dd406d176a5f": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "nprice",
+              "type": "uint256"
+            }
+          ],
+          "name": "LogNewPrice",
+          "type": "event"
+        },
+        "0x4ad213fb6e3032a9d41d4bd82a9d895ecb023cd1968dca7e6894e7662fe34467": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "name": "_buyer",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "name": "_seller",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "name": "value",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "name": "_price",
+              "type": "uint256"
+            }
+          ],
+          "name": "LogSalePending",
+          "type": "event"
+        },
+        "0x1e05a6a361c56da5734c297adbdd1d65035dbf31baa8a0fd110af39f26a7b82a": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "_seller",
+              "type": "address"
+            }
+          ],
+          "name": "LogCashReceived",
+          "type": "event"
+        }
+      },
+      "links": {},
+      "address": "0x28c0fa2b876b10eb2af6c1c757467471279e4cd7",
+      "updated_at": 1504438363904
+    },
+    "1504458100689": {
+      "events": {
+        "0x64dc90db4042609ed72aa03bf5c32686fe07c08c0682284e7f1c6f315a3660b3": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "wei_to_buy",
+              "type": "uint256"
+            }
+          ],
+          "name": "LogNewWeiToBuy",
+          "type": "event"
+        },
+        "0x8b3781c36bbc6b82b5fd7bc438ad241cec4db2920a51ecfeaca9dd406d176a5f": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "nprice",
+              "type": "uint256"
+            }
+          ],
+          "name": "LogNewPrice",
+          "type": "event"
+        },
+        "0x4ad213fb6e3032a9d41d4bd82a9d895ecb023cd1968dca7e6894e7662fe34467": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "name": "_buyer",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "name": "_seller",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "name": "value",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "name": "_price",
+              "type": "uint256"
+            }
+          ],
+          "name": "LogSalePending",
+          "type": "event"
+        },
+        "0x1e05a6a361c56da5734c297adbdd1d65035dbf31baa8a0fd110af39f26a7b82a": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "_seller",
+              "type": "address"
+            }
+          ],
+          "name": "LogCashReceived",
+          "type": "event"
+        }
+      },
+      "links": {},
+      "address": "0xbbc462f3ddc243a696f4b133c1396aa8b9dfc007",
+      "updated_at": 1504458126720
+    },
+    "1504584900501": {
+      "events": {
+        "0x64dc90db4042609ed72aa03bf5c32686fe07c08c0682284e7f1c6f315a3660b3": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "wei_to_buy",
+              "type": "uint256"
+            }
+          ],
+          "name": "LogNewWeiToBuy",
+          "type": "event"
+        },
+        "0x8b3781c36bbc6b82b5fd7bc438ad241cec4db2920a51ecfeaca9dd406d176a5f": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "nprice",
+              "type": "uint256"
+            }
+          ],
+          "name": "LogNewPrice",
+          "type": "event"
+        },
+        "0x4ad213fb6e3032a9d41d4bd82a9d895ecb023cd1968dca7e6894e7662fe34467": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "_buyer",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "name": "_seller",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "name": "value",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "name": "_price",
+              "type": "uint256"
+            }
+          ],
+          "name": "LogSalePending",
+          "type": "event"
+        },
+        "0x1e05a6a361c56da5734c297adbdd1d65035dbf31baa8a0fd110af39f26a7b82a": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "_seller",
+              "type": "address"
+            }
+          ],
+          "name": "LogCashReceived",
+          "type": "event"
+        }
+      },
+      "links": {},
+      "address": "0xccb131631ded4ebdcb5d1d9961e92b6960044606",
+      "updated_at": 1504585038359
+    },
+    "1504587270133": {
+      "events": {
+        "0x64dc90db4042609ed72aa03bf5c32686fe07c08c0682284e7f1c6f315a3660b3": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "wei_to_buy",
+              "type": "uint256"
+            }
+          ],
+          "name": "LogNewWeiToBuy",
+          "type": "event"
+        },
+        "0x8b3781c36bbc6b82b5fd7bc438ad241cec4db2920a51ecfeaca9dd406d176a5f": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "nprice",
+              "type": "uint256"
+            }
+          ],
+          "name": "LogNewPrice",
+          "type": "event"
+        },
+        "0x4ad213fb6e3032a9d41d4bd82a9d895ecb023cd1968dca7e6894e7662fe34467": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "_buyer",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "name": "_seller",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "name": "value",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "name": "_price",
+              "type": "uint256"
+            }
+          ],
+          "name": "LogSalePending",
+          "type": "event"
+        },
+        "0x1e05a6a361c56da5734c297adbdd1d65035dbf31baa8a0fd110af39f26a7b82a": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "_seller",
+              "type": "address"
+            }
+          ],
+          "name": "LogCashReceived",
+          "type": "event"
+        }
+      },
+      "links": {},
+      "address": "0x28c0fa2b876b10eb2af6c1c757467471279e4cd7",
+      "updated_at": 1504587533655
+    },
+    "1504594595256": {
+      "events": {
+        "0x64dc90db4042609ed72aa03bf5c32686fe07c08c0682284e7f1c6f315a3660b3": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "wei_to_buy",
+              "type": "uint256"
+            }
+          ],
+          "name": "LogNewWeiToBuy",
+          "type": "event"
+        },
+        "0x8b3781c36bbc6b82b5fd7bc438ad241cec4db2920a51ecfeaca9dd406d176a5f": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "nprice",
+              "type": "uint256"
+            }
+          ],
+          "name": "LogNewPrice",
+          "type": "event"
+        },
+        "0x4ad213fb6e3032a9d41d4bd82a9d895ecb023cd1968dca7e6894e7662fe34467": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "_buyer",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "name": "_seller",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "name": "value",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "name": "_price",
+              "type": "uint256"
+            }
+          ],
+          "name": "LogSalePending",
+          "type": "event"
+        },
+        "0x1e05a6a361c56da5734c297adbdd1d65035dbf31baa8a0fd110af39f26a7b82a": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "_seller",
+              "type": "address"
+            }
+          ],
+          "name": "LogCashReceived",
+          "type": "event"
+        }
+      },
+      "links": {},
+      "address": "0x28c0fa2b876b10eb2af6c1c757467471279e4cd7",
+      "updated_at": 1504594660302
+    },
+    "1504595358525": {
+      "events": {
+        "0x64dc90db4042609ed72aa03bf5c32686fe07c08c0682284e7f1c6f315a3660b3": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "wei_to_buy",
+              "type": "uint256"
+            }
+          ],
+          "name": "LogNewWeiToBuy",
+          "type": "event"
+        },
+        "0x8b3781c36bbc6b82b5fd7bc438ad241cec4db2920a51ecfeaca9dd406d176a5f": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "nprice",
+              "type": "uint256"
+            }
+          ],
+          "name": "LogNewPrice",
+          "type": "event"
+        },
+        "0x4ad213fb6e3032a9d41d4bd82a9d895ecb023cd1968dca7e6894e7662fe34467": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "_buyer",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "name": "_seller",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "name": "value",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "name": "_price",
+              "type": "uint256"
+            }
+          ],
+          "name": "LogSalePending",
+          "type": "event"
+        },
+        "0x1e05a6a361c56da5734c297adbdd1d65035dbf31baa8a0fd110af39f26a7b82a": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "_seller",
+              "type": "address"
+            }
+          ],
+          "name": "LogCashReceived",
+          "type": "event"
+        }
+      },
+      "links": {},
+      "address": "0x4cf8445ebc3702049b306df4c192c70400cb0012",
+      "updated_at": 1504595417050
     }
   },
   "schema_version": "0.0.5",
-  "updated_at": 1504300718299
+  "updated_at": 1504602345481
 }

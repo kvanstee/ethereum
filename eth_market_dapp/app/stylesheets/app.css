@@ -48,10 +48,13 @@ td {
 .selected {
   background-color: lightgreen;
 }
+.pending {
+  background-color: lightyellow;
+}
 .hidden {
 display: none;
 }
-.show {
+.shown {
 display: inline-block;
 }
 #sell {

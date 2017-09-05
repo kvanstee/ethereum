@@ -19,7 +19,6 @@ contract Orders {
     LogNewSellOrder(msg.sender, order);    
     SellOrders.push(order);
   }
-
   function newBuyOrder(uint price) payable {
     require(msg.value > price*5000);
     address order =(new Buy_eth).value(msg.value)(price, msg.sender, this);
@@ -39,7 +38,6 @@ contract Orders {
     delete SellOrders[SellOrders.length-1];
     SellOrders.length--;
   }
-  
   function removeBuyOrder() {
     for (uint i = 0; i<BuyOrders.length; i++){
       if (BuyOrders[i] == msg.sender) {
@@ -61,6 +59,5 @@ contract Orders {
     return BuyOrders;
   }
 
-  function() {throw;}
-}  
-  
+  function() {revert();}
+}
