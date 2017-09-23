@@ -26,28 +26,26 @@
         Price (AUD):<input type="number" id="bid_price" required><br>
         <button onclick="App.setup_buy()" href="#">add buy order contract</button>
       </div>
-      <div id="selectBuyAddr" class="hidden" bgcolor="blue">
+      <div id="selBuyAddr" class="hidden">
         Contract Address:<input size="42" type="text" id="selected_buy_address" readonly>
-      </div><br>
+      </div>
+      <br>
       <div id="sell_ether" class="hidden" bgcolor="lightyellow">
         Select Value(AUD):<select  id="sell_val"><option value="50">$50</option><option value="100">$100</option><option value="200">$200</option><option value="500">$500</option><option value="1000">$1000</option></select>
 	<button onclick="App.sell()" href="#">Sell Ether to this Contract</button><br>
         <button onclick="App.buy_order_payment_received()" href="#">Payment Received</button>
       </div>
-      <! CONTRACT FUNCTIONS  !>
+      <! CHANGE PRICE/VOLUME  !>
       <div id="buy_contract_functions" class="hidden">        
-        
           New Price:<input type="number" id="new_buy_price">
-          <button  onclick="App.change_price()" href="#">Change Price</button><br>
-        
-        
+          <button  onclick="App.change_price()" href="#">Change Price</button><br>        
           Remove Ether:<input type="number" id="remove_ether">
-          <button  onclick="App.remove_ether()" href="#">Remove ether from contract</button><br>
-        
-        
-          <button  onclick="App.terminate_contract()" href="#">terminate contract</button>
-        
+          <button  onclick="App.remove_ether()" href="#">Remove ether from contract</button><br>       
       </div>  
+      <button id="terminate_buy_contract" class="hidden"  onclick="App.terminate_contract()" href="#">terminate contract</button>  
+      <table>
+      <tbody id="buy_pending_txs"></tbody>
+      </table>
     </div>
     
     
@@ -68,31 +66,23 @@
         Price (AUD):<input type="number" id="ask_price">
         <br><button onclick="App.setup_sell()" href="#">add sell order contract</button>
       </div>
-      <div id="selectSellAddr" class="hidden" bgcolor="blue">
-        Contract Address:<input size="42" type="text" id="selected_sell_address" readonly>
-      </div><br>
+      <div id="selSellAddr" class="hidden">
+        Contract Address:<input type="text" id="selected_sell_address" readonly><br>
+      </div>
       <div id="buy_ether" class="hidden" bgcolor="lightyellow">
         Select Value(AUD):<select  id="buy_val"><option value="50">$50</option><option value="100">$100</option><option value="200">$200</option><option value="500">$500</option><option value="1000">$1000</option></select>
         <button onclick="App.buy()" href="#">Buy Ether from this Contract</button>
-      </div>
-      
+      </div>      
       <div id="sell_contract_functions" class="hidden">
-        
           New Price:<input type="number" id="new_sell_price">
-          <button  onclick="App.change_price()" href="#">Change Price</button><br>
-        
-        
+          <button  onclick="App.change_price()" href="#">Change Price</button><br>         
           Add Ether:<input type="number" id="add_ether">
            <button  onclick="App.add_ether()" href="#">Add Ether to contract</button><br>
-        
-        
-          Address of buyer:<input type="text" size="42" id="receiving_address">
-          <button  onclick="App.sell_order_payment_received()" href="#">Payment received</button>
-        
-        
-          <button  onclick="App.terminate_contract()" href="#">terminate contract</button><br>
-        
-      </div>
+      </div>  
+      <button id="terminate_sell_contract" class="hidden" onclick="App.terminate_contract()" href="#">terminate contract</button><br>
+      <table>
+      <tbody id="sell_pending_txs"></tbody>
+      </table>
     </div>
   </div>
 </body>

@@ -49,7 +49,7 @@ td {
   background-color: lightgreen;
 }
 .pending {
-  background-color: lightyellow;
+  background-color: yellow;
 }
 .hidden {
 display: none;

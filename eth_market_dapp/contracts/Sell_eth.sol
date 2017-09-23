@@ -7,15 +7,15 @@ contract Sell_eth {
     uint weiForSale;
     uint price; //wei per smallest currency unit (eg. cent)
     address seller;
-    struct Buyer {uint amount; bool confirmed;}
-    mapping(address => Buyer) buyers;
+    mapping(address => uint) sales;
     uint8 pending;
     modifier onlySeller() {require(msg.sender == seller);  _;}
 
     event LogNewWeiForSale(uint indexed wei_for_sale);
     event LogNewPrice(uint indexed nprice);
-    event LogPurchasePending(address indexed _seller, address indexed _buyer, uint value, uint _price);
-    event LogCashReceived(address rec_buyer);
+    event LogSalePending(address indexed _seller, address indexed _buyer, uint value, uint _price);
+    event LogCashReceived(address _buyer);
+
     function Sell_eth(uint _price, address _seller, address _orders) payable {
         orders = Orders(_orders);
         seller = _seller;
@@ -25,33 +25,25 @@ contract Sell_eth {
     }
     
     function purchase() payable {
-        require(buyers[msg.sender].amount == 0);
+        require(sales[msg.sender] == 0);
         require(msg.value > 0 && msg.value < weiForSale && (msg.value/price)%5000 == 0);
-        buyers[msg.sender] = Buyer (msg.value, false);
+        sales[msg.sender] = msg.value;
         weiForSale -= msg.value/2;
         pending += 1;
         LogNewWeiForSale(weiForSale);
-        LogPurchasePending(seller, msg.sender, msg.value, price);
+        LogSalePending(seller, msg.sender, msg.value, price);
     }
 
-    function confirmReceived(address addr_buyer) onlySeller {
-        Buyer storage buyer = buyers[addr_buyer];
-        require(buyer.amount > 0 && pending > 0);
-        buyer.confirmed = true;
-    }
-    function buyerWithdraw() payable {
-        Buyer storage buyer = buyers[msg.sender];
-        require(buyer.amount > 0 && buyer.confirmed == true);
-        uint amt = buyer.amount;
-        buyer.amount = 0;
-        buyer.confirmed = false;
-        if (!msg.sender.send(2*amt)) {
-            buyer.amount = amt;
-            buyer.confirmed = true;
-        } else {
-            pending -= 1;
-            LogCashReceived(msg.sender);
+    function confirmReceived(address _buyer) onlySeller payable {
+        require(sales[_buyer] > 0 && pending > 0);
+        uint amt = sales[_buyer];
+        sales[_buyer] = 0;
+        if (!_buyer.send(2*amt)) {
+            sales[_buyer] = amt;
+            return;
         }
+        pending -= 1;
+        LogCashReceived(_buyer);
     }
 
     function addEther() onlySeller payable {
@@ -65,11 +57,11 @@ contract Sell_eth {
     }
     
     function retr_funds() onlySeller payable {
-        require(this.balance <= 2*weiForSale);
+        require(pending == 0);
         orders.removeSellOrder();
         selfdestruct(seller);
     }
-
+    
     function get_vars() returns(uint, uint) {
         return (weiForSale, price);
     }
@@ -82,7 +74,7 @@ contract Sell_eth {
     function has_pending() returns(bool) {
         if (msg.sender == seller) {
             if (pending > 0) return true;
-        } else if (buyers[msg.sender].amount > 0) {
+        } else if (sales[msg.sender] > 0) {
             return true;
         } else return false;
     }

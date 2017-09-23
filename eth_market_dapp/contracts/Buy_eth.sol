@@ -40,13 +40,14 @@ contract Buy_eth {
         sales[msg.sender] = 0;
         if (!msg.sender.send(amt)) {
             sales[msg.sender] = amt;
-        } else {
-            LogCashReceived(msg.sender);
-            weiToBuy += 2*amt;
-            pending -= 1;
-            LogNewWeiToBuy(weiToBuy);
+            return;
         }
+        LogCashReceived(msg.sender);
+        weiToBuy += 2*amt;
+        pending -= 1;
+        LogNewWeiToBuy(weiToBuy);
     }
+    
     function retreive_eth(uint vol) onlyBuyer payable {  
         require(vol < weiToBuy-price*5000);
         weiToBuy -= vol;
