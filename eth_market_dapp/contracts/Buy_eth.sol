@@ -11,8 +11,8 @@ contract Buy_eth {
     uint8 pending;
     modifier onlyBuyer() {require(msg.sender == buyer);  _;}
     
-    event LogNewWeiToBuy(uint indexed wei_to_buy);
-    event LogNewPrice(uint indexed nprice);
+    event LogNewWeiToBuy(uint wei_to_buy);
+    event LogNewPrice(uint nprice);
     event LogSalePending(address indexed _buyer, address indexed _seller, uint value, uint _price);
     event LogCashReceived(address indexed _seller);
 

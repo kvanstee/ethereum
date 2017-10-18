@@ -11,10 +11,10 @@ contract Sell_eth {
     uint8 pending;
     modifier onlySeller() {require(msg.sender == seller);  _;}
 
-    event LogNewWeiForSale(uint indexed wei_for_sale);
-    event LogNewPrice(uint indexed nprice);
+    event LogNewWeiForSale(uint wei_for_sale);
+    event LogNewPrice(uint nprice);
     event LogSalePending(address indexed _seller, address indexed _buyer, uint value, uint _price);
-    event LogCashReceived(address _buyer);
+    event LogCashReceived(address indexed _buyer);
 
     function Sell_eth(uint _price, address _seller, address _orders) payable {
         orders = Orders(_orders);
