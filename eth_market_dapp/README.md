@@ -8,10 +8,10 @@ Here is the code that generates a contract (Orders.sol):
 
 ```
 function newSellOrder(uint price) payable {
+    require(msg.value/2 > price*5000);
     address order =(new Sell_eth).value(msg.value)(price, msg.sender, this);
-    ...........;//event
-    SellOrders.push(order);
-}
+    LogNewSellOrder(order);    
+  }
 ```
 
 and here is the constructor of Sell_eth.sol:
@@ -33,12 +33,12 @@ To keep the parties focused each must put up a returnable deposit equal to the c
 There are five functions that allow wei to flow from the sell and buy contracts. Two are calls to 'selfdestruct'. Only the Sell_eth function is a push external call:
 
 ```
-function confirmReceived(address addr_buyer) onlySeller payable {
-    Buyer storage buyer = buyers[addr_buyer];
+function confirmReceived(address buyer) onlySeller payable {
+    Buyer storage buyer = buyers[buyer];
     require(buyer.amount > 0 && pending > 0);
     uint amt = buyer.amount;
     buyer.amount = 0;
-    if (!addr_buyer.send(2*amt) {
+    if (buyer.send(2*amt) {
       buyer.amount = amt;
       return;
     };
@@ -46,7 +46,7 @@ function confirmReceived(address addr_buyer) onlySeller payable {
     .............;//event
 }
 ```
-The 'owner' of the sell contract receives the currency from the buyer 'addr_buyer' and calls the confirmReceived() function. If the buyer has a pending transaction in this contract, struct variables are reverted to default and wei is transferred to her.
+The 'owner' of the sell contract receives the currency from the buyer 'buyer' and calls the confirmReceived() function. If the buyer has a pending transaction in this contract, struct variables are reverted to default and wei is transferred to her.
 
 This app is live on the rinkeby testnet at http://128.199.144.211:8080. To add an order fill out the fields below the table and click 'add new buy/sell order'. To change price or volume click on the table row and if you are the 'owner' of the contract appropriate fields will be displayed. If you are not the 'owner' the fields displayed allow buying from or selling to the contract. The fields may take a few seconds to appear. If there are no pending transactions the contract can be terminated and ether returned.
 

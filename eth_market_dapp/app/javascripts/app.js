@@ -27,8 +27,8 @@ window.App = {
     // retrieve Buy and Sell order values from contracts
     Orders.deployed().then(function(instance) {
       /////SELL SELL SELL\\\\\\\
-      instance.LogNewSellOrder({}, {fromBlock:1e6}, function(err, result) {
-       if (!err) {console.log(result.args);
+      instance.LogNewSellOrder({}, {fromBlock:0}, function(err, result) {
+       if (!err) {
         var address = result.args.sellorder;
         //if (web3.eth.getCode(address) != null) {
         Sell_eth.at(address).then(function(inst) {
@@ -46,7 +46,7 @@ window.App = {
               var tx = document.createElement("tr");
               tx.innerHTML = '<td align="right"></td><td align="right"></td><td align="right"></td><td align="right"></td>';
               var trans = tx.getElementsByTagName('td');
-              inst.LogSalePending({_buyer:web3.eth.accounts[0]}, {fromBlock:1e6}, function(err, result) {
+              inst.LogSalePending({_buyer:web3.eth.accounts[0]}, {fromBlock:0}, function(err, result) {
                 if (!err) {
                   trans[1].innerHTML = "to";
                   trans[2].innerHTML = result.args._seller;
@@ -54,7 +54,7 @@ window.App = {
                   trans[0].innerHTML = parseInt(result.args.value/result.args._price/100);
 	        };
               }).stopWatching();
-              inst.LogSalePending({_seller:web3.eth.accounts[0]}, {fromBlock:1e6}, function(err, result) {
+              inst.LogSalePending({_seller:web3.eth.accounts[0]}, {fromBlock:0}, function(err, result) {
                 if (!err) {
                   var buyer = result.args._buyer;
                   var contract = inst.address;
@@ -72,7 +72,7 @@ window.App = {
        };
       });
           /////////BUY BUY BUY \\\\\\\\\\\
-      instance.LogNewBuyOrder({}, {fromBlock:1e6}, function(err, result) {
+      instance.LogNewBuyOrder({}, {fromBlock:0}, function(err, result) {
         if (!err) {
             var address = result.args.buyorder;
             Buy_eth.at(address).then(function(inst) {
@@ -90,7 +90,7 @@ window.App = {
                     var tx = document.createElement("tr");
                     tx.innerHTML = '<td align="right"></td><td align="right"></td><td align="right"></td><td align="right"></td>';
                     var trans = tx.getElementsByTagName('td');
-         	    inst.LogSalePending({_seller:web3.eth.accounts[0]}, {fromBlock:1e6}, function(err, result) {
+         	    inst.LogSalePending({_seller:web3.eth.accounts[0]}, {fromBlock:0}, function(err, result) {
                       if (!err) {
                         trans[0].innerHTML = parseInt(result.args.value/result.args._price/100);
                         trans[1].innerHTML = "from";
@@ -98,7 +98,7 @@ window.App = {
                         trans[3].innerHTML = '<button onclick="App.buy_order_payment_received()" >payment received</button>';
                       }
                     }).stopWatching();
-                    inst.LogSalePending({_buyer:web3.eth.accounts[0]}, {fromBlock:1e6}, function(err, result) {
+                    inst.LogSalePending({_buyer:web3.eth.accounts[0]}, {fromBlock:0}, function(err, result) {
                       if (!err) {
                         trans[1].innerHTML = "to";
                         trans[2].innerHTML = "<input value=" + result.args._seller +">";
