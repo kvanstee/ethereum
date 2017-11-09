@@ -14,7 +14,7 @@ contract Buy_eth {
     event LogNewWeiToBuy(uint wei_to_buy);
     event LogNewPrice(uint nprice);
     event LogSalePending(address indexed _buyer, address indexed _seller, uint value, uint _price);
-    event LogCashReceived(address indexed _seller);
+    event LogCashReceived(address indexed _seller, address indexed _buyer);
 
     function Buy_eth(uint _price, address _buyer, address _orders) payable {
         orders = Orders(_orders);
@@ -42,7 +42,7 @@ contract Buy_eth {
             sales[msg.sender] = amt;
             return;
         }
-        LogCashReceived(msg.sender);
+        LogCashReceived(msg.sender, buyer);
         weiToBuy += 2*amt;
         pending -= 1;
         LogNewWeiToBuy(weiToBuy);
@@ -66,20 +66,16 @@ contract Buy_eth {
         selfdestruct(buyer);
     }
 
-    function is_buyer() returns(bool) {
-        if (buyer == msg.sender) return true;
-        else return false;
-    }
-
     function get_vars() returns(uint,uint) {
         return (weiToBuy, price);
     }
 
+    function is_party() returns(string) {
+        if (buyer == msg.sender) return "buyer";
+        else if (sales[msg.sender] > 0) return "seller";
+    }
+
     function has_pending() returns(bool) {
-        if (msg.sender == buyer) {
-            if (pending > 0) return true;
-        } else if (sales[msg.sender] > 0) {
-            return true;
-        } else return false;        
+	if (pending > 0) return true;
     }
 }

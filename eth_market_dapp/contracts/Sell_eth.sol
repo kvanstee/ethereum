@@ -14,7 +14,7 @@ contract Sell_eth {
     event LogNewWeiForSale(uint wei_for_sale);
     event LogNewPrice(uint nprice);
     event LogSalePending(address indexed _seller, address indexed _buyer, uint value, uint _price);
-    event LogCashReceived(address indexed _buyer);
+    event LogCashReceived(address indexed _buyer, address indexed _seller);
 
     function Sell_eth(uint _price, address _seller, address _orders) payable {
         orders = Orders(_orders);
@@ -24,7 +24,7 @@ contract Sell_eth {
         weiForSale = msg.value / 2;
     }
     
-    function purchase() payable {
+    function buy() payable {
         require(sales[msg.sender] == 0);
         require(msg.value > 0 && msg.value < weiForSale && (msg.value/price)%5000 == 0);
         sales[msg.sender] = msg.value;
@@ -43,7 +43,7 @@ contract Sell_eth {
             return;
         }
         pending -= 1;
-        LogCashReceived(_buyer);
+        LogCashReceived(_buyer, seller);
     }
 
     function addEther() onlySeller payable {
@@ -66,16 +66,12 @@ contract Sell_eth {
         return (weiForSale, price);
     }
 
-    function is_seller() returns(bool) {
-        if (seller == msg.sender) return true;
-        else return false;
+    function is_party() returns(string) {
+        if (sales[msg.sender] > 0) return "buyer";
+        else if (seller == msg.sender) return "seller";
     }
 
     function has_pending() returns(bool) {
-        if (msg.sender == seller) {
-            if (pending > 0) return true;
-        } else if (sales[msg.sender] > 0) {
-            return true;
-        } else return false;
+	if (pending > 0) return true;
     }
 }
