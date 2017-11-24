@@ -19,6 +19,7 @@ var account;
 window.App = {
   start: function(_account) {
     account = _account;
+    document.getElementById("chat").src = "http://127.0.0.1:3000/chat.html?name="+account.substring(2,7)+"&room=eth_trade";
     var self = this;
     // Bootstrap the Buy_eth, Sell_eth and Orders abstraction for use.
     Sell_eth.setProvider(web3.currentProvider);
@@ -26,7 +27,7 @@ window.App = {
     Orders.setProvider(web3.currentProvider);
     // retrieve Buy and Sell order values from contracts using logged events from Orders.sol
     Orders.deployed().then(function(instance) {
-      /////SELL SELL SELL\\\\\\\
+      //VVVVVV SELL SELL SELL VVVVVV
       instance.LogNewSellOrder({}, {fromBlock:0}, function(err, result) {
        if (!err) {
         var address = result.args.sellorder;
@@ -74,13 +75,12 @@ window.App = {
                       self.writePending("sell_contract", "buyer", lastEvent);
 		      var eventCashRec = inst.LogCashReceived({_buyer:account}, {fromBlock:lastEvent.blockNumber});
                       eventCashRec.watch(function(err, res) {
+			eventCashRec.stopWatching();
                         var pend_tx_id = res.address.substring(2,5)+res.args._buyer.substring(2,5)+res.args._seller.substring(2,5);
                         document.getElementById(pend_tx_id).parentNode.innerHTML = "complete";
-	                console.log(inst.LogCashReceived().stopWatching());
 		      });
                     };
                   });
-		//it's pending so watch for seller confirmation
 	        };
               });
             };
@@ -88,7 +88,9 @@ window.App = {
         });
        };
       });
-          /////////BUY BUY BUY \\\\\\\\\\\
+      //^^^^^^^ SELL SELL SELL ^^^^^^^
+
+      //VVVVVVV BUY BUY BUY VVVVVVV
       instance.LogNewBuyOrder({}, {fromBlock:0}, function(err, result) {
         if (!err) {
           var address = result.args.buyorder;
@@ -103,6 +105,7 @@ window.App = {
                 self.sortTable("buy_orders");
                 inst.is_party.call({from:account}).then(function(party) {
                   if (party == "buyer") {
+		  //buyer can have multiple previous pending as well as multiple previous sellers.
 		    inst.has_pending.call({from:account}).then(function(pending) {
                      if (pending) {
                        var eventPend = inst.LogSalePending({}, {fromBlock:0});
@@ -142,6 +145,7 @@ window.App = {
         };
       });
     });
+    //^^^^^^^^^ BUY BUY BUY BUY ^^^^^^^^^
   },
 
   writePending: function(contract, party, _result) {
@@ -316,9 +320,15 @@ window.App = {
                 }
               });
             } else if (party == "seller") {
-              document.getElementById("sell_ether").className = 'hidden'
+              document.getElementById("sell_ether").className = 'hidden';
               document.getElementById("buy_contract_functions").className = 'hidden';
-            } else document.getElementById("sell_ether").className = 'shown';
+              document.getElementById("terminate_buy_contract").className = 'hidden';
+
+            } else {
+	      document.getElementById("terminate_buy_contract").className = 'hidden';
+	      document.getElementById("sell_ether").className = 'shown';
+	      document.getElementById("buy_contract_functions").className = 'hidden';
+	    };
           });
         });
       };
@@ -367,9 +377,7 @@ window.App = {
     Orders.deployed().then(function(inst) {
       inst.newSellOrder(price, {from: account, value: 2*volume, gas:1e6}).then(function(err, res) { 
           if (!err) {
-            inst.LogCashReceived({_buyer:account}, function(err, res) {
-               console.log(res.args);
-            });
+	    console.log("new sell order created: " + res.args.sellorder);
           };
       });
     });
@@ -552,5 +560,5 @@ window.addEventListener('load', function() {
         console.log('This is an unknown network.')
     }
   })
-  App.start(web3.eth.accounts[1]);
+  App.start(web3.eth.accounts[0]);
 });

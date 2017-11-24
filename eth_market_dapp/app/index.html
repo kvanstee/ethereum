@@ -3,9 +3,6 @@
 <head>
   <title>Ethereum/AUD Exchange</title>
   <link href="./app/stylesheets/app.css" rel="stylesheet" type="text/css">
-  <!<script src="/socket.io/socket.io.js"></script>
-  <!script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
-  <!<script src="./chat.js"></script>
   <script src="./app.js"></script>
 </head>
 <body>
@@ -36,7 +33,6 @@
       <div id="sell_ether" class="hidden" bgcolor="lightyellow">
         Select Value(AUD):<select  id="sell_val"><option value="50">$50</option><option value="100">$100</option><option value="200">$200</option><option value="500">$500</option><option value="1000">$1000</option></select>
 	<button onclick="App.sell()" href="#">Sell Ether to this Contract</button><br>
-        <button onclick="App.buy_order_payment_received()" href="#">Payment Received</button>
       </div>
       <! CHANGE PRICE/VOLUME  !>
       <div id="buy_contract_functions" class="hidden">        
@@ -88,57 +84,6 @@
       </table>
     </div>
   </div>
-<script>/*
-  <div style="float:left;width:100px;border-right:1px solid black;height:300px;padding:10px;overflow:scroll-y;">
-    <b>USERS</b>
-    <div id="users"></div>
-    </div>
-    <div style="float:left;width:300px;height:250px;overflow:scroll-y;padding:10px;">
-    <div id="conversation"></div>
-    <input id="data" style="width:200px;" />
-    <input type="button" id="datasend" value="send" />
-  </div>
-
+  <iframe id="chat" height="500" width="800"></iframe>  
 </body>
 </html>
-  var socket = io.connect('http://localhost:8081');
-
-  // on connection to server, ask for user's name with an anonymous callback
-  socket.on('connect', function(){
-    // call the server-side function 'adduser' and send one parameter (value of prompt)
-    socket.emit('adduser', web3.eth.accounts[0]);
-  });
-
-  // listener, whenever the server emits 'updatechat', this updates the chat body
-  socket.on('updatechat', function (username, data) {
-    $('#conversation').append('<b>'+username + ':</b> ' + data + '<br>');
-  });
-
-  // listener, whenever the server emits 'updateusers', this updates the username list
-  socket.on('updateusers', function(data) {
-    $('#users').empty();
-    $.each(data, function(key, value) {
-      $('#users').append('<div>' + key + '</div>');
-    });
-  });
-
-  // on load of page
-  $(function(){
-    // when the client clicks SEND
-    $('#datasend').click( function() {
-      var message = $('#data').val();
-      $('#data').val('');
-      // tell server to execute 'sendchat' and send along one parameter
-      socket.emit('sendchat', message);
-    });
-
-    // when the client hits ENTER on their keyboard
-    $('#data').keypress(function(e) {
-      if(e.which == 13) {
-        $(this).blur();
-        $('#datasend').focus().click();
-      }
-    });
-  });
-
-*/</script>
