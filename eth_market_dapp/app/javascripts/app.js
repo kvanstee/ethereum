@@ -43,54 +43,38 @@ window.App = {
                 if (party == null)  return;
                 else if (party == "seller") {
 		  inst.has_pending.call({from:account}).then(function(pending) {
-		    if (pending) {//get LogSalePending and if no error, LogCashReceived events
-                      var eventSalePending = inst.LogSalePending({}, {fromBlock:0});
+		    if (pending) {
+	              var eventsCashRecFilt;
+                      var eventCashReceived = inst.LogCashReceived({}, {fromBlock:0});
+                      eventCashReceived.get(function(err, eventsCashRec) {
+                        if (!err) {
+                          eventsCashRecFilt = eventsCashRec.filter(function(event,index,events) {
+                            for (var i=index+1; i<events.length; i++) {
+                              if (event.args._buyer == events[i].args._buyer) return false;
+                            };
+                            return true;
+                          });
+                        };
+                      });
+ 		      var eventSalePending = inst.LogSalePending({}, {fromBlock:0});
                       eventSalePending.get(function(err, eventsPend) {
                         if (!err) {//filter out earlier events to leave last for each buyer
-  	                  var eventsCashRecFilt = [];
-      		          var eventCashReceived = inst.LogCashReceived({}, {fromBlock:0});
-		          eventCashReceived.get(function(err, eventsCashRec) {
-			    if (!err && eventsCashRec != []) {//filter out ealier events to leave last for each buyer
-                              eventsCashRecFilt = eventsCashRec.filter(function(el,index,self) {
-                                for (var i=index+1; i<self.length; i++) {
-                                  if (el.args._buyer == self[i].args._buyer) return false;
-                                };
-                                return true;
-                              });
+	                  eventsPend.filter(function(el,index,array) {
+                            for (var i=index+1; i<array.length; i++) {
+                              if (el.args._buyer == array[i].args._buyer) return false;
                             };
-                          });
-			  eventsPend.filter(function(el,ind,self) {
-			    for (var i=ind+1; i<self.length; i++) {
-                              if (el.args._buyer == self[i].args._buyer) return false;
-			    };
-			    return true;
-			  }).filter(function(el,ind,self) {//filter out salePending events with CashReceived events
+                            return true;
+                          }).filter(function(el) {
 			    for (var i=0; i<eventsCashRecFilt.length; i++) {
-			      if (el.args._buyer == eventsCashRecFilt[i].args._buyer) return false;
+			      if (el.args._buyer == eventsCashRecFilt[i].args._buyer && el.blockNumber < eventsCashRecFilt[i].blockNumber) return false;
 			    };
-			    return true;
-			  }).forEach(function(pending_event) {
-                            self.writePending("sell_contract", "seller", pending_event);
+                            return true;
+		          }).forEach(function(pending_event) {
+			    self.writePending("sell_contract", "seller", pending_event);
                           });
-			};
-		      });
-                        /*  for (var i=eventsPend.length-1; i>=0; i--) {
-                            for (var k=i+1; k<eventsPend.length; k++) {
-                              if (eventsPend[i].args._buyer = eventsPend[k].args._buyer) return;
-                            }
-	                    self.writePending("sell_contract", "seller", eventsPend[i]);
-		            var eventCashRec = inst.LogCashReceived({_buyer: eventsPend[i].args._buyer}, {fromBlock:eventsPend[i]});
-			    eventCashRec.watch(function(err,res) {
-			      if (!err) {
-  			        eventCashRec.stopWatching();
-                                var pend_tx_id = res.address.substring(2,5)+res.args._buyer.substring(2,5)+res.args._seller.substring(2,5); 
-			        document.getElementById(pend_tx_id).parentNode.innerHTML = "complete";
-                              };
-			    });
-                          };
-			};
-                      });*/
-                    };
+                        };
+                      });
+		    };
 		  });
                 } else if (party == "buyer") {
                 //there must be only one pending here: the last
@@ -103,7 +87,6 @@ window.App = {
                       eventCashRec.watch(function(err, res) {
                         var pend_tx_id = res.address.substring(2,5)+res.args._buyer.substring(2,5)+res.args._seller.substring(2,5);
                         document.getElementById(pend_tx_id).parentNode.innerHTML = "complete";
-	                console.log(inst.LogCashReceived().stopWatching());
 		      });
                     };
                   });
@@ -130,27 +113,39 @@ window.App = {
                 inst.is_party.call({from:account}).then(function(party) {
                   if (party == "buyer") {
 		    inst.has_pending.call({from:account}).then(function(pending) {
-                     if (pending) {
-                       var eventPend = inst.LogSalePending({}, {fromBlock:0});
-                       eventPend.get(function(err, eventsPend) {
-                        if (!err) {
-                          for (var i=eventsPend.length-1; i>=0; i--) {
-                            for (var k=i+1; k<eventsPend.length; k++) {
-                              if (eventsPend[i].args._seller = eventsPend[k].args._seller) return;
-                            }
-                            self.writePending("buy_contract", "buyer", eventsPend[i]);
-                            var eventCashRec = inst.LogCashReceived({_seller: eventsPend[i].args._seller}, {fromBlock:eventsPend[i].blockNumber});
-                            eventCashRec.watch(function(err,res) {
-                              if (!err) {
-                                eventCashRec.stopWatching();
-                                var pend_tx_id = res.address.substring(2,5)+res.args._buyer.substring(2,5)+res.args._seller.substring(2,5);
-                                document.getElementById(pend_tx_id).parentNode.innerHTML = "complete";
+                      if (pending) {
+                        var eventsCashRecFilt = [];
+                        var eventCashReceived = inst.LogCashReceived({}, {fromBlock:0});
+                        eventCashReceived.get(function(err, eventsCashRec) {
+                          if (!err) {//filter out ealier events to l
+                            eventsCashRecFilt = eventsCashRec.filter(function(el,index,events) {
+                              for (var i=index+1; i<events.length; i++) {
+                                if (el.args._seller == events[i].args._seller) return false;
                               };
+                              return true;
                             });
                           };
-                        };
-                       });
-		     };
+                        });
+                        var eventPend = inst.LogSalePending({}, {fromBlock:0});
+                        eventPend.get(function(err, eventsPend) {
+                          if (!err) {//filter out earlier events to leave last for each buyer
+                            eventsPend.filter(function(el,ind,events) {
+                              for (var i=ind+1; i<events.length; i++) {
+                                if (el.args._seller == events[i].args._seller) return false;
+                              };
+                              return true;
+                            }).filter(function(el) {//filter completed events
+                              for (var i=0; i<eventsCashRecFilt.length; i++) {
+                                if (el.args._seller == eventsCashRecFilt[i].args._seller && el.blockNumber < eventsCashRecFilt[i].blockNumber) return false;
+                              };
+                              return true;
+                            }).forEach(function(pending_event) {
+                              self.writePending("buy_contract", "buyer", pending_event);
+                            });
+                          };
+                        });
+		        inst.LogCashReceived({_buyer:account}).watch();
+		      };
 		    });
                   } else if (party == "seller") {
 		  //there can be only one pending here: the last
@@ -457,14 +452,17 @@ window.App = {
     var eventCashReceived = contr.LogCashReceived({_seller:account});
     eventCashReceived.watch(function(err, res) {
       if (!err) {
-        var tx_id = res.address.substring(2,5)+res.args._buyer.substring(2,5)+res.args._seller.substring(2,5);
-        if (contr.has_pending.call({from:account}) == 0 ) document.getElementById(_contract).className="";
-        document.getElementById(tx_id).parentNode.innerHTML = "complete";
         eventCashReceived.stopWatching();
+        var tx_id = res.address.substring(2,5)+res.args._buyer.substring(2,5)+res.args._seller.substring(2,5);
+        console.log("transaction complete");
+        document.getElementById(tx_id).parentNode.innerHTML = "complete";
       };
     });
-    contr.confirmReceived(rec_address, {from: account}).then(function(err, res) {
-      if (!err) console.log("purchase + deposit sent to " + rec_address);
+    contr.confirmReceived(rec_address, {from: account}).then(function(res) {
+        console.log("purchase + deposit sent to " + rec_address);
+        contr.has_pending.call({from:account}).then(function(pending) {
+	  if (!pending) document.getElementById(contr.address).className = "";
+      }); 
     });
   },
 
@@ -473,14 +471,15 @@ window.App = {
     var eventCashReceived = contr.LogCashReceived({_seller:account});
     eventCashReceived.watch(function(err, res) {
       if (!err) {
+        eventCashReceived.stopWatching();
         var tx_id = res.address.substring(2,5)+res.args._buyer.substring(2,5)+res.args._seller.substring(2,5);
         if (contr.has_pending.call({from:account}) == 0 ) document.getElementById(_contract).className="";
         document.getElementById(tx_id).parentNode.innerHTML = "complete";
-        eventCashReceived.stopWatching();
       };
     });
     contr.confirmReceived({from:account}).then(function(res) {
       console.log("transaction successful; deposit returned to your account");
+      document.getElementById(contr.address).className = "";
     });
   },
 
