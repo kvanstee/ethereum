@@ -64,9 +64,13 @@ window.App = {
                               if (el.args._buyer == array[i].args._buyer) return false;
                             };
                             return true;
-                          }).filter(function(el) {//filter out completed transactions
+                          }).filter(function(event_pend) {//filter out completed transactions
 			    for (var i=0; i<eventsCashRecFilt.length; i++) {
-			      if (el.args._buyer == eventsCashRecFilt[i].args._buyer && el.blockNumber < eventsCashRecFilt[i].blockNumber) return false;
+			      if (event_pend.args._buyer == eventsCashRecFilt[i].args._buyer)  {
+				var event_blockNumber = eventsCashRecFilt[i].blockNumber;
+				eventsCashRecFilt.splice(i,1);
+			        if (event_pend.blockNumber < event_blockNumber) return false;
+			      };
 			    };
                             return true;
 		          }).forEach(function(pending_event) {//write pending transactions
@@ -468,7 +472,7 @@ window.App = {
         console.log("purchase + deposit sent to " + rec_address);
         contr.has_pending.call({from:account}).then(function(pending) {
 	  if (!pending) document.getElementById(contr.address).className = "";
-      }); 
+      });
     });
   },
 
@@ -479,13 +483,12 @@ window.App = {
       if (!err) {
         eventCashReceived.stopWatching();
         var tx_id = res.address.substring(2,5)+res.args._buyer.substring(2,5)+res.args._seller.substring(2,5);
-        if (contr.has_pending.call({from:account}) == 0 ) document.getElementById(_contract).className="";
         document.getElementById(tx_id).parentNode.innerHTML = "complete";
+        document.getElementById(_contract).className="";
       };
     });
     contr.confirmReceived({from:account}).then(function(res) {
       console.log("transaction successful; deposit returned to your account");
-      document.getElementById(contr.address).className = "";
     });
   },
 

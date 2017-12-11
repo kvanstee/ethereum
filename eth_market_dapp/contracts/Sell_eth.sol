@@ -16,7 +16,7 @@ contract Sell_eth {
     event LogSalePending(address indexed _seller, address indexed _buyer, uint value, uint _price);
     event LogCashReceived(address indexed _buyer, address indexed _seller);
 
-    function Sell_eth(uint _price, address _seller, address _orders) payable {
+    function Sell_eth(uint _price, address _seller, address _orders) public payable {
         orders = Orders(_orders);
         seller = _seller;
         price = _price;
@@ -24,7 +24,7 @@ contract Sell_eth {
         weiForSale = msg.value / 2;
     }
     
-    function buy() payable {
+    function buy() payable public {
         require(sales[msg.sender] == 0);
         require(msg.value > 0 && msg.value < weiForSale && (msg.value/price)%5000 == 0);
         sales[msg.sender] = msg.value;
@@ -34,44 +34,41 @@ contract Sell_eth {
         LogSalePending(seller, msg.sender, msg.value, price);
     }
 
-    function confirmReceived(address _buyer) onlySeller payable {
+    function confirmReceived(address _buyer) public onlySeller payable {
         require(sales[_buyer] > 0 && pending > 0);
         uint amt = sales[_buyer];
         sales[_buyer] = 0;
-        if (!_buyer.send(2*amt)) {
-            sales[_buyer] = amt;
-            return;
-        }
+        _buyer.transfer(2*amt);
         pending -= 1;
         LogCashReceived(_buyer, seller);
     }
 
-    function addEther() onlySeller payable {
+    function addEther() public onlySeller payable {
         weiForSale += msg.value/2;
         LogNewWeiForSale(weiForSale);
     }
 
-    function changePrice(uint new_price) onlySeller {
+    function changePrice(uint new_price) public onlySeller {
         price = new_price;
         LogNewPrice(price);
     }
     
-    function retr_funds() onlySeller payable {
+    function retr_funds() public onlySeller payable {
         require(pending == 0);
         orders.removeSellOrder();
         selfdestruct(seller);
     }
     
-    function get_vars() returns(uint, uint) {
+    function get_vars() view public returns(uint, uint) {
         return (weiForSale, price);
     }
 
-    function is_party() returns(string) {
+    function is_party() view public returns(string) {
         if (sales[msg.sender] > 0) return "buyer";
         else if (seller == msg.sender) return "seller";
     }
 
-    function has_pending() returns(bool) {
+    function has_pending() view public returns(bool) {
 	if (pending > 0) return true;
     }
 }
