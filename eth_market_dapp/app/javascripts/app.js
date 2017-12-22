@@ -20,13 +20,7 @@ window.App = {
   start: function(_account) {
     var self = this;
     account = _account;
-    document.getElementById("chat").src = "http://127.0.0.1:3000/chat.html?name="+account.substring(2,7)+"&room=eth_trade";
-    /*for (var address in web3.eth.accounts) {console.log(address);
-      var row = document.createElement("tr");
-      var row_elements = row.getElementsByTagName("td");
-      row_elements[i].innerHTML = '<td value='+address+'></td><td value='+web3.eth.getBalance(address)/1e18+'></td>';
-      document.getElementById("accounts").append(row);
-    };*/
+    document.getElementById("chat").src = "http://128.199.144.211:3000/chat.html?name=" + account.substring(2,7) + "&room=eth_trade";
     // Bootstrap the Buy_eth, Sell_eth and Orders abstraction for use.
     Sell_eth.setProvider(web3.currentProvider);
     Buy_eth.setProvider(web3.currentProvider);
@@ -37,7 +31,7 @@ window.App = {
       instance.LogNewSellOrder({}, {fromBlock:0}, function(err, result) {
        if (!err) {
         var address = result.args.sellorder;
-        //if (web3.eth.getCode(address) == []) return;
+        //web3.eth.getCode(address, function(res) {if (res == null) return});
         Sell_eth.at(address).then(function(inst) {
           inst.get_vars.call().then(function(vars) {
             var volume = vars[0];
@@ -48,30 +42,17 @@ window.App = {
               self.sortTable("sell_orders");
               inst.is_party.call({from:account}).then(function(party) {
                 if (party == "seller") {
-		  inst.has_pending.call({from:account}).then(function(pending) {
-		    //there can be multiple buyers each with multiple serial transactions.
-		    if (pending) {
-                      var eventPend = inst.LogSalePending({}, {fromBlock:0});
-                      eventPend.get(function(err, eventsPend) {
+                  inst.LogSalePending({}, {fromBlock:0}, function(err,res) {
+                    if (!err) {
+                      var eventCashRec = inst.LogCashReceived({_buyer:res.args._buyer}, {fromBlock:res.blockNumber});
+                      eventCashRec.get(function(err, events) {
                         if (!err) {
-                          for (var i=eventsPend.length-1; i>=0; i--) {
-                            for (var k=i+1; k<eventsPend.length; k++) {
-                              if (eventsPend[i].args._buyer = eventsPend[k].args._buyer) return;
-                            }
-	                    self.writePending("sell_contract", "seller", eventsPend[i]);
-		            var eventCashRec = inst.LogCashReceived({_buyer: eventsPend[i].args._buyer}, {fromBlock:eventsPend[i].blockNumber});
-			    eventCashRec.watch(function(err,res) {
-			      if (!err) {
-  			        eventCashRec.stopWatching();
-                                var pend_tx_id = res.address.substring(2,5)+res.args._buyer.substring(2,5)+res.args._seller.substring(2,5); 
-			        document.getElementById(pend_tx_id).parentNode.innerHTML = "complete";
-				document.getElementById(inst.address).className = "";
-                              };
-			    });
-                          };
+                          if (events.length == 0) {
+                            self.writePending("sell_contract", "seller", res);
+			  };
 			};
-                      });
-                    };
+		      });
+		    };
 		  });
                 } else {
 		  self.catchSellEvents(address);
@@ -104,7 +85,7 @@ window.App = {
       instance.LogNewBuyOrder({}, {fromBlock:0}, function(err, result) {
         if (!err) {
           var address = result.args.buyorder;
-          //console.log(web3.eth.getCode(address)); //== null) return;
+          //web3.eth.getCode(address, function(res) {if (res == null) return});
           Buy_eth.at(address).then(function(inst) {
             inst.get_vars.call().then(function(vars) {
               var volume = parseInt(vars[0]);
@@ -115,30 +96,31 @@ window.App = {
                 self.sortTable("buy_orders");
                 inst.is_party.call({from:account}).then(function(party) {
                   if (party == "buyer") {
-		  //buyer can have multiple previous pending as well as multiple previous sellers.
-		    inst.has_pending.call({from:account}).then(function(pending) {
-                     if (pending) {
-                       var eventPend = inst.LogSalePending({}, {fromBlock:0});
-                       eventPend.get(function(err, eventsPend) {
-                        if (!err) {
-                          for (var i=eventsPend.length-1; i>=0; i--) {
-                            for (var k=i+1; k<eventsPend.length; k++) {
-                              if (eventsPend[i].args._seller = eventsPend[k].args._seller) return;
-                            }
-                            self.writePending("buy_contract", "buyer", eventsPend[i]);
-                            var eventCashRec = inst.LogCashReceived({_seller: eventsPend[i].args._seller}, {fromBlock:eventsPend[i].blockNumber});
-                            eventCashRec.watch(function(err,res) {
-                              if (!err) {
-                                eventCashRec.stopWatching();
-                                var pend_tx_id = res.address.substring(2,5)+res.args._buyer.substring(2,5)+res.args._seller.substring(2,5);
-                                document.getElementById(pend_tx_id).parentNode.innerHTML = "complete";
-                              };
-                            });
-                          };
-                        };
-                       });
-		     };
+		    inst.LogSalePending({}, {fromBlock:0}, function(err,res) {
+		      if (!err) {
+			var eventCashRec = inst.LogCashReceived({_seller:res.args._seller}, {fromBlock:res.blockNumber});
+			eventCashRec.get(function(err, events) {
+			  if (!err) {
+			    if (events.length == 0) {
+			      self.writePending("buy_contract", "buyer", res);
+			      eventCashRec.watch(function(err, event) {
+			        if (!err) {
+		       	          eventCashRec.stopWatching();
+                                  var pend_tx_id = res.address.substring(2,5)+res.args._buyer.substring(2,5)+res.args._seller.substring(2,5);
+                                  document.getElementById(pend_tx_id).innerHTML = "complete";
+                                  inst.has_pending.call(function(pending) {
+                                    if (!pending) {
+				      document.getElementById(inst.address).className == "";
+				    };
+                                  });
+                                };
+			      });
+			    };
+			  };
+			});
+		      };
 		    });
+		  //buyer can have multiple previous pending as well as multiple previous sellers.
                   } else {
 		    self.catchBuyEvents(inst.address);
                     if (party == "seller") {
@@ -261,9 +243,8 @@ window.App = {
     ////Append new contract row
     document.getElementById(_orders).append(contract);
     self.sortTable(_orders);
-    //if (_orders == "sell_orders") self.catchSellEvents(_addr);
-    //if (_orders == "buy_orders") self.catchBuyEvents(_addr);
-
+    if (_orders == "sell_orders") self.catchSellEvents(_addr);
+    if (_orders == "buy_orders") self.catchBuyEvents(_addr);
     ////CLICK ON TABLE ROW EVENT////
     contract.addEventListener("click", function () {
       //give row "selected" classname
@@ -397,8 +378,8 @@ window.App = {
     var sale_pending = contr.LogSalePending({_buyer:account});
     sale_pending.watch(function(err, result) {
       if (!err) {
-        self.writePending("sell_contract", "buyer", result);console.log(parseInt(result.args._price),parseInt(result.args.value));
         sale_pending.stopWatching();
+        self.writePending("sell_contract", "buyer", result);
       };
     });
     contr.buy({from: account, value: volume, gas: 600000}).then(function(res) {
@@ -428,8 +409,8 @@ window.App = {
     var eventPend = contr.LogSalePending({_seller:account});
     eventPend.watch(function(err, result) {
       if (!err) {
-        self.writePending("buy_contract", "seller", result);
         eventPend.stopWatching();
+        self.writePending("buy_contract", "seller", result);
       };
     });
     contr.sell({from: account, value: 2*volume, gas: 600000}).then(function(res) {
@@ -440,16 +421,19 @@ window.App = {
   sell_order_payment_received: function(_contract, rec_address) {
     self = this;
     var contr = Sell_eth.at(_contract);
-    /*var eventCashReceived = contr.LogCashReceived({_seller:account});
+    var eventCashReceived = contr.LogCashReceived({_seller:account});
     eventCashReceived.watch(function(err, res) {
-      for (var addr in web3.eth.accounts) console.log(addr);//web3.eth.getBalance(addr)/1e18);
       if (!err) {
+        eventCashReceived.stopWatching();
+        var tx_id = res.address.substring(2,5)+res.args._buyer.substring(2,5)+res.args._seller.substring(2,5);
+        document.getElementById(tx_id).parentNode.innerHTML = "complete";
+	contr.has_pending.call({from:account}).then(function(pending) {
+	  if (!pending) document.getElementById(_contract).className = "";
+	});  
       };
-    });*/
-    contr.confirmReceived(rec_address, {from: account}).then(function(err, res) {
-      if (!err) {
+    });
+    contr.confirmReceived(rec_address, {from: account}).then(function(res) {
         console.log("purchase + deposit sent to " + rec_address);
-      };
     });
   },
 
@@ -458,15 +442,14 @@ window.App = {
     var eventCashReceived = contr.LogCashReceived({_seller:account});
     eventCashReceived.watch(function(err, res) {
       if (!err) {
+        eventCashReceived.stopWatching();
         var tx_id = res.address.substring(2,5)+res.args._buyer.substring(2,5)+res.args._seller.substring(2,5);
-        console.log(tx_id);
-        document.getElementById(_contract).className="";
         document.getElementById(tx_id).parentNode.innerHTML = "complete";
+        document.getElementById(_contract).className="";
       };
     });
     contr.confirmReceived({from:account}).then(function(res) {
       console.log("transaction successful; deposit returned to your account");
-      eventCashReceived.stopWatching();
     });
   },
 
@@ -593,5 +576,5 @@ window.addEventListener('load', function() {
         console.log('This is an unknown network.')
     }
   })
-  App.start(web3.eth.accounts[0]);
+  setTimeout(App.start(web3.eth.accounts[0]),5000);
 });
