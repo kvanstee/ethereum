@@ -43,6 +43,7 @@ window.App = {
       instance.LogNewSellOrder({}, {fromBlock:0}, function(err, result) {
        if (!err) {
         var address = result.args.sellorder;
+	if (document.getElementById(address) !== null) return;
         //web3.eth.getCode(address, function(res) {if (res == null) return});
         Sell_eth.at(address).then(function(inst) {
           inst.get_vars.call().then(function(vars) {
@@ -53,35 +54,35 @@ window.App = {
               self.populate_row_cells("sell_orders", inst.address, price, volume);
               self.sortTable("sell_orders");
               inst.is_party.call({from:account}).then(function(party) {
-                if (party == "seller") {
+                if (party === "seller") {
                   inst.LogSalePending({}, {fromBlock:0}, function(err,res) {
                     if (!err) {
                       var eventCashRec = inst.LogCashReceived({_buyer:res.args._buyer}, {fromBlock:res.blockNumber});
                       eventCashRec.get(function(err, events) {
                         if (!err) {
-                          if (events.length == 0) {
+                          if (events.length === 0) {
                             self.writePending("sell_contract", "seller", res);
 			  };
 			};
 		      });
 		    };
 		  });
-                } else if (party == "buyer") {
-                    //there must be only one pending here: the last
-                    var eventPend = inst.LogSalePending({_buyer:account}, {fromBlock:0});
-                    eventPend.get(function(err, eventsPending) {
-                      if (!err) {
-		        var lastEvent = eventsPending[eventsPending.length-1];
-                        self.writePending("sell_contract", "buyer", lastEvent);
-		        var eventCashRec = inst.LogCashReceived({_buyer:account}, {fromBlock:lastEvent.blockNumber});
-                        eventCashRec.watch(function(err, res) {
-			  eventCashRec.stopWatching();
-                          var pend_tx_id = res.address.substring(2,5)+res.args._buyer.substring(2,5)+res.args._seller.substring(2,5);
-                          document.getElementById(pend_tx_id).parentNode.innerHTML = "complete";
-		        });
-                      };
-                    });
-                };
+                } else if (party === "buyer") {
+                  //there must be only one pending here: the last
+                  var eventPend = inst.LogSalePending({_buyer:account}, {fromBlock:0});
+                  eventPend.get(function(err, eventsPending) {
+                    if (!err) {
+             	      var lastEvent = eventsPending[eventsPending.length-1];
+                      self.writePending("sell_contract", "buyer", lastEvent);
+		      var eventCashRec = inst.LogCashReceived({_buyer:account}, {fromBlock:lastEvent.blockNumber});
+                      eventCashRec.watch(function(err, res) {
+                        eventCashRec.stopWatching();
+                        var pend_tx_id = res.address.substring(2,5)+res.args._buyer.substring(2,5)+res.args._seller.substring(2,5);
+                        document.getElementById(pend_tx_id).parentNode.innerHTML = "complete";
+		      });
+                    };
+                  });
+	        };
               });
             };
           });
@@ -94,6 +95,7 @@ window.App = {
       instance.LogNewBuyOrder({}, {fromBlock:0}, function(err, result) {
         if (!err) {
           var address = result.args.buyorder;
+	  if (document.getElementById(address) !== null) return;
           //web3.eth.getCode(address, function(res) {if (res == null) return});
           Buy_eth.at(address).then(function(inst) {
             inst.get_vars.call().then(function(vars) {
@@ -104,13 +106,13 @@ window.App = {
                 self.populate_row_cells("buy_orders", inst.address, price, volume);
                 self.sortTable("buy_orders");
                 inst.is_party.call({from:account}).then(function(party) {
-                  if (party == "buyer") {
+                  if (party === "buyer") {
 		    inst.LogSalePending({}, {fromBlock:0}, function(err,res) {
 		      if (!err) {
 			var eventCashRec = inst.LogCashReceived({_seller:res.args._seller}, {fromBlock:res.blockNumber});
 			eventCashRec.get(function(err, events) {
 			  if (!err) {
-			    if (events.length == 0) {
+			    if (events.length === 0) {
 			      self.writePending("buy_contract", "buyer", res);
 			      eventCashRec.watch(function(err, event) {
 			        if (!err) {
@@ -129,15 +131,16 @@ window.App = {
 			});
 		      };
 		    });
-                  } else if (party == "seller") {
+		  //buyer can have multiple previous pending as well as multiple previous sellers.
+                  } else if (party === "seller") {
 		  //there can be only one pending here: the last
-                      var eventPending = inst.LogSalePending({_seller:account}, {fromBlock:0});
-                      eventPending.get(function(err,eventsPending) {
-                        if (!err) {
-                          self.writePending("buy_contract", "seller", eventsPending[eventsPending.length-1]);
-			  eventPending.stopWatching();
-                        };
-                      });
+                    var eventPending = inst.LogSalePending({_seller:account}, {fromBlock:0});
+                    eventPending.get(function(err,eventsPending) {
+                      if (!err) {
+                        self.writePending("buy_contract", "seller", eventsPending[eventsPending.length-1]);
+                        eventPending.stopWatching();
+                      };
+                    });
                   };
                 });
               };
@@ -248,8 +251,8 @@ window.App = {
     ////Append new contract row
     document.getElementById(_orders).append(contract);
     self.sortTable(_orders);
-    if (_orders == "sell_orders") self.catchSellEvents(_addr);
-    if (_orders == "buy_orders") self.catchBuyEvents(_addr);
+    if (_orders === "sell_orders") self.catchSellEvents(_addr);
+    if (_orders === "buy_orders") self.catchBuyEvents(_addr);
     ////CLICK ON TABLE ROW EVENT////
     contract.addEventListener("click", function () {
       //give row "selected" classname
@@ -257,7 +260,7 @@ window.App = {
       if (selected[0]) selected[0].className = '';
       contract.className = 'selected';
       ///SELL////
-      if (_orders == "sell_orders") {
+      if (_orders === "sell_orders") {
         document.getElementById("new_sell_price").value = '';
         document.getElementById("add_ether").value = '';
         document.getElementById("selected_sell_address").value = contract.id;
@@ -269,7 +272,7 @@ window.App = {
         // see if user is seller and load appropriate div
         Sell_eth.at(_addr).then(function(inst) {
           inst.is_party.call({from:account}).then(function(party) {
-            if (party == "seller") {
+            if (party === "seller") {
               document.getElementById("sell_contract_functions").className = 'shown';
               document.getElementById("buy_ether").className = 'hidden';
               inst.has_pending.call({from:account}).then(function(pending) {
@@ -279,14 +282,14 @@ window.App = {
                   document.getElementById("terminate_sell_contract").className = 'shown';
                 }
               });
-            } else if (party == "buyer") {
+            } else if (party === "buyer") {
                 document.getElementById("terminate_sell_contract").className = 'hidden';
                 document.getElementById("buy_ether").className = 'hidden';
             } else document.getElementById("buy_ether").className = 'shown';;
           });
         });
       /////BUY/////
-      } else if (_orders == "buy_orders") {
+      } else if (_orders === "buy_orders") {
         document.getElementById("new_buy_price").value = '';
         document.getElementById("remove_ether").value = '';
         document.getElementById("selected_buy_address").value = contract.id;
@@ -299,7 +302,7 @@ window.App = {
         // see if user is buyer and load appropriate div
         Buy_eth.at(_addr).then(function(inst) {
           inst.is_party.call({from:account}).then(function(party) {
-            if (party == "buyer") {
+            if (party === "buyer") {
               document.getElementById("buy_contract_functions").className = 'shown';
               document.getElementById("sell_ether").className = 'hidden';
               inst.has_pending.call({from:account}).then(function(pending) {
@@ -309,7 +312,7 @@ window.App = {
                   document.getElementById("terminate_buy_contract").className = "shown";
                 }
               });
-            } else if (party == "seller") {
+            } else if (party === "seller") {
               document.getElementById("sell_ether").className = 'hidden';
               document.getElementById("buy_contract_functions").className = 'hidden';
               document.getElementById("terminate_buy_contract").className = 'hidden';
@@ -366,9 +369,9 @@ window.App = {
     var volume = document.getElementById("ask_value").value*100*price;
     Orders.deployed().then(function(inst) {
       inst.newSellOrder(price, {from: account, value: 2*volume, gas:1e6}).then(function(err, res) { 
-          if (!err) {
-	    console.log("new sell order created: " + res.args.sellorder);
-          };
+        if (!err) {
+          console.log("new sell order created: " + res.args.sellorder);
+        };
       });
     });
   },
@@ -399,7 +402,7 @@ window.App = {
     var volume = document.getElementById("bid_value").value*100*price;
     Orders.deployed().then(function(inst) {
       inst.newBuyOrder(price, {from:account, value:volume, gas:1e6}).then(function(err, res) {
-          if (!err) console.log("buy order contract deployed");
+        if (!err) console.log("buy order contract deployed");
       });
     });
   },
@@ -434,7 +437,7 @@ window.App = {
         document.getElementById(tx_id).parentNode.innerHTML = "complete";
 	contr.has_pending.call({from:account}).then(function(pending) {
 	  if (!pending) document.getElementById(_contract).className = "";
-	});  
+	});
       };
     });
     contr.confirmReceived(rec_address, {from: account}).then(function(res) {
