@@ -27,6 +27,18 @@ window.App = {
     Orders.setProvider(web3.currentProvider);
     // retrieve Buy and Sell order values from contracts using logged events from Orders.sol
     Orders.deployed().then(function(instance) {
+      instance.LogRemoveSellOrder({}, function(err, result) {
+	if (!err) {
+	  var contract = document.getElementById(result.args.sellorder);
+	  contract.parentNode.removeChild(contract);
+	};
+      });
+      instance.LogRemoveBuyOrder({}, function(err, result) {
+	if (!err) {
+	  var contract = document.getElementById(result.args.buyorder);
+          contract.parentNode.removeChild(contract);
+	};
+      });
       //VVVVVV SELL SELL SELL VVVVVV
       instance.LogNewSellOrder({}, {fromBlock:0}, function(err, result) {
        if (!err) {
@@ -54,9 +66,7 @@ window.App = {
 		      });
 		    };
 		  });
-                } else {
-		  self.catchSellEvents(address);
-                  if (party == "buyer") {
+                } else if (party == "buyer") {
                     //there must be only one pending here: the last
                     var eventPend = inst.LogSalePending({_buyer:account}, {fromBlock:0});
                     eventPend.get(function(err, eventsPending) {
@@ -71,8 +81,7 @@ window.App = {
 		        });
                       };
                     });
-                  };
-	        };
+                };
               });
             };
           });
@@ -109,7 +118,7 @@ window.App = {
                                   var pend_tx_id = res.address.substring(2,5)+res.args._buyer.substring(2,5)+res.args._seller.substring(2,5);
                                   document.getElementById(pend_tx_id).innerHTML = "complete";
                                   inst.has_pending.call(function(pending) {
-                                    if (!pending) {
+                                    if (pending == 0) {
 				      document.getElementById(inst.address).className == "";
 				    };
                                   });
@@ -120,10 +129,7 @@ window.App = {
 			});
 		      };
 		    });
-		  //buyer can have multiple previous pending as well as multiple previous sellers.
-                  } else {
-		    self.catchBuyEvents(inst.address);
-                    if (party == "seller") {
+                  } else if (party == "seller") {
 		  //there can be only one pending here: the last
                       var eventPending = inst.LogSalePending({_seller:account}, {fromBlock:0});
                       eventPending.get(function(err,eventsPending) {
@@ -132,7 +138,6 @@ window.App = {
 			  eventPending.stopWatching();
                         };
                       });
-		    };
                   };
                 });
               };
