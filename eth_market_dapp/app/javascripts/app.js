@@ -1,6 +1,6 @@
 // Import the page's CSS. Webpack will know what to do with it.
 import "../stylesheets/app.css";
-
+//import "github.com/hoisie/mustache"
 // Import libraries we need.
 import { default as Web3} from 'web3';
 import { default as contract } from 'truffle-contract';
@@ -29,14 +29,14 @@ window.App = {
     Orders.deployed().then(function(instance) {
       instance.LogRemoveSellOrder({}, function(err, result) {
 	if (!err) {
-	  var contract = document.getElementById(result.args.sellorder);
-	  contract.parentNode.removeChild(contract);
+	  var contr = document.getElementById(result.args.sellorder);
+	  contr.parentNode.removeChild(contr);
 	};
       });
       instance.LogRemoveBuyOrder({}, function(err, result) {
 	if (!err) {
-	  var contract = document.getElementById(result.args.buyorder);
-          contract.parentNode.removeChild(contract);
+	  var contr = document.getElementById(result.args.buyorder);
+          contr.parentNode.removeChild(contr);
 	};
       });
       //VVVVVV SELL SELL SELL VVVVVV
@@ -117,11 +117,11 @@ window.App = {
 			      eventCashRec.watch(function(err, event) {
 			        if (!err) {
 		       	          eventCashRec.stopWatching();
-                                  var pend_tx_id = res.address.substring(2,5)+res.args._buyer.substring(2,5)+res.args._seller.substring(2,5);
+                                  var pend_tx_id = event.address.substring(2,5)+event.args._buyer.substring(2,5)+event.args._seller.substring(2,5);
                                   document.getElementById(pend_tx_id).innerHTML = "complete";
-                                  inst.has_pending.call(function(pending) {
-                                    if (pending == 0) {
-				      document.getElementById(inst.address).className == "";
+                                  inst.has_pending.call().then(function(pending) {
+                                    if (!pending) {console.log(event.address);
+				      document.getElementById(event.address).className == "";
 				    };
                                   });
                                 };
@@ -156,9 +156,10 @@ window.App = {
     var tx = document.createElement("tr");
     tx.innerHTML = '<td align="right"></td><td align="right"></td><td align="right"></td><td align="right"></td>';
     var trans = tx.getElementsByTagName('td');
+    var pend_tx_id = _result.address.substring(2,5)+_result.args._buyer.substring(2,5)+_result.args._seller.substring(2,5);
+    if (document.getElementById(pend_tx_id)) return;
     if (contract == "buy_contract") {
       if (party == "seller") {
-        var pend_tx_id = _result.address.substring(2,5)+_result.args._buyer.substring(2,5)+_result.args._seller.substring(2,5);
         trans[0].innerHTML = parseInt(_result.args.value/_result.args._price/100);
         trans[1].innerHTML = "from";
         trans[2].innerHTML = "<input value=" + _result.args._buyer + ">";
@@ -182,7 +183,6 @@ window.App = {
         trans[0].innerHTML = parseInt(_result.args.value/_result.args._price/100);
       } else if (party == "seller") {
         var buyer = _result.args._buyer;
-        var pend_tx_id = _result.address.substring(2,5)+buyer.substring(2,5)+_result.args._seller.substring(2,5); 
         trans[0].innerHTML = parseInt(_result.args.value/_result.args._price/100);
         trans[1].innerHTML = "from";
         trans[2].innerHTML = "<input value=" + buyer +" readonly>";
@@ -241,6 +241,7 @@ window.App = {
   //create and populate row of contract info
   populate_row_cells: function(_orders, _addr, _price, _volume) {
     self = this;
+    if (document.getElementById(_addr)) return;
     var contract = document.createElement("tr");
     contract.innerHTML = '<td align="right"></td><td align="right"></td><td align="right"></td>';
     contract.id = _addr;
