@@ -6,7 +6,7 @@
     "lint": "eslint ./",
     "build": "webpack",
     "start": "webpack-dev-server",
-//    "dev": "webpack-dev-server"
+    "dev": "webpack-dev-server"
   },
   "author": "Douglas von Kohorn",
   "license": "MIT",

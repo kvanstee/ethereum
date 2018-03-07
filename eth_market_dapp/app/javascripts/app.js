@@ -120,8 +120,8 @@ window.App = {
                                   var pend_tx_id = event.address.substring(2,5)+event.args._buyer.substring(2,5)+event.args._seller.substring(2,5);
                                   document.getElementById(pend_tx_id).innerHTML = "complete";
                                   inst.has_pending.call().then(function(pending) {
-                                    if (!pending) {console.log(event.address);
-				      document.getElementById(event.address).className == "";
+                                    if (!pending) {
+				      document.getElementById(event.address).classList.remove("pending");
 				    };
                                   });
                                 };
@@ -171,7 +171,7 @@ window.App = {
         trans[0].innerHTML = parseInt(_result.args.value/_result.args._price/100);
       };
       document.getElementById("buy_pending_txs").prepend(tx);
-      document.getElementById(_result.address).className = "pending";
+      document.getElementById(_result.address).classList.add("pending");
       if (document.getElementById(pend_tx_id)) {
         document.getElementById(pend_tx_id).onclick = function() {self.buy_order_payment_received(_result.address, _result.args._buyer)};
       };
@@ -189,7 +189,7 @@ window.App = {
         trans[3].innerHTML = "<button id=" + pend_tx_id + ">payment received</button>";
       };
       document.getElementById("sell_pending_txs").prepend(tx);
-      document.getElementById(_result.address).className = "pending";
+      document.getElementById(_result.address).classList.add("pending");
       if (document.getElementById(pend_tx_id)) {
         document.getElementById(pend_tx_id).onclick = function() {self.sell_order_payment_received(_result.address, _result.args._buyer)};
       };
@@ -241,7 +241,6 @@ window.App = {
   //create and populate row of contract info
   populate_row_cells: function(_orders, _addr, _price, _volume) {
     self = this;
-    if (document.getElementById(_addr)) return;
     var contract = document.createElement("tr");
     contract.innerHTML = '<td align="right"></td><td align="right"></td><td align="right"></td>';
     contract.id = _addr;
@@ -258,8 +257,8 @@ window.App = {
     contract.addEventListener("click", function () {
       //give row "selected" classname
       var selected = document.getElementsByClassName('selected');
-      if (selected[0]) selected[0].className = '';
-      contract.className = 'selected';
+      if (selected[0]) selected[0].classList.remove("selected");
+      contract.classList.add("selected");
       ///SELL////
       if (_orders === "sell_orders") {
         document.getElementById("new_sell_price").value = '';
@@ -272,7 +271,7 @@ window.App = {
         document.getElementById("selBuyAddr").className = "hidden";
         // see if user is seller and load appropriate div
         Sell_eth.at(_addr).then(function(inst) {
-          inst.is_party.call({from:account}).then(function(party) {
+          inst.is_party.call({from:account}).then(function(party) {console.log(party);
             if (party === "seller") {
               document.getElementById("sell_contract_functions").className = 'shown';
               document.getElementById("buy_ether").className = 'hidden';
@@ -285,9 +284,14 @@ window.App = {
               });
             } else if (party === "buyer") {
                 document.getElementById("terminate_sell_contract").className = 'hidden';
-                document.getElementById("buy_ether").className = 'hidden';
-            } else document.getElementById("buy_ether").className = 'shown';;
-          });
+                document.getElementById("sell_contract_functions").className = 'hidden';
+		document.getElementById("buy_ether").className = 'hidden';
+            } else {
+		document.getElementById("buy_ether").className = 'shown';
+		document.getElementById("terminate_sell_contract").className = 'hidden';
+		document.getElementById("sell_contract_functions").className = 'hidden';
+            };
+	  });
         });
       /////BUY/////
       } else if (_orders === "buy_orders") {
