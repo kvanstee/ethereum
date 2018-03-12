@@ -20,7 +20,7 @@ window.App = {
   start: function(_account) {
     var self = this;
     account = _account;
-    document.getElementById("chat").src = "http://128.199.144.211:3000/chat.html?name=" + account.substring(2,7) + "&room=eth_trade";
+    document.getElementById("chat").src = "http://128.199.144.211:3000";
     // Bootstrap the Buy_eth, Sell_eth and Orders abstraction for use.
     Sell_eth.setProvider(web3.currentProvider);
     Buy_eth.setProvider(web3.currentProvider);
@@ -253,6 +253,7 @@ window.App = {
     self.sortTable(_orders);
     if (_orders === "sell_orders") self.catchSellEvents(_addr);
     if (_orders === "buy_orders") self.catchBuyEvents(_addr);
+
     ////CLICK ON TABLE ROW EVENT////
     contract.addEventListener("click", function () {
       //give row "selected" classname
@@ -266,18 +267,20 @@ window.App = {
         document.getElementById("selected_sell_address").value = contract.id;
         document.getElementById("selSellAddr").className = 'shown';
         document.getElementById("new_sell_contract").className = 'hidden';
+	document.getElementById("new_buy_contract").className = 'shown';
         document.getElementById("buy_contract_functions").className = "hidden";
         document.getElementById("sell_ether").className = "hidden";
         document.getElementById("selBuyAddr").className = "hidden";
+	document.getElementById("terminate_buy_contract").className = "hidden";
         // see if user is seller and load appropriate div
         Sell_eth.at(_addr).then(function(inst) {
-          inst.is_party.call({from:account}).then(function(party) {console.log(party);
+          inst.is_party.call({from:account}).then(function(party) {
             if (party === "seller") {
               document.getElementById("sell_contract_functions").className = 'shown';
               document.getElementById("buy_ether").className = 'hidden';
               inst.has_pending.call({from:account}).then(function(pending) {
                 if (pending) {
-                  document.getElementById("terminate_sell_contract").className = 'hidden';//if (res) get pending txs *******TODO*******
+                  document.getElementById("terminate_sell_contract").className = 'hidden';
                 } else {
                   document.getElementById("terminate_sell_contract").className = 'shown';
                 }
@@ -304,6 +307,7 @@ window.App = {
         document.getElementById("sell_contract_functions").className = "hidden";
         document.getElementById("buy_ether").className = "hidden";
         document.getElementById("selSellAddr").className = "hidden";
+	document.getElementById("terminate_sell_contract").className = "hidden";
         // see if user is buyer and load appropriate div
         Buy_eth.at(_addr).then(function(inst) {
           inst.is_party.call({from:account}).then(function(party) {
