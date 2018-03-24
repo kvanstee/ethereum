@@ -15,11 +15,17 @@ var Sell_eth = contract(selleth_artifacts);
 var Buy_eth = contract(buyeth_artifacts);
 var Orders = contract(orders_artifacts);
 var account;
+var curr; //fiat currency
 
 window.App = {
   start: function(_account) {
     var self = this;
     account = _account;
+    curr = document.getElementById("currency").value;
+    var curr_text = document.getElementsByClassName("curren");
+    var i = curr_text.length;
+    while(i--) {curr_text[i].innerHTML = curr};
+    document.getElementById("currency").onchange = function() {self.start(account)};
     document.getElementById("chat").src = "http://128.199.144.211:3000";
     // Bootstrap the Buy_eth, Sell_eth and Orders abstraction for use.
     Sell_eth.setProvider(web3.currentProvider);
@@ -27,20 +33,20 @@ window.App = {
     Orders.setProvider(web3.currentProvider);
     // retrieve Buy and Sell order values from contracts using logged events from Orders.sol
     Orders.deployed().then(function(instance) {
-      instance.LogRemoveSellOrder({}, function(err, result) {
+      instance.LogRemoveSellOrder({currency:curr}, function(err, result) {
 	if (!err) {
 	  var contr = document.getElementById(result.args.sellorder);
 	  contr.parentNode.removeChild(contr);
 	};
       });
-      instance.LogRemoveBuyOrder({}, function(err, result) {
+      instance.LogRemoveBuyOrder({currency:curr}, function(err, result) {
 	if (!err) {
 	  var contr = document.getElementById(result.args.buyorder);
           contr.parentNode.removeChild(contr);
 	};
       });
       //VVVVVV SELL SELL SELL VVVVVV
-      instance.LogNewSellOrder({}, {fromBlock:0}, function(err, result) {
+      instance.LogNewSellOrder({currency:curr}, {fromBlock:0}, function(err, result) {
        if (!err) {
         var address = result.args.sellorder;
 	if (document.getElementById(address) !== null) return;
@@ -92,7 +98,7 @@ window.App = {
       //^^^^^^^ SELL SELL SELL ^^^^^^^
 
       //VVVVVVV BUY BUY BUY VVVVVVV
-      instance.LogNewBuyOrder({}, {fromBlock:0}, function(err, result) {
+      instance.LogNewBuyOrder({currency:curr}, {fromBlock:0}, function(err, result) {
         if (!err) {
           var address = result.args.buyorder;
 	  if (document.getElementById(address) !== null) return;
@@ -117,7 +123,7 @@ window.App = {
 			      eventCashRec.watch(function(err, event) {
 			        if (!err) {
 		       	          eventCashRec.stopWatching();
-                                  var pend_tx_id = event.address.substring(2,5)+event.args._buyer.substring(2,5)+event.args._seller.substring(2,5);
+                                  var pend_tx_id = event.address.substring(2,5)+event.args._buyer.substring(2,5)+event.args._seller.substring(2,5); console.log(pend_tx_id);
                                   document.getElementById(pend_tx_id).innerHTML = "complete";
                                   inst.has_pending.call().then(function(pending) {
                                     if (!pending) {
@@ -538,14 +544,14 @@ window.App = {
     });
   },
 
-  terminate_contract: function() {
+  terminate_contract: function(curr) {
     var self = this;
     var contr = document.getElementsByClassName("selected")[0];
     var addr = contr.id;
     var order;
     if (contr.parentNode.id == "sell_orders") {
       Sell_eth.at(addr).then(function(instance) {
-        instance.retr_funds({from: account, gas:900000}).then(function() {
+        instance.retr_funds(currency, {from: account, gas:900000}).then(function() {
             console.log("contract terminated, funds returned to your account.");
             var contract = document.getElementById(addr);
             contract.parentNode.removeChild(contract);

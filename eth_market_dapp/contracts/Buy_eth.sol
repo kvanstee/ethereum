@@ -1,9 +1,10 @@
-pragma solidity ^0.4.4;
+pragma solidity ^0.4.21;
 
 import "./Orders.sol";
 
 contract Buy_eth {
     Orders orders;
+    string currency;
     uint weiToBuy;
     uint price; //wei per smallest currency unit (eg. cent)   
     address buyer;
@@ -16,8 +17,9 @@ contract Buy_eth {
     event LogSalePending(address indexed _buyer, address indexed _seller, uint value, uint _price);
     event LogCashReceived(address indexed _seller, address indexed _buyer);
 
-    function Buy_eth(uint _price, address _buyer, address _orders) public payable {
+    function Buy_eth(string _currency, uint _price, address _buyer, address _orders) public payable {
         orders = Orders(_orders);
+	currency = _currency;
         buyer = _buyer;
         price = _price;
         pending = 0;
@@ -25,13 +27,13 @@ contract Buy_eth {
     }
     function sell() public payable {
         require(sales[msg.sender] == 0);
-        require(msg.value > 0 && msg.value/2 < weiToBuy && (msg.value/2/price)%5000 == 0); 
+        require(msg.value > 0 && msg.value/2 <= weiToBuy && (msg.value/price)%10000 == 0); 
         uint amt = msg.value/2;
-        LogSalePending(buyer, msg.sender, amt, price);
         sales[msg.sender] = amt;
         weiToBuy -= amt;
         pending += 1;
-        LogNewWeiToBuy(weiToBuy);
+        emit LogSalePending(buyer, msg.sender, amt, price);
+        emit LogNewWeiToBuy(weiToBuy);
     }
 
     function confirmReceived() public payable {
@@ -39,27 +41,27 @@ contract Buy_eth {
         uint amt = sales[msg.sender];
         sales[msg.sender] = 0;
         msg.sender.transfer(amt);
-        LogCashReceived(msg.sender, buyer);
+        emit LogCashReceived(msg.sender, buyer);
         weiToBuy += 2*amt;
         pending -= 1;
-        LogNewWeiToBuy(weiToBuy);
+        emit LogNewWeiToBuy(weiToBuy);
     }
     
     function retreive_eth(uint vol) public onlyBuyer payable {  
-        require(vol < weiToBuy-price*5000);
+        require(vol <= weiToBuy-price*5000);
         weiToBuy -= vol;
         buyer.transfer(vol);
-        LogNewWeiToBuy(weiToBuy);
+        emit LogNewWeiToBuy(weiToBuy);
     }
 
     function changePrice(uint new_price) public onlyBuyer {
         price = new_price;
-        LogNewPrice(price);
+        emit LogNewPrice(price);
     }
 
     function terminate_contract() public onlyBuyer payable {
         require(pending == 0);
-        orders.removeBuyOrder();
+        orders.removeBuyOrder(currency);
         selfdestruct(buyer);
     }
 
@@ -76,3 +78,4 @@ contract Buy_eth {
 	if (pending > 0) return true;
     }
 }
+

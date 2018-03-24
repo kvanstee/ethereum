@@ -6,25 +6,25 @@
   <script src="./app.js"></script>
 </head>
 <body>
-  <h1 align="centre">ETH/AUD Market</h1>
+  <h1>ETH/<span class="curren"></span> Market</h1>
   <div id="container" style="position:relative">
   <div>
      
   <!--------BUY BUY BUY BUY BUY BUY---------!>
   <!VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV!>
-
+    <div id="curr"><select id="currency"><option value="AUD">AUD</option><option value="KRW">KRW</option><option value="CNY">CNY</option><option value="USD">USD</option></select>
     <div id="buy">
       <table>
         <h2>Buy Orders</h2>
-        <tr><th>Price(AUD)</th>
+        <tr><th>Price(<span class="curren"></span>)</th>
         <th>Volume(ETH)</th>
-        <th>Value(AUD)</th></tr>
+        <th>Value(<span class="curren"></span>)</th></tr>
         <tbody id="buy_orders"></tbody>
       </table><br><br>
 
       <div id="new_buy_contract">
-        Value (AUD):<input type="number" id="bid_value" required><br>
-        Price (AUD):<input type="number" id="bid_price" required><br>
+        Value (<span class="curren"></span>):<input type="number" id="bid_value" required><br>
+        Price (<span class="curren"></span>):<input type="number" id="bid_price" required><br>
         <button onclick="App.setup_buy()" href="#">add buy order contract</button>
       </div>
       <div id="selBuyAddr" class="hidden">
@@ -32,7 +32,7 @@
       </div>
       <br>
       <div id="sell_ether" class="hidden" bgcolor="lightyellow">
-        Select Value(AUD):<select  id="sell_val"><option value="50">$50</option><option value="100">$100</option><option value="200">$200</option><option value="500">$500</option><option value="1000">$1000</option></select>
+        Select Value(<span class="curren"></span>):<select  id="sell_val"><option value="50">$50</option><option value="100">$100</option><option value="200">$200</option><option value="500">$500</option><option value="1000">$1000</option></select>
 	<button onclick="App.sell()" href="#">Sell Ether to this Contract</button><br>
       </div>
       <! CHANGE PRICE/VOLUME  !>
@@ -55,22 +55,22 @@
     <div id="sell">
       <table>
         <h2>Sell Orders</h2> 
-        <tr><th>Price(AUD)</th>
+        <tr><th>Price(<span class="curren"></span>)</th>
         <th>Volume(ETH)</th>
-        <th>Value(AUD)</th></tr>
+        <th>Value(<span class="curren"></span>)</th></tr>
         <tbody id="sell_orders"></tbody>
       </table><br><br>
 
       <div id="new_sell_contract">
-        Value (AUD):<input type="number" id="ask_value"><br>
-        Price (AUD):<input type="number" id="ask_price">
+        Value (<span class="curren"></span>):<input type="number" id="ask_value"><br>
+        Price (<span class="curren"></span>):<input type="number" id="ask_price">
         <br><button onclick="App.setup_sell()" href="#">add sell order contract</button>
       </div>
       <div id="selSellAddr" class="hidden">
         Contract Address:<input type="text" id="selected_sell_address" readonly><br>
       </div>
       <div id="buy_ether" class="hidden" bgcolor="lightyellow">
-        Select Value(AUD):<select  id="buy_val"><option value="50">$50</option><option value="100">$100</option><option value="200">$200</option><option value="500">$500</option><option value="1000">$1000</option></select>
+        Select Value(<span class="curren"></span>):<select  id="buy_val"><option value="50">$50</option><option value="100">$100</option><option value="200">$200</option><option value="500">$500</option><option value="1000">$1000</option></select>
         <button onclick="App.buy()" href="#">Buy Ether from this Contract</button>
       </div>      
       <div id="sell_contract_functions" class="hidden">

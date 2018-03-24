@@ -1,9 +1,10 @@
-pragma solidity ^0.4.4;
+pragma solidity ^0.4.21;
 
 import "./Orders.sol";
 
 contract Sell_eth {
     Orders orders;
+    string currency;
     uint weiForSale;
     uint price; //wei per smallest currency unit (eg. cent)
     address seller;
@@ -16,8 +17,9 @@ contract Sell_eth {
     event LogSalePending(address indexed _seller, address indexed _buyer, uint value, uint _price);
     event LogCashReceived(address indexed _buyer, address indexed _seller);
 
-    function Sell_eth(uint _price, address _seller, address _orders) public payable {
+    function Sell_eth(string _currency, uint _price, address _seller, address _orders) public payable {
         orders = Orders(_orders);
+	currency = _currency;
         seller = _seller;
         price = _price;
         pending = 0;
@@ -26,12 +28,12 @@ contract Sell_eth {
     
     function buy() payable public {
         require(sales[msg.sender] == 0);
-        require(msg.value > 0 && msg.value < weiForSale && (msg.value/price)%5000 == 0);
+        require(msg.value > 0 && msg.value <= weiForSale && (msg.value/price)%5000 == 0);
         sales[msg.sender] = msg.value;
         weiForSale -= msg.value/2;
         pending += 1;
-        LogNewWeiForSale(weiForSale);
-        LogSalePending(seller, msg.sender, msg.value, price);
+        emit LogNewWeiForSale(weiForSale);
+        emit LogSalePending(seller, msg.sender, msg.value, price);
     }
 
     function confirmReceived(address _buyer) public onlySeller payable {
@@ -40,22 +42,22 @@ contract Sell_eth {
         sales[_buyer] = 0;
         _buyer.transfer(2*amt);
         pending -= 1;
-        LogCashReceived(_buyer, seller);
+        emit LogCashReceived(_buyer, seller);
     }
 
     function addEther() public onlySeller payable {
         weiForSale += msg.value/2;
-        LogNewWeiForSale(weiForSale);
+        emit LogNewWeiForSale(weiForSale);
     }
 
     function changePrice(uint new_price) public onlySeller {
         price = new_price;
-        LogNewPrice(price);
+        emit LogNewPrice(price);
     }
     
     function retr_funds() public onlySeller payable {
         require(pending == 0);
-        orders.removeSellOrder();
+        orders.removeSellOrder(currency);
         selfdestruct(seller);
     }
     
@@ -72,3 +74,4 @@ contract Sell_eth {
 	if (pending > 0) return true;
     }
 }
+

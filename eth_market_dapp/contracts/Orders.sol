@@ -1,34 +1,35 @@
-pragma solidity ^0.4.4;
+pragma solidity ^0.4.21;
 
 import "./Sell_eth.sol";
 import "./Buy_eth.sol";
 
 contract Orders {
 
-  event LogNewSellOrder(address sellorder);
-  event LogNewBuyOrder(address buyorder);
-  event LogRemoveSellOrder(address sellorder);
-  event LogRemoveBuyOrder(address buyorder);   
+  event LogNewSellOrder(string indexed currency, address sellorder);
+  event LogNewBuyOrder(string indexed currency, address buyorder);
+  event LogRemoveSellOrder(string indexed currency, address sellorder);
+  event LogRemoveBuyOrder(string indexed currency, address buyorder);   
 
-  function newSellOrder(uint price) public payable {
-    require(msg.value/2 > price*5000);
-    address order =(new Sell_eth).value(msg.value)(price, msg.sender, this);
-    LogNewSellOrder(order);    
+  function newSellOrder(string curr, uint price) public payable {
+    require(msg.value/price >= 10000);
+    address order =(new Sell_eth).value(msg.value)(curr, price, msg.sender, this);
+    emit LogNewSellOrder(curr, order);    
   }
 
-  function newBuyOrder(uint price) public payable {
-    require(msg.value > price*5000);
-    address order =(new Buy_eth).value(msg.value)(price, msg.sender, this);
-    LogNewBuyOrder(order);
+  function newBuyOrder(string curr, uint price) public payable {
+    require(msg.value/price >= 5000);
+    address order =(new Buy_eth).value(msg.value)(curr, price, msg.sender, this);
+    emit LogNewBuyOrder(curr, order);
   }
 
-  function removeSellOrder() public {  
-    LogRemoveSellOrder(msg.sender);
+  function removeSellOrder(string curr) public {  
+    emit LogRemoveSellOrder(curr, msg.sender);
   }
 
-  function removeBuyOrder() public {
-    LogRemoveBuyOrder(msg.sender);
+  function removeBuyOrder(string curr) public {
+    emit LogRemoveBuyOrder(curr, msg.sender);
   }
 
   function() public {revert();}
 }
+
