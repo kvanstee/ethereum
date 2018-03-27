@@ -4,7 +4,7 @@ var Buy_eth = artifacts.require("./Buy_eth.sol");
 
 module.exports = function(deployer) {
   deployer.deploy(Orders);
-  deployer.deploy(Sell_eth);
-  deployer.deploy(Buy_eth);
+//  deployer.deploy(Sell_eth);
+//  deployer.deploy(Buy_eth);
 };
 

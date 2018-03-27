@@ -1,18 +1,17 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Ethereum/AUD Exchange</title>
+  <title>Ethereum Market</title>
   <link href="./app/stylesheets/app.css" rel="stylesheet" type="text/css">
+  <link href="./app/stylesheets/styles.css" rel="stylesheet" type="text/css">  <link href="./app/stylesheets/app.css" rel="stylesheet" type="text/css">
   <script src="./app.js"></script>
 </head>
 <body>
-  <h1>ETH/<span class="curren"></span> Market</h1>
-  <div id="container" style="position:relative">
-  <div>
+  <h1>ETH/<span id="curr"><select id="currency"><option value="AUD">AUD</option><option value="KRW">KRW</option><option value="CNY">CNY</option><option value="USD">USD</option></select></span> Market</h1>
+  <div id="container">
      
-  <!--------BUY BUY BUY BUY BUY BUY---------!>
-  <!VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV!>
-    <div id="curr"><select id="currency"><option value="AUD">AUD</option><option value="KRW">KRW</option><option value="CNY">CNY</option><option value="USD">USD</option></select>
+    <!--------BUY BUY BUY BUY BUY BUY---------!>
+    <!VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV!>
     <div id="buy">
       <table>
         <h2>Buy Orders</h2>
@@ -84,8 +83,35 @@
       <tbody id="sell_pending_txs"></tbody>
       </table>
     </div>
-  </div>
-  <iframe id="chat" height="500" width="800"></iframe>
+    <div id="chat">
+      <div class="chat__sidebar">
+        <h3>Online Users</h3>
+        <div id="users"></div>
+      </div>
+      <div class="chat__main">
+        <ol id="messages" class="chat__messages"></ol>
+        <div class="chat__footer">
+          <form id="message-form">
+	    <input id="rec" size="5" name="receiver" type="text" placeholder="to: eg. e41a6"/>
+            <input id="mess" name="message" type="text" placeholder="Message" autofocus autocomplete="off"/>
+            <button>Send</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>  
+  <script id="message-template" type="text/template">
+    <li class="message">
+      <div class="message__title">
+        <h4>{{from}}</h4>
+        <span>{{createdAt}}</span>
+      </div>
+      <div class="message__body">
+        <p>{{text}}</p>
+      </div>
+    </li>
+  </script>
+  <!iframe id="chat" height="500" width="800" src="/app/chat.html"></iframe!>
   <!iframe id="metamask" src="file:///~/.config/google-chrome/Default/Extensions/nkbihfbeogaeaoehlefnkodbefgpgknn/3.14.1_0/popup.html"></iframe!>
 </body>
 </html>

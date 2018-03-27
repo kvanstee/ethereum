@@ -1,6 +1,6 @@
 // Import the page's CSS. Webpack will know what to do with it.
 import "../stylesheets/app.css";
-//import "github.com/hoisie/mustache"
+import "../stylesheets/styles.css";
 // Import libraries we need.
 import { default as Web3} from 'web3';
 import { default as contract } from 'truffle-contract';
@@ -20,64 +20,57 @@ var curr; //fiat currency
 window.App = {
   start: function(_account) {
     var self = this;
-    account = _account;
-    curr = document.getElementById("currency").value;
-    var curr_text = document.getElementsByClassName("curren");
-    var i = curr_text.length;
-    while(i--) {curr_text[i].innerHTML = curr};
-    document.getElementById("currency").onchange = function() {self.start(account)};
-    document.getElementById("chat").src = "http://128.199.144.211:3000";
-    // Bootstrap the Buy_eth, Sell_eth and Orders abstraction for use.
     Sell_eth.setProvider(web3.currentProvider);
     Buy_eth.setProvider(web3.currentProvider);
     Orders.setProvider(web3.currentProvider);
+    account = _account;
+    curr = web3.fromAscii(document.getElementById("currency").value);
+    var curr_text = document.getElementsByClassName("curren");
+    var i = curr_text.length;
+    while(i--) {curr_text[i].innerHTML = document.getElementById("currency").value};
+    document.getElementById("currency").onchange = function() {
+      var sell = document.getElementById("sell_orders");
+      while (sell.hasChildNodes()) sell.removeChild(sell.lastChild);
+      var buy = document.getElementById("buy_orders");
+      while (buy.hasChildNodes()) buy.removeChild(buy.lastChild);
+      self.start(account)
+    };
+    // Bootstrap the Buy_eth, Sell_eth and Orders abstraction for use.
     // retrieve Buy and Sell order values from contracts using logged events from Orders.sol
     Orders.deployed().then(function(instance) {
-      instance.LogRemoveSellOrder({currency:curr}, function(err, result) {
-	if (!err) {
-	  var contr = document.getElementById(result.args.sellorder);
-	  contr.parentNode.removeChild(contr);
-	};
-      });
-      instance.LogRemoveBuyOrder({currency:curr}, function(err, result) {
-	if (!err) {
-	  var contr = document.getElementById(result.args.buyorder);
-          contr.parentNode.removeChild(contr);
-	};
-      });
       //VVVVVV SELL SELL SELL VVVVVV
       instance.LogNewSellOrder({currency:curr}, {fromBlock:0}, function(err, result) {
-       if (!err) {
+        if (err) return;
         var address = result.args.sellorder;
-	if (document.getElementById(address) !== null) return;
-        //web3.eth.getCode(address, function(res) {if (res == null) return});
-        Sell_eth.at(address).then(function(inst) {
-          inst.get_vars.call().then(function(vars) {
-            var volume = vars[0];
-            var price = vars[1];
-            //populate sell order contract table
-            if (price > 0) {
-              self.populate_row_cells("sell_orders", inst.address, price, volume);
-              self.sortTable("sell_orders");
-              inst.is_party.call({from:account}).then(function(party) {
-                if (party === "seller") {
-                  inst.LogSalePending({}, {fromBlock:0}, function(err,res) {
-                    if (!err) {
+        var removeEvent = instance.LogRemoveSellOrder({sellorder:address}, {fromBlock:result.blockNumber});
+        removeEvent.get(function(err, result) {
+       	  if (err) return;
+	  if (result.length === 1) return;
+          Sell_eth.at(address).then(function(inst) {
+            inst.get_vars.call().then(function(vars) {
+              var volume = vars[0];
+              var price = vars[1];
+              //populate sell order contract table
+              if (price > 0) {
+                self.populate_row_cells("sell_orders", inst.address, price, volume);
+                self.sortTable("sell_orders");
+                inst.is_party.call({from:account}).then(function(party) {
+                  if (party === "seller") {
+                    inst.LogSalePending({}, {fromBlock:0}, function(err,res) {
+                      if (err) return;
                       var eventCashRec = inst.LogCashReceived({_buyer:res.args._buyer}, {fromBlock:res.blockNumber});
                       eventCashRec.get(function(err, events) {
-                        if (!err) {
-                          if (events.length === 0) {
-                            self.writePending("sell_contract", "seller", res);
-			  };
-			};
-		      });
-		    };
-		  });
-                } else if (party === "buyer") {
+                        if (err) return;
+                        if (events.length === 0) {
+                          self.writePending("sell_contract", "seller", res);
+	                };
+               	      });
+		    });
+                  } else if (party === "buyer") {
                   //there must be only one pending here: the last
-                  var eventPend = inst.LogSalePending({_buyer:account}, {fromBlock:0});
-                  eventPend.get(function(err, eventsPending) {
-                    if (!err) {
+                    var eventPend = inst.LogSalePending({_buyer:account}, {fromBlock:0});
+                    eventPend.get(function(err, eventsPending) {
+                      if (err) return;
              	      var lastEvent = eventsPending[eventsPending.length-1];
                       self.writePending("sell_contract", "buyer", lastEvent);
 		      var eventCashRec = inst.LogCashReceived({_buyer:account}, {fromBlock:lastEvent.blockNumber});
@@ -86,23 +79,29 @@ window.App = {
                         var pend_tx_id = res.address.substring(2,5)+res.args._buyer.substring(2,5)+res.args._seller.substring(2,5);
                         document.getElementById(pend_tx_id).parentNode.innerHTML = "complete";
 		      });
-                    };
-                  });
-	        };
-              });
-            };
+                    });
+		  };
+                });
+              };
+            });
+	    removeEvent.watch(function(err,res) {
+	      removeEvent.stopWatching();
+	      var contr = document.getElementById(address);
+	      contr.parentNode.removeChild(contr);
+	    });
           });
         });
-       };
       });
       //^^^^^^^ SELL SELL SELL ^^^^^^^
 
       //VVVVVVV BUY BUY BUY VVVVVVV
       instance.LogNewBuyOrder({currency:curr}, {fromBlock:0}, function(err, result) {
-        if (!err) {
-          var address = result.args.buyorder;
-	  if (document.getElementById(address) !== null) return;
-          //web3.eth.getCode(address, function(res) {if (res == null) return});
+        if (err) return;
+        var address = result.args.buyorder;
+        var removeEvent = instance.LogRemoveBuyOrder({buyorder:address}, {fromBlock:result.blockNumber});
+        removeEvent.get(function(err, result) {
+          if (err) return;
+          if (result.length === 1) return;
           Buy_eth.at(address).then(function(inst) {
             inst.get_vars.call().then(function(vars) {
               var volume = parseInt(vars[0]);
@@ -114,48 +113,49 @@ window.App = {
                 inst.is_party.call({from:account}).then(function(party) {
                   if (party === "buyer") {
 		    inst.LogSalePending({}, {fromBlock:0}, function(err,res) {
-		      if (!err) {
-			var eventCashRec = inst.LogCashReceived({_seller:res.args._seller}, {fromBlock:res.blockNumber});
-			eventCashRec.get(function(err, events) {
-			  if (!err) {
-			    if (events.length === 0) {
-			      self.writePending("buy_contract", "buyer", res);
-			      eventCashRec.watch(function(err, event) {
-			        if (!err) {
-		       	          eventCashRec.stopWatching();
-                                  var pend_tx_id = event.address.substring(2,5)+event.args._buyer.substring(2,5)+event.args._seller.substring(2,5); console.log(pend_tx_id);
-                                  document.getElementById(pend_tx_id).innerHTML = "complete";
-                                  inst.has_pending.call().then(function(pending) {
-                                    if (!pending) {
-				      document.getElementById(event.address).classList.remove("pending");
-				    };
-                                  });
-                                };
-			      });
-			    };
-			  };
-			});
-		      };
-		    });
+		      if (err) return;
+	              var eventCashRec = inst.LogCashReceived({_seller:res.args._seller}, {fromBlock:res.blockNumber});
+		      eventCashRec.get(function(err, events) {
+			if (err) return;
+		        if (events.length === 0) {
+		          self.writePending("buy_contract", "buyer", res);
+	          	  eventCashRec.watch(function(err, event) {
+			    if (err) return;
+		            eventCashRec.stopWatching();
+                            var pend_tx_id = event.address.substring(2,5)+event.args._buyer.substring(2,5)+event.args._seller.substring(2,5); console.log(pend_tx_id);
+                            document.getElementById(pend_tx_id).innerHTML = "complete";
+                            inst.has_pending.call().then(function(pending) {
+                              if (!pending) {
+           		        document.getElementById(event.address).classList.remove("pending");
+		              };
+                            });
+			  });
+			};
+		      });
+                    });
 		  //buyer can have multiple previous pending as well as multiple previous sellers.
                   } else if (party === "seller") {
 		  //there can be only one pending here: the last
                     var eventPending = inst.LogSalePending({_seller:account}, {fromBlock:0});
                     eventPending.get(function(err,eventsPending) {
-                      if (!err) {
-                        self.writePending("buy_contract", "seller", eventsPending[eventsPending.length-1]);
-                        eventPending.stopWatching();
-                      };
+                      if (err) return;
+                      self.writePending("buy_contract", "seller", eventsPending[eventsPending.length-1]);
+                      eventPending.stopWatching();
                     });
                   };
                 });
               };
             });
+	    removeEvent.watch(function(err,res) {
+              removeEvent.stopWatching();
+              var contr = document.getElementById(address);
+              contr.parentNode.removeChild(contr);
+            });
           });
-        };
+        });
       });
+      //^^^^^^^^^ BUY BUY BUY BUY ^^^^^^^^^
     });
-    //^^^^^^^^^ BUY BUY BUY BUY ^^^^^^^^^
   },
 
   writePending: function(contract, party, _result) {
@@ -383,10 +383,11 @@ window.App = {
     var price = 1e16/document.getElementById("ask_price").value;
     var volume = document.getElementById("ask_value").value*100*price;
     Orders.deployed().then(function(inst) {
-      inst.newSellOrder(price, {from: account, value: 2*volume, gas:1e6}).then(function(err, res) { 
-        if (!err) {
+      inst.newSellOrder.sendTransaction(curr, price, {from: account, value: 2*volume, gas:1e6}).then(function(res) {
+        console.log(res); 
+        /*if (!err) {
           console.log("new sell order created: " + res.args.sellorder);
-        };
+        };*/
       });
     });
   },
@@ -405,7 +406,7 @@ window.App = {
         self.writePending("sell_contract", "buyer", result);
       };
     });
-    contr.buy({from: account, value: volume, gas: 600000}).then(function(res) {
+    contr.buy.sendTransaction({from: account, value: volume, gas: 600000}).then(function(res) {
       console.log("transaction successful!");
     });
   },
@@ -416,8 +417,8 @@ window.App = {
     var price = 1e16/document.getElementById("bid_price").value;
     var volume = document.getElementById("bid_value").value*100*price;
     Orders.deployed().then(function(inst) {
-      inst.newBuyOrder(price, {from:account, value:volume, gas:1e6}).then(function(err, res) {
-        if (!err) console.log("buy order contract deployed");
+      inst.newBuyOrder.sendTransaction(curr, price, {from:account, value:volume, gas:1e6}).then(function(res) { console.log(res);
+        //if (!err) console.log("buy order contract deployed");
       });
     });
   },
@@ -436,7 +437,7 @@ window.App = {
         self.writePending("buy_contract", "seller", result);
       };
     });
-    contr.sell({from: account, value: 2*volume, gas: 600000}).then(function(res) {
+    contr.sell.sendTransaction({from: account, value: 2*volume, gas: 600000}).then(function(res) {
       console.log("transaction successful!");
     });
   },
@@ -455,7 +456,7 @@ window.App = {
 	});
       };
     });
-    contr.confirmReceived(rec_address, {from: account}).then(function(res) {
+    contr.confirmReceived.sendTransaction(rec_address, {from: account}).then(function(res) {
         console.log("purchase + deposit sent to " + rec_address);
     });
   },
@@ -471,7 +472,7 @@ window.App = {
         document.getElementById(_contract).className="";
       };
     });
-    contr.confirmReceived({from:account}).then(function(res) {
+    contr.confirmReceived.sendTransaction({from:account}).then(function(res) {
       console.log("transaction successful; deposit returned to your account");
     });
   },
@@ -497,7 +498,7 @@ window.App = {
       contr_elements[2].innerHTML = (vol*newPrice).toFixed(2);
       self.sortTable(contr.parentNode.id);
     });
-    contract.changePrice(nprice, {from: account}).then(function(err, res) {
+    contract.changePrice.sendTransaction(nprice, {from: account}).then(function(err, res) {
       if (!err) {
         console.log("selected contract has changed price to: " + (1e16/nprice).toFixed(2));
       };
@@ -519,7 +520,7 @@ window.App = {
       contr_elements[2].innerHTML = (vol*price).toFixed(2);
     });
     var volume = parseInt(document.getElementById("add_ether").value*1e18);
-    contract.addEther({from: account, value: volume }).then(function(err, res) {
+    contract.addEther.sendTransaction({from: account, value: volume }).then(function(err, res) {
      if (!err) console.log(volume/1e18 + " ether added to contract at " + addr);
     });
   },
@@ -539,7 +540,7 @@ window.App = {
       contr_elements[2].innerHTML = (vol*price).toFixed(2);
     });
     var volume = parseInt(document.getElementById("remove_ether").value*1e18);
-    contract.retreive_eth(volume, {from: account}).then(function(err, res) {
+    contract.retreive_eth.sendTransaction(volume, {from: account}).then(function(err, res) {
       if (!err) console.log(volume + " ether removed from contract at " + addr);
     });
   },
@@ -551,18 +552,20 @@ window.App = {
     var order;
     if (contr.parentNode.id == "sell_orders") {
       Sell_eth.at(addr).then(function(instance) {
-        instance.retr_funds(currency, {from: account, gas:900000}).then(function() {
+        instance.retr_funds.sendTransaction({from: account, gas:900000}).then(function() {
             console.log("contract terminated, funds returned to your account.");
             var contract = document.getElementById(addr);
+	    document.getElementById("selSellAddr").className = "hidden";
             contract.parentNode.removeChild(contract);
         });
       });
     }
     else if (contr.parentNode.id == "buy_orders") {
       Buy_eth.at(addr).then(function(instance) {
-        instance.terminate_contract({from: account}).then(function() {
+        instance.terminate_contract.sendTransaction({from: account}).then(function() {
             console.log("contract terminated, funds returned.");
             var contract = document.getElementById(instance.address);
+	    document.getElementById("selBuyAddr").className = "hidden";
             contract.parentNode.removeChild(contract);
         });
       });

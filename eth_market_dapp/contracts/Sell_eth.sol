@@ -4,7 +4,6 @@ import "./Orders.sol";
 
 contract Sell_eth {
     Orders orders;
-    string currency;
     uint weiForSale;
     uint price; //wei per smallest currency unit (eg. cent)
     address seller;
@@ -17,9 +16,8 @@ contract Sell_eth {
     event LogSalePending(address indexed _seller, address indexed _buyer, uint value, uint _price);
     event LogCashReceived(address indexed _buyer, address indexed _seller);
 
-    function Sell_eth(string _currency, uint _price, address _seller, address _orders) public payable {
+    function Sell_eth(uint _price, address _seller, address _orders) public payable {
         orders = Orders(_orders);
-	currency = _currency;
         seller = _seller;
         price = _price;
         pending = 0;
@@ -57,7 +55,7 @@ contract Sell_eth {
     
     function retr_funds() public onlySeller payable {
         require(pending == 0);
-        orders.removeSellOrder(currency);
+        orders.removeSellOrder();
         selfdestruct(seller);
     }
     
