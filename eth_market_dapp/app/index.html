@@ -3,7 +3,6 @@
 <head>
   <title>Ethereum Market</title>
   <link href="./app/stylesheets/app.css" rel="stylesheet" type="text/css">
-  <link href="./app/stylesheets/styles.css" rel="stylesheet" type="text/css">  <link href="./app/stylesheets/app.css" rel="stylesheet" type="text/css">
   <script src="./app.js"></script>
 </head>
 <body>
@@ -22,7 +21,7 @@
       </table><br><br>
 
       <div id="new_buy_contract">
-        Value (<span class="curren"></span>):<input type="number" id="bid_value" required><br>
+        Value (<span class="curren"></span>):<input type="number" min="50" id="bid_value" required><br>
         Price (<span class="curren"></span>):<input type="number" id="bid_price" required><br>
         <button onclick="App.setup_buy()" href="#">add buy order contract</button>
       </div>
@@ -61,7 +60,7 @@
       </table><br><br>
 
       <div id="new_sell_contract">
-        Value (<span class="curren"></span>):<input type="number" id="ask_value"><br>
+        Value (<span class="curren"></span>):<input type="number" min="50" id="ask_value"><br>
         Price (<span class="curren"></span>):<input type="number" id="ask_price">
         <br><button onclick="App.setup_sell()" href="#">add sell order contract</button>
       </div>
@@ -83,35 +82,7 @@
       <tbody id="sell_pending_txs"></tbody>
       </table>
     </div>
-    <div id="chat">
-      <div class="chat__sidebar">
-        <h3>Online Users</h3>
-        <div id="users"></div>
-      </div>
-      <div class="chat__main">
-        <ol id="messages" class="chat__messages"></ol>
-        <div class="chat__footer">
-          <form id="message-form">
-	    <input id="rec" size="5" name="receiver" type="text" placeholder="to: eg. e41a6"/>
-            <input id="mess" name="message" type="text" placeholder="Message" autofocus autocomplete="off"/>
-            <button>Send</button>
-          </form>
-        </div>
-      </div>
-    </div>
-  </div>  
-  <script id="message-template" type="text/template">
-    <li class="message">
-      <div class="message__title">
-        <h4>{{from}}</h4>
-        <span>{{createdAt}}</span>
-      </div>
-      <div class="message__body">
-        <p>{{text}}</p>
-      </div>
-    </li>
-  </script>
-  <!iframe id="chat" height="500" width="800" src="/app/chat.html"></iframe!>
-  <!iframe id="metamask" src="file:///~/.config/google-chrome/Default/Extensions/nkbihfbeogaeaoehlefnkodbefgpgknn/3.14.1_0/popup.html"></iframe!>
+  <iframe id="chat" height="500" width="700"></iframe>
+  </div>
 </body>
 </html>

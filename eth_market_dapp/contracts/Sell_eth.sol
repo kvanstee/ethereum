@@ -28,7 +28,7 @@ contract Sell_eth {
         require(sales[msg.sender] == 0);
         require(msg.value > 0 && msg.value <= weiForSale && (msg.value/price)%5000 == 0);
         sales[msg.sender] = msg.value;
-        weiForSale -= msg.value/2;
+        weiForSale -= msg.value;
         pending += 1;
         emit LogNewWeiForSale(weiForSale);
         emit LogSalePending(seller, msg.sender, msg.value, price);
@@ -41,6 +41,8 @@ contract Sell_eth {
         _buyer.transfer(2*amt);
         pending -= 1;
         emit LogCashReceived(_buyer, seller);
+	weiForSale += amt/2;
+	emit LogNewWeiForSale(weiForSale); 
     }
 
     function addEther() public onlySeller payable {

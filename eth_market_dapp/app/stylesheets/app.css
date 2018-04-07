@@ -16,8 +16,12 @@ input {
 }
 
 button {
-  font-size: 16px;
+  font-size: 15px;
   padding: 5px;
+}
+
+select {
+  font-size: 48px;
 }
 
 h2 {
@@ -43,7 +47,7 @@ table {
   color: black;
 }
 td {
-  border: 1px #DDD solid; padding: 5px; cursor: pointer;
+  border: 2px #DDD solid; padding: 1px; cursor: pointer;
 }
 .selected {
   background-color: lightgreen;
@@ -70,7 +74,7 @@ display: inline-block;
     float: left;
 }
 #chat {
-    position: fixed;
-    bottom: 0;
-    right: 0;
+    position:;
+    bottom: ;
+    right: ;
 }
