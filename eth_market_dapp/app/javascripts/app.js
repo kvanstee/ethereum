@@ -27,10 +27,9 @@ window.App = {
     Buy_eth.setProvider(web3.currentProvider);
     Orders.setProvider(web3.currentProvider);
     account = _account;
-    curr = _curr;
     //CURRENCY egAUD
+    curr = _curr;
     document.getElementById("chat").src = "http://localhost:3000#" + JSON.stringify({account:account.substring(2,7), curr:curr});
-    //change currecy text s.a. AUD on the web page
     var curr_text = document.getElementsByClassName("curren");
     var i = curr_text.length;
     while(i--) {curr_text[i].innerHTML = document.getElementById("currency").value};
@@ -63,12 +62,6 @@ window.App = {
                         if (err) return;
                         if (events.length === 0) {
                           self.writePending("sell_contract", "seller", res);
-			  /*eventCashRec.watch(function(err,res) {
-			    if (err) return;
-			    eventCashRec.stopWatching();
-                            var pend_tx_id = res.address.substring(2,5)+res.args._buyer.substring(2,5)+res.args._seller.substring(2,5);
-                            document.getElementById(pend_tx_id).parentNode.innerHTML = "complete";
-                          });*/
 	                };
                	      });
 		    });
@@ -93,6 +86,7 @@ window.App = {
               };
             });
 	    removeEvent.watch(function(err,res) {
+	      if (err) return;
 	      removeEvent.stopWatching();
 	      var contr = document.getElementById(address);
 	      contr.parentNode.removeChild(contr);
@@ -400,10 +394,7 @@ window.App = {
     var volume = document.getElementById("ask_value").value*100*price;
     Orders.deployed().then(function(inst) {
       inst.newSellOrder.sendTransaction(curr, price, {from: account, value: 2*volume, gas:1e6}).then(function(res) {
-        console.log(res); 
-        /*if (!err) {
-          console.log("new sell order created: " + res.args.sellorder);
-        };*/
+        if (res) console.log("new sell order created: " + res.args.sellorder);
       });
     });
   },
@@ -440,8 +431,8 @@ window.App = {
     var price = 1e16/document.getElementById("bid_price").value;
     var volume = document.getElementById("bid_value").value*100*price;
     Orders.deployed().then(function(inst) {
-      inst.newBuyOrder.sendTransaction(curr, price, {from:account, value:volume, gas:1e6}).then(function(res) { console.log(res);
-        //if (!err) console.log("buy order contract deployed");
+      inst.newBuyOrder.sendTransaction(curr, price, {from:account, value:volume, gas:1e6}).then(function(res) {
+        if (res) console.log("buy order contract deployed");
       });
     });
   },
@@ -574,9 +565,6 @@ window.App = {
       Sell_eth.at(addr).then(function(instance) {
         instance.retr_funds.sendTransaction({from: account, gas:900000}).then(function() {
             console.log("contract terminated, funds returned to your account.");
-            //var contract = document.getElementById(addr);
-	    //document.getElementById("selSellAddr").className = "hidden";
-            //contract.parentNode.removeChild(contract);
         });
       });
     }
@@ -584,9 +572,6 @@ window.App = {
       Buy_eth.at(addr).then(function(instance) {
         instance.terminate_contract.sendTransaction({from: account}).then(function() {
             console.log("contract terminated, funds returned.");
-            //var contract = document.getElementById(instance.address);
-	    //document.getElementById("selBuyAddr").className = "hidden";
-            //contract.parentNode.removeChild(contract);
         });
       });
     };
@@ -596,11 +581,11 @@ window.App = {
 window.addEventListener('load', function() {
   // Checking if Web3 has been injected by the browser (Mist/MetaMask)
   if (typeof web3 !== 'undefined') {
-    console.warn("Using web3 detected from external source. If you find that your accounts don't appear or you have 0 MetaCoin, ensure you've configured that source properly. If using MetaMask, see the following link. Feel free to delete this warning. :) http://truffleframework.com/tutorials/truffle-and-metamask")
+    //console.warn("Using web3 detected from external source. If you find that your accounts don't appear or you have 0 MetaCoin, ensure you've configured that source properly. If using MetaMask, see the following link. Feel free to delete this warning. :) http://truffleframework.com/tutorials/truffle-and-metamask")
     // Use Mist/MetaMask's provider
     window.web3 = new Web3(web3.currentProvider);
   } else {
-    console.warn("No web3 detected. Falling back to http://localhost:8545. You should remove this fallback when you deploy live, as it's inherently insecure. Consider switching to Metamask for development. More info here: http://truffleframework.com/tutorials/truffle-and-metamask");
+    console.warn("No web3 detected. Falling back to http://localhost:8545.");
     // fallback - use your fallback strategy (local node / hosted node + in-dapp id mgmt / fail)
     window.web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
   }
@@ -627,7 +612,7 @@ window.addEventListener('load', function() {
     while (sell.hasChildNodes()) sell.removeChild(sell.lastChild);
     var buy = document.getElementById("buy_orders");
     while (buy.hasChildNodes()) buy.removeChild(buy.lastChild);
-    self.start(account,document.getElementById("currency").value)
+    self.start(account,document.getElementById("currency").value);
   };
   setTimeout(App.start(web3.eth.accounts[0],document.getElementById("currency").value),5000);
 });
