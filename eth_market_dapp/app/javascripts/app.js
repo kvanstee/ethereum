@@ -256,6 +256,7 @@ window.App = {
 
   //create and populate row of contract info
   populate_row_cells: function(_orders, _addr, _price, _volume) {
+    if (document.getElementById(_addr)) return;
     self = this;
     var contract = document.createElement("tr");
     contract.innerHTML = '<td align="right"></td><td align="right"></td><td align="right"></td>';
@@ -612,7 +613,7 @@ window.addEventListener('load', function() {
     while (sell.hasChildNodes()) sell.removeChild(sell.lastChild);
     var buy = document.getElementById("buy_orders");
     while (buy.hasChildNodes()) buy.removeChild(buy.lastChild);
-    self.start(account,document.getElementById("currency").value);
+    App.start(account,document.getElementById("currency").value);
   };
   setTimeout(App.start(web3.eth.accounts[0],document.getElementById("currency").value),5000);
 });
