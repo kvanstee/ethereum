@@ -1,7 +1,7 @@
 // Import the page's CSS. Webpack will know what to do with it.
 import "../stylesheets/app.css";
 //import "../stylesheets/styles.css";
-import io from 'socket.io-client';
+//import io from 'socket.io-client';
 //import "./chat.js";
 
 // Import libraries we need.
@@ -18,23 +18,23 @@ var Sell_eth = contract(selleth_artifacts);
 var Buy_eth = contract(buyeth_artifacts);
 var Orders = contract(orders_artifacts);
 var account;
-var curr; //fiat currency
+var fiat_curr; //fiat currency
 
 window.App = {
-  start: function(_account,_curr) {
+  start: function(_account,_currency) {
     var self = this;
+    // Bootstrap the Buy_eth, Sell_eth and Orders abstraction for use.
     Sell_eth.setProvider(web3.currentProvider);
     Buy_eth.setProvider(web3.currentProvider);
     Orders.setProvider(web3.currentProvider);
     account = _account;
     //CURRENCY egAUD
-    curr = _curr;
-    document.getElementById("chat").src = "http://localhost:3000#" + JSON.stringify({account:account.substring(2,7), curr:curr});
+    fiat_curr = _currency;
+    document.getElementById("chat").src = "http://localhost:3000#" + JSON.stringify({account:account.substring(2,7), curr:fiat_curr});
     var curr_text = document.getElementsByClassName("curren");
     var i = curr_text.length;
     while(i--) {curr_text[i].innerHTML = document.getElementById("currency").value};
     //change currency
-    // Bootstrap the Buy_eth, Sell_eth and Orders abstraction for use.
     // retrieve Buy and Sell order values from contracts using logged events from Orders.sol
     Orders.deployed().then(function(instance) {
       //VVVVVV SELL SELL SELL VVVVVV
@@ -613,7 +613,8 @@ window.addEventListener('load', function() {
     while (sell.hasChildNodes()) sell.removeChild(sell.lastChild);
     var buy = document.getElementById("buy_orders");
     while (buy.hasChildNodes()) buy.removeChild(buy.lastChild);
-    App.start(account,document.getElementById("currency").value);
+    //document.getElementById("chat").src = "http://localhost:3000#" + JSON.stringify({account:account.substring(2,7), curr:this.value});
+    App.start(account,this.value);
   };
   setTimeout(App.start(web3.eth.accounts[0],document.getElementById("currency").value),5000);
 });

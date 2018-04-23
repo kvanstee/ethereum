@@ -53,13 +53,16 @@ td {
   background-color: lightgreen;
 }
 .pending {
-  background-color: yellow;
+    background-color: yellow;
 }
 .hidden {
-display: none;
+    display: none;
 }
 .shown {
-display: inline-block;
+    display: inline-block;
+}
+#top {
+    float: right;
 }
 #sell {
     width: 15cm;
