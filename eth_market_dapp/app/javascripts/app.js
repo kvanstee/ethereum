@@ -36,10 +36,10 @@ window.App = {
     while(i--) {curr_text[i].innerHTML = document.getElementById("currency").value};
     //change currency
     // retrieve Buy and Sell order values from contracts using logged events from Orders.sol
-    Orders.deployed().then(function(instance) {
+    Orders.deployed().then(function(instance) {console.log(instance.address);
       //VVVVVV SELL SELL SELL VVVVVV
       instance.LogNewSellOrder({currency:fiat_curr}, {fromBlock:0}, function(err, result) {
-        if (err) return; console.log(result.args);
+        if (err) return; 
         var address = result.args.sellorder;
         var removeEvent = instance.LogRemoveSellOrder({sellorder:address}, {fromBlock:result.blockNumber});
         removeEvent.get(function(err, result) {
@@ -557,7 +557,7 @@ window.App = {
     });
   },
 
-  terminate_contract: function(curr) {
+  terminate_contract: function(fiat_curr) {
     var self = this;
     var contr = document.getElementsByClassName("selected")[0];
     var addr = contr.id;
