@@ -30,7 +30,7 @@ window.App = {
     account = _account;
     //CURRENCY egAUD
     fiat_curr = _currency;
-    document.getElementById("chat").src = "http://localhost:3000#" + JSON.stringify({account:account.substring(2,7), curr:fiat_curr});
+    document.getElementById("chat").src = "http://128.199.144.211:3000#" + JSON.stringify({account:account.substring(2,7), curr:fiat_curr});
     var curr_text = document.getElementsByClassName("curren");
     var i = curr_text.length;
     while(i--) {curr_text[i].innerHTML = document.getElementById("currency").value};
@@ -38,8 +38,8 @@ window.App = {
     // retrieve Buy and Sell order values from contracts using logged events from Orders.sol
     Orders.deployed().then(function(instance) {
       //VVVVVV SELL SELL SELL VVVVVV
-      instance.LogNewSellOrder({currency:curr}, {fromBlock:0}, function(err, result) {
-        if (err) return;
+      instance.LogNewSellOrder({currency:fiat_curr}, {fromBlock:0}, function(err, result) {
+        if (err) return; console.log(result.args);
         var address = result.args.sellorder;
         var removeEvent = instance.LogRemoveSellOrder({sellorder:address}, {fromBlock:result.blockNumber});
         removeEvent.get(function(err, result) {
@@ -101,7 +101,7 @@ window.App = {
       //^^^^^^^ SELL SELL SELL ^^^^^^^
 
       //VVVVVVV BUY BUY BUY VVVVVVV
-      instance.LogNewBuyOrder({currency:curr}, {fromBlock:0}, function(err, result) {
+      instance.LogNewBuyOrder({currency:fiat_curr}, {fromBlock:0}, function(err, result) {
         if (err) return;
         var address = result.args.buyorder;
         var removeEvent = instance.LogRemoveBuyOrder({buyorder:address}, {fromBlock:result.blockNumber});
@@ -394,7 +394,7 @@ window.App = {
     var price = 1e16/document.getElementById("ask_price").value;
     var volume = document.getElementById("ask_value").value*100*price;
     Orders.deployed().then(function(inst) {
-      inst.newSellOrder.sendTransaction(curr, price, {from: account, value: 2*volume, gas:1e6}).then(function(res) {
+      inst.newSellOrder.sendTransaction(fiat_curr, price, {from: account, value: 2*volume, gas:1e6}).then(function(res) {
         if (res) console.log("new sell order created: " + res.args.sellorder);
       });
     });
@@ -432,7 +432,7 @@ window.App = {
     var price = 1e16/document.getElementById("bid_price").value;
     var volume = document.getElementById("bid_value").value*100*price;
     Orders.deployed().then(function(inst) {
-      inst.newBuyOrder.sendTransaction(curr, price, {from:account, value:volume, gas:1e6}).then(function(res) {
+      inst.newBuyOrder.sendTransaction(fiat_curr, price, {from:account, value:volume, gas:1e6}).then(function(res) {
         if (res) console.log("buy order contract deployed");
       });
     });
