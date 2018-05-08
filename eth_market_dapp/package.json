@@ -1,16 +1,35 @@
 {
-  "name": "truffle-init-webpack",
-  "version": "0.0.1",
-  "description": "Frontend example using truffle v3",
+  "name": "eth_market",
+  "version": "1.0.0",
+  "description": "",
+  "private": true,
   "scripts": {
-    "lint": "eslint ./",
     "build": "webpack",
-    "start": "webpack-dev-server",
-    "dev": "webpack-dev-server"
+    "start": "node app/javascripts/server.js",
+    "test": "mocha server/**/*.test.js",
+    "test-watch": "nodemon --exec 'npm test"
   },
-  "author": "Douglas von Kohorn",
-  "license": "MIT",
+  "engines": {
+    "node": "6.11.0"
+  },
+  "author": "kvanstee+sethmcguire",
+  "license": "",
+  "dependencies": {
+    "crypto": "^1.0.1",
+    "express": "^4.16.2",
+    "html-webpack-plugin": "^3.2.0",
+    "https": "^1.0.0",
+    "jquery": "^3.3.1",
+    "moment": "^2.19.1",
+    "openssl": "^1.1.0",
+    "socket.io": "^2.0.3",
+    "webpack": "^4.0.1",
+    "webpack-cli": "^2.0.9",
+    "css-loader": "^0.28.11",
+    "style-loader": "^0.21.0"
+  },
   "devDependencies": {
+    "nodemon": "^1.12.1",
     "babel-cli": "^6.22.2",
     "babel-core": "^6.22.1",
     "babel-eslint": "^6.1.2",
@@ -24,16 +43,13 @@
     "eslint": "^3.14.0",
     "eslint-config-standard": "^6.0.0",
     "eslint-plugin-babel": "^4.0.0",
-    "eslint-plugin-mocha": "^4.8.0",
     "eslint-plugin-promise": "^3.0.0",
     "eslint-plugin-standard": "^2.0.0",
     "html-webpack-plugin": "^2.28.0",
     "json-loader": "^0.5.4",
-    "socket.io": "^2.0.4",
     "style-loader": "^0.13.1",
     "truffle-contract": "^1.1.6",
     "web3": "^0.18.2",
-    "webpack": "^2.2.1",
-    "webpack-dev-server": "^2.3.0"
+    "webpack": "^2.2.1"
   }
 }

@@ -1,10 +1,13 @@
 // Import the page's CSS. Webpack will know what to do with it.
 import "../stylesheets/app.css";
-//import "../stylesheets/styles.css";
-//import io from 'socket.io-client';
-//import "./chat.js";
-
 // Import libraries we need.
+import jQuery from 'jquery';
+window.$ = window.jQuery = jQuery;
+import moment from 'moment';
+import Mustache from './libs/mustache.js';
+require ('./libs/deparam.js');
+import io from 'socket.io-client';
+
 import { default as Web3} from 'web3';
 import { default as contract } from 'truffle-contract';
 
@@ -20,8 +23,9 @@ var Orders = contract(orders_artifacts);
 var account;
 var fiat_curr; //fiat currency
 
+
 window.App = {
-  start: function(_account,_currency) {
+  start: function(_account) {
     var self = this;
     // Bootstrap the Buy_eth, Sell_eth and Orders abstraction for use.
     Sell_eth.setProvider(web3.currentProvider);
@@ -29,17 +33,16 @@ window.App = {
     Orders.setProvider(web3.currentProvider);
     account = _account;
     //CURRENCY egAUD
-    fiat_curr = _currency;
-    document.getElementById("chat").src = "http://128.199.144.211:3000#" + JSON.stringify({account:account.substring(2,7), curr:fiat_curr});
+    fiat_curr = document.getElementById("currency").value;
+    //change currency
     var curr_text = document.getElementsByClassName("curren");
     var i = curr_text.length;
     while(i--) {curr_text[i].innerHTML = document.getElementById("currency").value};
-    //change currency
     // retrieve Buy and Sell order values from contracts using logged events from Orders.sol
-    Orders.deployed().then(function(instance) {console.log(instance.address);
+    Orders.deployed().then(function(instance) {
       //VVVVVV SELL SELL SELL VVVVVV
       instance.LogNewSellOrder({currency:fiat_curr}, {fromBlock:0}, function(err, result) {
-        if (err) return; 
+        if (err) return;
         var address = result.args.sellorder;
         var removeEvent = instance.LogRemoveSellOrder({sellorder:address}, {fromBlock:result.blockNumber});
         removeEvent.get(function(err, result) {
@@ -395,7 +398,7 @@ window.App = {
     var volume = document.getElementById("ask_value").value*100*price;
     Orders.deployed().then(function(inst) {
       inst.newSellOrder.sendTransaction(fiat_curr, price, {from: account, value: 2*volume, gas:1e6}).then(function(res) {
-        if (res) console.log("new sell order created: " + res.args.sellorder);
+        if (res) console.log("new sell order created");
       });
     });
   },
@@ -609,12 +612,69 @@ window.addEventListener('load', function() {
     }
   })
   document.getElementById("currency").onchange = function() {
+    var newcurr = this.value;
     var sell = document.getElementById("sell_orders");
     while (sell.hasChildNodes()) sell.removeChild(sell.lastChild);
     var buy = document.getElementById("buy_orders");
     while (buy.hasChildNodes()) buy.removeChild(buy.lastChild);
-    //document.getElementById("chat").src = "http://localhost:3000#" + JSON.stringify({account:account.substring(2,7), curr:this.value});
-    App.start(account,this.value);
+    socket.emit('join', {account:account.substring(2,7), curr:newcurr}, function(err){
+      if(err) alert(err);
+      else console.log('connected to server');
+    });;
+    App.start(account);
   };
-  setTimeout(App.start(web3.eth.accounts[0],document.getElementById("currency").value),5000);
+  const socket = io();
+  socket.on('connect', function(){
+    var params = {account:web3.eth.accounts[0].substring(2,7), curr:document.getElementById("currency").value};
+    socket.emit('join', params, function(err){
+      if(err) alert(err);
+      else console.log('connected to server');
+    });
+  });
+
+  socket.on('disconnect', function(){
+    console.log('Disconnected from server');
+  });
+
+  socket.on('updateUserList', function(users){
+    var ol = jQuery('<ol></ol>');
+    users.forEach(function(user){
+      ol.append(jQuery('<li></li>').text(user));
+    });
+    jQuery('#users').html(ol);
+  });
+
+  socket.on('newMessage', function(message){
+    var formattedTime = moment(message.createdAt).format('h:mm a');
+    var template = jQuery('#message-template').html();
+    var html = Mustache.render(template, {
+      text: message.text,
+      from: message.from,
+      createdAt: formattedTime
+    });
+    jQuery('#messages').append(html);
+    var  messages = jQuery('#messages'),
+         newMessage = messages.children('li:last-child'),
+         clientHeight = messages.prop('clientHeight'),
+         scrollTop = messages.prop('scrollTop'),
+         scrollHeight = messages.prop('scrollHeight'),
+         newMessageHeight = newMessage.innerHeight(),
+         lastMessageHeight = newMessage.prev().innerHeight();
+    if(clientHeight + scrollTop + newMessageHeight + lastMessageHeight >= scrollHeight){
+        messages.scrollTop(scrollHeight);
+    }
+  });
+
+  jQuery('#message-form').on('submit', function(e){
+    e.preventDefault();
+    var messageTextbox = jQuery('[name=message]');
+    var toTextbox = jQuery('[name=receiver]');
+    socket.emit('createMessage', {
+      text: messageTextbox.val(),
+      to: toTextbox.val()
+    }, function(){
+      messageTextbox.val('');
+    });
+  });
+  App.start(web3.eth.accounts[0]);
 });

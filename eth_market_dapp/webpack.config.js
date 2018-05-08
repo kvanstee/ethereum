@@ -1,45 +1,26 @@
 const path = require('path');
-const CopyWebpackPlugin = require('copy-webpack-plugin');
+const webpack = require('webpack');
 
 module.exports = {
-  entry: [
-    './app/javascripts/app.js',
-    'webpack/hot/dev-server',
-    //'webpack-dev-server/client?localhost:8080'
+  entry: {
+    index: './app/javascripts/app.js',
+  },
+  plugins: [
+    new webpack.optimize.OccurrenceOrderPlugin()
   ],
   output: {
-    path: path.resolve(__dirname, 'build'),
-    filename: 'app.js'
+    filename: 'bundle.js',
+    path: path.resolve(__dirname, 'app'),
+    publicPath: '/'
   },
-  devServer: {
-    host: "localhost", // Your Computer Name
-    port: 8080
-  },
-
-  plugins: [
-    // Copy our app's index.html to the build folder.
-    new CopyWebpackPlugin([
-      { from: './app/index.html', to: "index.html" }
-    ]),
-  ],
   module: {
-    rules: [
-      {
-       test: /\.css$/,
-       use: [ 'style-loader', 'css-loader' ]
-      }
-    ],
-    loaders: [
-      { test: /\.json$/, use: 'json-loader' },
-      {
-        test: /\.js$/,
-        exclude: /(node_modules|bower_components)/,
-        loader: 'babel-loader',
-        query: {
-          presets: ['es2015'],
-          plugins: ['transform-runtime']
-        }
-      }
-    ]
-  }
+    rules: [{
+      test: /\.css$/,
+      use: [
+	'style-loader',
+	'css-loader'
+      ]
+    }]
+  },
+  //mode: 'development'
 }
