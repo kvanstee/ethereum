@@ -615,8 +615,16 @@ window.addEventListener('load', function() {
     var newcurr = this.value;
     var sell = document.getElementById("sell_orders");
     while (sell.hasChildNodes()) sell.removeChild(sell.lastChild);
+    document.getElementById("new_sell_contract").className = 'shown';
+    document.getElementById("sell_contract_functions").className = 'hidden';
+    document.getElementById("selSellAddr").className = 'hidden';
+    document.getElementById("terminate_sell_contract").className = 'hidden';
     var buy = document.getElementById("buy_orders");
     while (buy.hasChildNodes()) buy.removeChild(buy.lastChild);
+    document.getElementById("new_buy_contract").className = 'shown';
+    document.getElementById("buy_contract_functions").className = 'hidden';
+    document.getElementById("selBuyAddr").className = 'hidden';
+    document.getElementById("terminate_buy_contract").className = 'hidden';
     socket.emit('join', {account:account.substring(2,7), curr:newcurr}, function(err){
       if(err) alert(err);
       else console.log('connected to server');

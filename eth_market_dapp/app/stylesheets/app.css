@@ -21,7 +21,7 @@ label {
 }
 
 input {
-  width: 100px;
+  width: 130px;
   padding: 5px;
   font-size: 16px;
 }
@@ -29,14 +29,16 @@ input {
 select {
   font-size: 48px;
 }
-
+h1 {
+  color: black;
+  font-size: 45px;
+}
 h2 {
   color: black;
   font-size: 32px;
 }
 
 h3 {
-  font-weight: normal;
   color: black;
   font-size: 24px;
 }
@@ -46,7 +48,7 @@ table {
 }
 
 td {
-  border: 2px #DDD solid; padding: 1px; cursor: pointer;
+  border: 2px #DDD solid; padding: 2px; cursor: pointer;
 }
 .selected {
   background-color: lightgreen;
@@ -64,16 +66,18 @@ td {
     float: left;
 }
 #sell {
-    width: 15cm;
+    width: 16cm;
     margin: 20px;
     border: 3px solid #73AD21; 
     float: left;
+    padding: 5px;
 }
 #buy {
-    width: 15cm;
+    width: 16cm;
     margin: 20px;
     border: 3px solid #73AD21; 
     float: left;
+    padding: 5px;
 }
 
 #chat {

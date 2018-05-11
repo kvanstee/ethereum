@@ -16,22 +16,20 @@
   "license": "",
   "dependencies": {
     "crypto": "^1.0.1",
+    "css-loader": "^0.28.11",
     "express": "^4.16.2",
-    "html-webpack-plugin": "^3.2.0",
     "https": "^1.0.0",
     "jquery": "^3.3.1",
     "moment": "^2.19.1",
     "openssl": "^1.1.0",
-    "socket.io": "^2.0.3",
+    "socket.io": "^2.1.0",
+    "style-loader": "^0.13.1",
     "webpack": "^4.0.1",
-    "webpack-cli": "^2.0.9",
-    "css-loader": "^0.28.11",
-    "style-loader": "^0.21.0"
+    "webpack-cli": "^2.0.9"
   },
   "devDependencies": {
-    "nodemon": "^1.12.1",
     "babel-cli": "^6.22.2",
-    "babel-core": "^6.22.1",
+    "babel-core": "^6.26.3",
     "babel-eslint": "^6.1.2",
     "babel-loader": "^6.2.10",
     "babel-plugin-transform-runtime": "^6.22.0",
@@ -39,17 +37,14 @@
     "babel-preset-es2015": "^6.22.0",
     "babel-register": "^6.22.0",
     "copy-webpack-plugin": "^4.0.1",
-    "css-loader": "^0.26.1",
     "eslint": "^3.14.0",
     "eslint-config-standard": "^6.0.0",
     "eslint-plugin-babel": "^4.0.0",
     "eslint-plugin-promise": "^3.0.0",
     "eslint-plugin-standard": "^2.0.0",
-    "html-webpack-plugin": "^2.28.0",
     "json-loader": "^0.5.4",
-    "style-loader": "^0.13.1",
+    "nodemon": "^1.12.1",
     "truffle-contract": "^1.1.6",
-    "web3": "^0.18.2",
-    "webpack": "^2.2.1"
+    "web3": "^0.18.2"
   }
 }
