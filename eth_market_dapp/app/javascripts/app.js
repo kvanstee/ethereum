@@ -3,7 +3,6 @@ import "../stylesheets/app.css";
 // Import libraries we need.
 import jQuery from 'jquery';
 window.$ = window.jQuery = jQuery;
-import moment from 'moment';
 import Mustache from './libs/mustache.js';
 require ('./libs/deparam.js');
 import io from 'socket.io-client';
@@ -41,7 +40,7 @@ window.App = {
     // retrieve Buy and Sell order values from contracts using logged events from Orders.sol
     Orders.deployed().then(function(instance) {
       //VVVVVV SELL SELL SELL VVVVVV
-      instance.LogNewSellOrder({currency:fiat_curr}, {fromBlock:0}, function(err, result) {
+      instance.LogNewSellOrder({currency:fiat_curr}, {fromBlock:5.2e6}, function(err, result) {
         if (err) return;
         var address = result.args.sellorder;
         var removeEvent = instance.LogRemoveSellOrder({sellorder:address}, {fromBlock:result.blockNumber});
@@ -104,7 +103,7 @@ window.App = {
       //^^^^^^^ SELL SELL SELL ^^^^^^^
 
       //VVVVVVV BUY BUY BUY VVVVVVV
-      instance.LogNewBuyOrder({currency:fiat_curr}, {fromBlock:0}, function(err, result) {
+      instance.LogNewBuyOrder({currency:fiat_curr}, {fromBlock:5.2e6}, function(err, result) {
         if (err) return;
         var address = result.args.buyorder;
         var removeEvent = instance.LogRemoveBuyOrder({buyorder:address}, {fromBlock:result.blockNumber});
@@ -653,12 +652,12 @@ window.addEventListener('load', function() {
   });
 
   socket.on('newMessage', function(message){
-    var formattedTime = moment(message.createdAt).format('h:mm a');
+    var time = new Date();
     var template = jQuery('#message-template').html();
     var html = Mustache.render(template, {
       text: message.text,
       from: message.from,
-      createdAt: formattedTime
+      createdAt: time.getHours() + ":" + time.getMinutes()
     });
     jQuery('#messages').append(html);
     var  messages = jQuery('#messages'),
