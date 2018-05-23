@@ -2,8 +2,7 @@ var  express = require('express'),
      app = express(),
      socketIO = require('socket.io'),
      http = require('http'),
-     time = require('moment')().valueOf(),
-     crypto = require('crypto'),
+     //crypto = require('crypto'),
      key = "ladkfjeoijiejoef9878euofjopd6y7e452vjl",
      server = http.createServer(app),
      io = socketIO(server);
@@ -11,8 +10,7 @@ var  express = require('express'),
 var generateMessage = function(from, text){
     return {
         from,
-        text,
-        createdAt: time
+        text
     };
 };
 var isRealString = function(str) {
@@ -59,7 +57,7 @@ io.on('connection', function(socket){
         socket.join(params.curr);
         addUser(socket.id, params.account, params.curr);
         io.to(params.curr).emit('updateUserList', getUserList(params.curr));
-        socket.emit('newMessage', generateMessage('Admin', 'Welcome to eth trading with ' + params.curr + '. Click on row to interact or add new contract'));
+        socket.emit('newMessage', generateMessage('Admin', 'Welcome to eth trading with ' + params.curr + '. Click on row to interact or add new contract.'));
         socket.broadcast.to(params.curr).emit('newMessage', generateMessage('Admin',  `${params.account} joined`));
 
         callback();
@@ -68,13 +66,13 @@ io.on('connection', function(socket){
     socket.on('createMessage', function(message, callback) {
         var sender = getUser(socket.id);
 	var receiver = getUserByName(message.to);
-        var enc = crypto.createCipher("aes-256-ctr", key).update(message.text, "utf-8", "hex");
-        var dec = crypto.createDecipher("aes-256-ctr", key).update(enc, "hex", "utf-8");
+        //var enc = crypto.createCipher("aes-256-ctr", key).update(message.text, "utf-8", "hex");
+        //var dec = crypto.createDecipher("aes-256-ctr", key).update(enc, "hex", "utf-8");
         if(sender && isRealString(message.text)){
        	    if(receiver){
-	        io.to(receiver.id).emit('newMessage', generateMessage(sender.name,dec));
-		socket.emit('newMessage', generateMessage(sender.name,dec));
-            } else if(!isRealString(message.to)) io.to(sender.room).emit('newMessage', generateMessage(sender.name,dec));
+	        io.to(receiver.id).emit('newMessage', generateMessage(sender.name,message.txt/*dec*/));
+		socket.emit('newMessage', generateMessage(sender.name,message.text/*dec*/));
+            } else if(!isRealString(message.to)) io.to(sender.room).emit('newMessage', generateMessage(sender.name,message.text/*dec*/));
         }
 
         callback();
