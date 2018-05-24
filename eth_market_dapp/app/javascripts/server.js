@@ -48,11 +48,13 @@ io.on('connection', function(socket){
     console.log('New user connected');
 
     socket.on('join', function(params, callback){
-        var user = removeUser(socket.id);
-        if (user) {
+        var prev_user = getUser(socket.id);
+        if (prev_user) {
           // leave the current room (stored in session)
-          socket.leave(user.curr);
-          socket.broadcast.to(user.curr).emit('newMessage', generateMessage('Admin',  `${user.account} has left this room`));
+          users = users.filter((user) => user.id !== prev_user.id);
+          io.to(prev_user.curr).emit('updateUserList', getUserList(prev_user.curr));
+          socket.broadcast.to(prev_user.curr).emit('newMessage', generateMessage('Admin',  `${prev_user.account} has left`));
+          socket.leave(prev_user.curr);
         }
         socket.join(params.curr);
         addUser(socket.id, params.account, params.curr);
@@ -70,9 +72,9 @@ io.on('connection', function(socket){
         //var dec = crypto.createDecipher("aes-256-ctr", key).update(enc, "hex", "utf-8");
         if(sender && isRealString(message.text)){
        	    if(receiver){
-	        io.to(receiver.id).emit('newMessage', generateMessage(sender.name,message.txt/*dec*/));
+	        io.to(receiver.id).emit('newMessage', generateMessage(sender.name, message.text/*dec*/));
 		socket.emit('newMessage', generateMessage(sender.name,message.text/*dec*/));
-            } else if(!isRealString(message.to)) io.to(sender.room).emit('newMessage', generateMessage(sender.name,message.text/*dec*/));
+            } else if(!isRealString(message.to)) io.to(sender.room).emit('newMessage', generateMessage(sender.name, message.text/*dec*/));
         }
 
         callback();
