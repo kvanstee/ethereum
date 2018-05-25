@@ -3,7 +3,7 @@ var  express = require('express'),
      socketIO = require('socket.io'),
      http = require('http'),
      //crypto = require('crypto'),
-     key = "ladkfjeoijiejoef9878euofjopd6y7e452vjl",
+     //key = "ladkfjeoijiejoef9878euofjopd6y7e452vjl",
      server = http.createServer(app),
      io = socketIO(server);
 
@@ -49,12 +49,11 @@ io.on('connection', function(socket){
 
     socket.on('join', function(params, callback){
         var prev_user = getUser(socket.id);
-        if (prev_user) {
-          // leave the current room (stored in session)
+        if (prev_user) {//previously in another room/currency
           users = users.filter((user) => user.id !== prev_user.id);
-          io.to(prev_user.curr).emit('updateUserList', getUserList(prev_user.curr));
-          socket.broadcast.to(prev_user.curr).emit('newMessage', generateMessage('Admin',  `${prev_user.account} has left`));
-          socket.leave(prev_user.curr);
+          io.to(prev_user.room).emit('updateUserList', getUserList(prev_user.room));
+          socket.broadcast.to(prev_user.room).emit('newMessage', generateMessage('Admin',  `${prev_user.name} has left`));
+          socket.leave(prev_user.room);
         }
         socket.join(params.curr);
         addUser(socket.id, params.account, params.curr);
