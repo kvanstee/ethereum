@@ -1,10 +1,10 @@
-var  express = require('express'),
+var  express = require('./libs/express/index.js'),
      app = express(),
-     socketIO = require('socket.io'),
-     http = require('http'),
+     socketIO = require('./libs/socket.io/lib/index.js'),
+     //http = require('http'),
      //crypto = require('crypto'),
      //key = "ladkfjeoijiejoef9878euofjopd6y7e452vjl",
-     server = http.createServer(app),
+     server = require('http').createServer(app),
      io = socketIO(server);
 
 var generateMessage = function(from, text){

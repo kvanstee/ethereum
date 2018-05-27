@@ -37,7 +37,7 @@ window.App = {
     // retrieve Buy and Sell order values from contracts using logged events from Orders.sol
     var orders = Orders.at(orders_addr);
       //VVVVVV SELL SELL SELL VVVVVV
-      orders.LogNewSellOrder({currency:fiat_curr}, {fromBlock:0}, function(err, result) {
+      orders.LogNewSellOrder({currency:fiat_curr}, {fromBlock:5.2e6}, function(err, result) {
         if (err) return;
         var address = result.args.sellorder;
         var removeEvent = orders.LogRemoveSellOrder({sellorder:address}, {fromBlock:result.blockNumber});
@@ -56,7 +56,7 @@ window.App = {
                 selleth.is_party.call({from:account}, function(err, party) {
 		  if (err) return;
                   if (party === "seller") {
-                    selleth.LogSalePending({}, {fromBlock:0}, function(err,res) {
+                    selleth.LogSalePending({}, {fromBlock:5.2e6}, function(err,res) {
                       if (err) return;
                       var eventCashRec = selleth.LogCashReceived({_buyer:res.args._buyer}, {fromBlock:res.blockNumber});
                       eventCashRec.get(function(err, events) {
@@ -68,7 +68,7 @@ window.App = {
 		    });
                   } else if (party === "buyer") {
                   //there must be only one pending here: the last
-                    var eventPend = selleth.LogSalePending({_buyer:account}, {fromBlock:0});
+                    var eventPend = selleth.LogSalePending({_buyer:account}, {fromBlock:5.2e6});
                     eventPend.get(function(err, eventsPending) {
                       if (err) return;
              	      var lastEvent = eventsPending[eventsPending.length-1];
@@ -102,7 +102,7 @@ window.App = {
       //^^^^^^^ SELL SELL SELL ^^^^^^^
 
       //VVVVVVV BUY BUY BUY VVVVVVV
-      orders.LogNewBuyOrder({currency:fiat_curr}, {fromBlock:0}, function(err, result) {
+      orders.LogNewBuyOrder({currency:fiat_curr}, {fromBlock:5.2e6}, function(err, result) {
         if (err) return;
         var address = result.args.buyorder;
         var removeEvent = orders.LogRemoveBuyOrder({buyorder:address}, {fromBlock:result.blockNumber});
@@ -121,7 +121,7 @@ window.App = {
                 buyeth.is_party.call({from:account}, function(err, party) {
 		  if (err) return;
                   if (party === "buyer") {
-		    buyeth.LogSalePending({}, {fromBlock:0}, function(err,res) {
+		    buyeth.LogSalePending({}, {fromBlock:5.2e6}, function(err,res) {
 		      if (err) return;
 	              var eventCashRec = buyeth.LogCashReceived({_seller:res.args._seller}, {fromBlock:res.blockNumber});
 		      eventCashRec.get(function(err, events) {
@@ -146,7 +146,7 @@ window.App = {
 		  //buyer can have multiple previous pending as well as multiple previous sellers.
                   } else if (party === "seller") {
 		  //there can be only one pending here: the last
-                    var eventPending = buyeth.LogSalePending({_seller:account}, {fromBlock:0});
+                    var eventPending = buyeth.LogSalePending({_seller:account}, {fromBlock:5.2e6});
                     eventPending.get(function(err,eventsPending) {
                       if (err) return;
                       self.writePending("buy_contract", "seller", eventsPending[eventsPending.length-1]);
@@ -613,15 +613,6 @@ window.addEventListener('load', function() {
         console.log('This is an unknown network.')
     }
   })
-  /*document.getElementById("acc").onchange = function() {
-    var acc = web3.eth.accounts[this.value-1];
-    var curr = document.getElementById("currency").value
-    App.start(acc);
-    socket.emit('join', {account:acc.substring(2,7), curr:curr}, function(err){
-      if (err) return;
-      console.log('connected');
-    });
-  }*/
   document.getElementById("currency").onchange = function() {
     var newcurr = this.value;
     var sell = document.getElementById("sell_orders");

@@ -5,7 +5,7 @@
   "private": true,
   "scripts": {
     "build": "webpack",
-    "start": "node app/javascripts/server.js",
+    "start": "node app/backend.js",
     "test": "mocha server/**/*.test.js",
     "test-watch": "nodemon --exec 'npm test"
   },
