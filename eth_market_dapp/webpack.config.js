@@ -14,7 +14,7 @@ module.exports = [
   {
     name: "client",
     entry: {
-      index: './app/javascripts/app.js',
+      index: './src/javascripts/app.js',
     },
     plugins: [
       new webpack.optimize.OccurrenceOrderPlugin(),
@@ -25,7 +25,7 @@ module.exports = [
     ],
     output: {
       filename: 'bundle.js',
-      path: path.resolve(__dirname, 'app'),
+      path: path.resolve(__dirname, 'app/public'),
     },
     module: {
       rules: [{
@@ -36,11 +36,11 @@ module.exports = [
         ]
       }]
     },
-    mode: 'development'
+    mode: 'production'
   },
   {
     name: 'server',
-    entry: './app/javascripts/server.js',
+    entry: './src/javascripts/server.js',
     target: 'node',
     output: {
       filename: 'backend.js',
@@ -51,7 +51,7 @@ module.exports = [
     __filename: true
     },
     externals: nodeModules,
-    mode: 'development',
+    mode: 'production',
     plugins: [
       new webpack.IgnorePlugin(/\.(css|less)$/),
       new webpack.BannerPlugin('require("source-map-support").install();')//, { raw: true, entryOnly: false })

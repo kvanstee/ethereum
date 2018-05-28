@@ -1,6 +1,6 @@
-var  express = require('./libs/express/index.js'),
+var  express = require('express'),
      app = express(),
-     socketIO = require('./libs/socket.io/lib/index.js'),
+     socketIO = require('socket.io'),
      //http = require('http'),
      //crypto = require('crypto'),
      //key = "ladkfjeoijiejoef9878euofjopd6y7e452vjl",
@@ -42,7 +42,7 @@ function getUserList(room){
 };
 var port = process.env.PORT || 8080;
 
-app.use(express.static('app'));
+app.use(express.static('app/public'));
 
 io.on('connection', function(socket){
     console.log('New user connected');
