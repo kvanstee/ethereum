@@ -182,11 +182,11 @@ window.App = {
       if (party == "seller") {
         trans[0].innerHTML = parseInt(_result.args.value/_result.args._price/100);
         trans[1].innerHTML = "from";
-        trans[2].innerHTML = "<input value=" + _result.args._buyer + ">";
+        trans[2].innerHTML = "<input value=" + _result.args._buyer + " readonly>";
         trans[3].innerHTML = "<button id=" + pend_tx_id  + ">payment received</button>";
       } else if (party == "buyer") {
         trans[1].innerHTML = "to";
-        trans[2].innerHTML = "<input value=" + _result.args._seller + ">";
+        trans[2].innerHTML = "<input value=" + _result.args._seller + " readonly>";
         trans[3].innerHTML = "<span id=" + pend_tx_id +">pending</span>";
         trans[0].innerHTML = parseInt(_result.args.value/_result.args._price/100);
       };

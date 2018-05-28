@@ -36,7 +36,7 @@ module.exports = [
         ]
       }]
     },
-    mode: 'production'
+    mode: 'development'
   },
   {
     name: 'server',
@@ -51,7 +51,7 @@ module.exports = [
     __filename: true
     },
     externals: nodeModules,
-    mode: 'production',
+    mode: 'development',
     plugins: [
       new webpack.IgnorePlugin(/\.(css|less)$/),
       new webpack.BannerPlugin('require("source-map-support").install();')//, { raw: true, entryOnly: false })
