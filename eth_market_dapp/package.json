@@ -10,7 +10,7 @@
     "test-watch": "nodemon --exec 'npm test"
   },
   "engines": {
-    "node": "5.6.0"
+    "node": "8.9.1"
   },
   "author": "kvanstee+sethmcguire",
   "license": "",
