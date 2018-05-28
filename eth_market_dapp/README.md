@@ -24,7 +24,7 @@ function newSellOrder(uint price) public payable {
     LogNewSellOrder(order);    
   }
 ```
-```price``` is wei per smallest fiat currency unit such as a cent. Thus more than $50 value of ether is required to create the sell (and buy) order.
+```price``` is wei per smallest fiat currency unit such as a cent. Thus more than $100 value of ether is required to create the sell order and more than $50 to create the buy order.
  
 Here is the constructor of Sell_eth.sol:
 
