@@ -2,16 +2,7 @@
 
 http://128.199.144.211:8080. MAIN NETWORK.
 
-This app is LIVE at the above address. To run this on localhost:
-
-```
-git clone https://github.com/kvanstee/ethereum/tree/master/eth_market_dapp.git
-cd eth_market_dapp
-npm install --production
-npm run build
-npm start
-```
-Connect to the MAIN NETWORK using the 'metamask' browser extension. Then navigate to localhost:8080.
+Connect to the MAIN NETWORK using the 'metamask' browser extension.
 
 This is a market for ether. A chat application is used to organise fiat currency transfer independently. There are 3 very simple contracts: a base contract 'Orders' generates either a sell order contract 'Sell_eth', or a buy order contract 'Buy_eth'. Each new sell or buy order  grants 'ownership' to the contract initiator. She can 'selfdestruct' the contract to herself and change price and volume.
 
@@ -58,5 +49,15 @@ function confirmReceived(address _buyer) public onlySeller payable {
 The 'owner' of the sell contract receives the currency from the buyer '_buyer' and calls the confirmReceived() function transferring purchase plus deposit to the buyer.
 
 To add an order fill out the fields below the table and click 'add new buy/sell order'. To change price or volume click on the table row and if you are the 'owner' of the contract appropriate fields will be displayed. If you are not the 'owner' the fields displayed allow buying from or selling to the contract. The fields may take a few seconds to appear. If there are no pending transactions the contract can be terminated and ether returned.
+
+To run on localhost:
+
+```
+git clone https://github.com/kvanstee/ethereum/tree/master/eth_market_dapp.git
+cd eth_market_dapp
+npm install --production
+npm run build
+npm start
+```
 
 
