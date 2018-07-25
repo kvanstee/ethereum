@@ -4,8 +4,7 @@ require('../stylesheets/app.css');
 var jQuery = require('./libs/jquery-3.2.1.min.js');
 window.$ = window.jQuery = jQuery;
 var Mustache = require('./libs/mustache.js');
-require ('./libs/deparam.js');
-var io = require('socket.io-client');
+var deparam = require ('./libs/deparam.js');
 
 //import { default as Web3} from 'web3';
 
@@ -633,59 +632,6 @@ window.addEventListener('load', function() {
     });;
     App.start(account);
   };
-  const socket = io();
-  socket.on('connect', function(){
-    var params = {account:web3.eth.accounts[0].substring(2,7), curr:document.getElementById("currency").value};
-    socket.emit('join', params, function(err){
-      if(err) alert(err);
-      else console.log('connected to server');
-    });
-  });
-
-  socket.on('disconnect', function(){
-    console.log('Disconnected from server');
-  });
-
-  socket.on('updateUserList', function(users){
-    var ol = jQuery('<ol></ol>');
-    users.forEach(function(user){
-      ol.append(jQuery('<li></li>').text(user));
-    });
-    jQuery('#users').html(ol);
-  });
-
-  socket.on('newMessage', function(message){
-    var time = new Date();
-    var template = jQuery('#message-template').html();
-    var html = Mustache.render(template, {
-      text: message.text,
-      from: message.from,
-      createdAt: time.getHours() + ":" + time.getMinutes()
-    });
-    jQuery('#messages').append(html);
-    var  messages = jQuery('#messages'),
-         newMessage = messages.children('li:last-child'),
-         clientHeight = messages.prop('clientHeight'),
-         scrollTop = messages.prop('scrollTop'),
-         scrollHeight = messages.prop('scrollHeight'),
-         newMessageHeight = newMessage.innerHeight(),
-         lastMessageHeight = newMessage.prev().innerHeight();
-    if(clientHeight + scrollTop + newMessageHeight + lastMessageHeight >= scrollHeight){
-        messages.scrollTop(scrollHeight);
-    }
-  });
-
-  jQuery('#message-form').on('submit', function(e){
-    e.preventDefault();
-    var messageTextbox = jQuery('[name=message]');
-    var toTextbox = jQuery('[name=receiver]');
-    socket.emit('createMessage', {
-      text: messageTextbox.val(),
-      to: toTextbox.val()
-    }, function(){
-      messageTextbox.val('');
-    });
-  });
   Sell_eth = web3.eth.contract(selleth_abi);
   Buy_eth = web3.eth.contract(buyeth_abi);
   Orders = web3.eth.contract(orders_abi);
