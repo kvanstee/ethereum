@@ -1,10 +1,10 @@
 # eth_market_dapp
 
-http://128.199.144.211:8080. MAIN NETWORK.
+dat://8bb51dd8cd4ae38db264bd7ee16c2b1a135a6cce3587b742d684e3fd014c18da. MAIN NETWORK.
 
 Connect to the MAIN NETWORK using the 'metamask' browser extension.
 
-This is a market for ether. A chat application is used to organise fiat currency transfer independently. There are 3 very simple contracts: a base contract 'Orders' generates either a sell order contract 'Sell_eth', or a buy order contract 'Buy_eth'. Each new sell or buy order  grants 'ownership' to the contract initiator. She can 'selfdestruct' the contract to herself and change price and volume.
+This is a market for ether. There are 3 very simple contracts: a base contract 'Orders' generates either a sell order contract 'Sell_eth', or a buy order contract 'Buy_eth'. Each new sell or buy order  grants 'ownership' to the contract initiator. She can 'selfdestruct' the contract to herself and change price and volume.
 
 Here is the code that generates a contract (Orders.sol):
 
@@ -53,11 +53,8 @@ To add an order fill out the fields below the table and click 'add new buy/sell 
 To run on localhost:
 
 ```
-git clone https://github.com/kvanstee/ethereum/tree/master/eth_market_dapp.git
-cd eth_market_dapp
-npm install --production
-npm run build
-npm start
+sudo apt-get install dat
+dat dat://8bb51dd8cd4ae38db264bd7ee16c2b1a135a6cce3587b742d684e3fd014c18da -http
+navigate to localhost:8080
 ```
-The chat app will be hosted at localhost and will not connect to the server above.
 
