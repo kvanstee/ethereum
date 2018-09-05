@@ -1,8 +1,5 @@
 # eth_market_dapp
 
-dat://8bb51dd8cd4ae38db264bd7ee16c2b1a135a6cce3587b742d684e3fd014c18da. MAIN NETWORK.
-
-Connect to the MAIN NETWORK using the 'metamask' browser extension.
 
 This is a market for ether. There are 3 very simple contracts: a base contract 'Orders' generates either a sell order contract 'Sell_eth', or a buy order contract 'Buy_eth'. Each new sell or buy order  grants 'ownership' to the contract initiator. She can 'selfdestruct' the contract to herself and change price and volume.
 
@@ -50,12 +47,15 @@ The 'owner' of the sell contract receives the currency from the buyer ```_buyer`
 
 To add an order fill out the fields below the table and click 'add new buy/sell order'. To change price or volume click on the table row and if you are the 'owner' of the contract appropriate fields will be displayed. If you are not the 'owner' the fields displayed allow buying from or selling to the contract. The fields may take a few seconds to appear. If there are no pending transactions the contract can be terminated and ether returned.
 
-To run on localhost:
+A barebones working example on MAIN NETWORK is here:
+dat://8bb51dd8cd4ae38db264bd7ee16c2b1a135a6cce3587b742d684e3fd014c18da. To read dat format install the node package dat:
 
-```
-sudo apt-get install dat
-dat dat://8bb51dd8cd4ae38db264bd7ee16c2b1a135a6cce3587b742d684e3fd014c18da -http
-navigate to localhost:8080
-```
+'''sudo npm install -g dat
+dat dat://8bb51dd8cd4ae38db264bd7ee16c2b1a135a6cce3587b742d684e3fd014c18da --http'''
 
+Navigate to localhost:8080.
+Firefox has an addon that supports dat protocol: https://addons.mozilla.org/en-US/firefox/addon/dat-p2p-protocol/.
+Beaker browser can't install the metamask extension.
+
+Connect to the MAIN NETWORK with the 'metamask' browser extension.  
 
