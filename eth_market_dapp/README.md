@@ -50,8 +50,8 @@ To add an order fill out the fields below the table and click 'add new buy/sell 
 A barebones working example on MAIN NETWORK is here:
 dat://8bb51dd8cd4ae38db264bd7ee16c2b1a135a6cce3587b742d684e3fd014c18da. To read dat format install the node package dat:
 
-'''sudo npm install -g dat'''
-'''dat dat://8bb51dd8cd4ae38db264bd7ee16c2b1a135a6cce3587b742d684e3fd014c18da --http'''
+```sudo npm install -g dat
+dat dat://8bb51dd8cd4ae38db264bd7ee16c2b1a135a6cce3587b742d684e3fd014c18da --http```
 
 Navigate to localhost:8080.
 Firefox has an addon that supports dat protocol: https://addons.mozilla.org/en-US/firefox/addon/dat-p2p-protocol/.
