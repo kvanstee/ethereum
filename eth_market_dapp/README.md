@@ -27,7 +27,9 @@ function Sell_eth(bytes3 _curr, uint _price, address _seller, address _orders) p
 }
 ```
 
-The new sell order has the msg.value of the Order function call ```newSellOrder()``` transferred directly to the ```msg.value``` of the Sell_eth contract constructor ```Sell_eth()```. The Orders contract address ```this``` allows the new sell contract to cause the Orders contract to emit a ```LogRemoveSellOrder()``` event which removes the order from the table. This occurs on selfdestruct of the sell order.  
+The new sell order has the msg.value of the Order function call ```newSellOrder()``` transferred directly to the ```msg.value``` of the Sell_eth contract constructor ```Sell_eth()```. 
+
+The constructor variable ```_orders``` is supplied by the newSellOrder variable ```this``` which is the orders contract address. This allows the new sell contract to communicate with the mother contract (orders) basically to emit a ```LogRemoveSellORder``` event.  
 
 To enable a trustless transaction each party must put up a returnable deposit equal to the contract amount. Thus a sell action will require twice the transaction value and a buy action requires a deposit of the contract amount. For example: in the above code ```weiForSale``` is half the ```msg.value```. A buyer will send currency to the seller who will confirm receipt because her deposit will be released. This confirmation will also send 2 times the transaction value to the buyer (sale + deposit). A contract cannot be terminated while the 'pending' variable > 0. For simplicity the same address cannot have more than one pending transaction in a particular contract.
   
