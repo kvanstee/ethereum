@@ -37,25 +37,6 @@ module.exports = [
       }]
     },
     mode: 'development'
-  },
-  {
-    name: 'server',
-    entry: './src/javascripts/server.js',
-    target: 'node',
-    output: {
-      filename: 'backend.js',
-      path: path.resolve(__dirname, 'app'),
-    },
-    node: {
-    __dirname: true,
-    __filename: true
-    },
-    externals: nodeModules,
-    mode: 'development',
-    plugins: [
-      new webpack.IgnorePlugin(/\.(css|less)$/),
-      new webpack.BannerPlugin('require("source-map-support").install();')//, { raw: true, entryOnly: false })
-    ]
   }
 ]
 

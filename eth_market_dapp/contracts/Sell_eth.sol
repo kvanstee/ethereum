@@ -16,7 +16,7 @@ contract Sell_eth {
     event LogSalePending(address indexed _seller, address indexed _buyer, uint value, uint _price);
     event LogCashReceived(address indexed _buyer, address indexed _seller);
 
-    function Sell_eth(uint _price, address _seller, address _orders) public payable {
+    constructor(uint _price, address _seller, address _orders) public payable {
         orders = Orders(_orders);
         seller = _seller;
         price = _price;

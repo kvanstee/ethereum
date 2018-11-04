@@ -4,8 +4,7 @@ require('../stylesheets/app.css');
 var jQuery = require('./libs/jquery-3.2.1.min.js');
 window.$ = window.jQuery = jQuery;
 var Mustache = require('./libs/mustache.js');
-require ('./libs/deparam.js');
-var io = require('socket.io-client');
+var deparam = require ('./libs/deparam.js');
 
 //import { default as Web3} from 'web3';
 
@@ -584,9 +583,31 @@ window.App = {
   },
 },
 
-window.addEventListener('load', function() {
+window.addEventListener('load', async function() {
   // Checking if Web3 has been injected by the browser (Mist/MetaMask)
-  if (typeof web3 !== 'undefined') {
+  if (window.ethereum) {
+    window.web3 = new Web3(ethereum);
+    try {
+      // Request account access if needed
+      await ethereum.enable();
+      // Acccounts now exposed
+      //web3.eth.sendTransaction({/* ... */});
+    } catch (error) {
+      // User denied account access...
+      console.log(error);
+    }
+  }
+  // Legacy dapp browsers...
+  else if (window.web3) {
+    window.web3 = new Web3(web3.currentProvider);
+    // Acccounts always exposed
+    //web3.eth.sendTransaction({/* ... */});
+  }
+    // Non-dapp browsers...
+  else {
+    console.log('Non-Ethereum browser detected. You should consider trying MetaMask!');
+  }
+ /* if (typeof web3 !== 'undefined') {
     //console.warn("Using web3 detected from external source. If you find that your accounts don't appear or you have 0 MetaCoin, ensure you've configured that source properly. If using MetaMask, see the following link. Feel free to delete this warning. :) http://truffleframework.com/tutorials/truffle-and-metamask")
     // Use Mist/MetaMask's provider
     window.web3 = new Web3(web3.currentProvider);
@@ -594,14 +615,11 @@ window.addEventListener('load', function() {
     console.warn("No web3 detected. Falling back to http://localhost:8545.");
     // fallback - use your fallback strategy (local node / hosted node + in-dapp id mgmt / fail)
     window.web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
-  }
-  web3.version.getNetwork((err, netId) => {
+  }*/
+  window.web3.version.getNetwork((err, netId) => {
     switch (netId) {
       case "1":
         console.log('This is mainnet')
-        break
-      case "2":
-        console.log('This is the deprecated Morden test network.')
         break
       case "3":
         console.log('This is the ropsten test network.')
@@ -627,65 +645,12 @@ window.addEventListener('load', function() {
     document.getElementById("buy_contract_functions").className = 'hidden';
     document.getElementById("selBuyAddr").className = 'hidden';
     document.getElementById("terminate_buy_contract").className = 'hidden';
-    socket.emit('join', {account:account.substring(2,7), curr:newcurr}, function(err){
+    /*socket.emit('join', {account:account.substring(2,7), curr:newcurr}, function(err){
       if(err) alert(err);
       else console.log('connected to server');
-    });;
+    });*/
     App.start(account);
   };
-  const socket = io();
-  socket.on('connect', function(){
-    var params = {account:web3.eth.accounts[0].substring(2,7), curr:document.getElementById("currency").value};
-    socket.emit('join', params, function(err){
-      if(err) alert(err);
-      else console.log('connected to server');
-    });
-  });
-
-  socket.on('disconnect', function(){
-    console.log('Disconnected from server');
-  });
-
-  socket.on('updateUserList', function(users){
-    var ol = jQuery('<ol></ol>');
-    users.forEach(function(user){
-      ol.append(jQuery('<li></li>').text(user));
-    });
-    jQuery('#users').html(ol);
-  });
-
-  socket.on('newMessage', function(message){
-    var time = new Date();
-    var template = jQuery('#message-template').html();
-    var html = Mustache.render(template, {
-      text: message.text,
-      from: message.from,
-      createdAt: time.getHours() + ":" + time.getMinutes()
-    });
-    jQuery('#messages').append(html);
-    var  messages = jQuery('#messages'),
-         newMessage = messages.children('li:last-child'),
-         clientHeight = messages.prop('clientHeight'),
-         scrollTop = messages.prop('scrollTop'),
-         scrollHeight = messages.prop('scrollHeight'),
-         newMessageHeight = newMessage.innerHeight(),
-         lastMessageHeight = newMessage.prev().innerHeight();
-    if(clientHeight + scrollTop + newMessageHeight + lastMessageHeight >= scrollHeight){
-        messages.scrollTop(scrollHeight);
-    }
-  });
-
-  jQuery('#message-form').on('submit', function(e){
-    e.preventDefault();
-    var messageTextbox = jQuery('[name=message]');
-    var toTextbox = jQuery('[name=receiver]');
-    socket.emit('createMessage', {
-      text: messageTextbox.val(),
-      to: toTextbox.val()
-    }, function(){
-      messageTextbox.val('');
-    });
-  });
   Sell_eth = web3.eth.contract(selleth_abi);
   Buy_eth = web3.eth.contract(buyeth_abi);
   Orders = web3.eth.contract(orders_abi);
