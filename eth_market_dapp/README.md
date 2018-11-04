@@ -27,7 +27,9 @@ function Sell_eth(bytes3 _curr, uint _price, address _seller, address _orders) p
 }
 ```
 
-The new sell order has the msg.value of the Order function call ```newSellOrder()``` transferred directly to the ```msg.value``` of the Sell_eth contract constructor ```Sell_eth()```. The Orders contract address ```this``` allows the new sell contract to cause the Orders contract to emit a ```LogRemoveSellOrder()``` event which removes the order from the table. This occurs on selfdestruct of the sell order.  
+The new sell order has the msg.value of the Order function call ```newSellOrder()``` transferred directly to the ```msg.value``` of the Sell_eth contract constructor ```Sell_eth()```. 
+
+The constructor variable ```_orders``` is supplied by the newSellOrder variable ```this``` which is the orders contract address. This allows the new sell contract to communicate with the mother contract (orders) basically to emit a ```LogRemoveSellORder``` event.  
 
 To enable a trustless transaction each party will include  a returnable deposit in the payment to the contract equal to the contract amount. Thus a sell action will require twice the transaction value and a buy action requires a deposit of the contract amount. For example: in the above code ```weiForSale``` is half the ```msg.value```. A buyer will send currency to the seller who will confirm receipt because her deposit will be released. This confirmation will also send 2 times the transaction value to the buyer (sale + deposit). A contract cannot be terminated while the 'pending' variable > 0. For simplicity the same address cannot have more than one pending transaction in a particular contract.
   
@@ -47,12 +49,7 @@ The 'owner' of the sell contract receives the currency from the buyer ```_buyer`
 
 To add an order fill out the fields below the table and click 'add new buy/sell order'. To change price or volume click on the table row and if you are the 'owner' of the contract appropriate fields will be displayed. If you are not the 'owner' the fields displayed allow buying from or selling to the contract. The fields may take a few seconds to appear. If there are no pending transactions the contract can be terminated and ether returned.
 
-Connect to the MAIN NETWORK with the 'metamask' browser extension.  
-
-This dapp is live in barebones form.
-
-Connect to the MAIN NETWORK using the 'metamask' browser extension.
-
-The dapp can then be accessed at https://ethmarket.hashbase.io or dat://8bb51dd8cd4ae38db264bd7ee16c2b1a135a6cce3587b742d684e3fd014c18da.
-
+A barebones working example on MAIN NETWORK is here:
+https://ethmarket.hashbase.io or dat://8bb51dd8cd4ae38db264bd7ee16c2b1a135a6cce3587b742d684e3fd014c18da.
+Of course you will need the metamask browser extension or equivilant to interact with the contracts.
 
