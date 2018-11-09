@@ -1,7 +1,7 @@
 # eth_market_dapp
 
 
-This is a market for ether. Four fiat currencies are supported now but any 3 character currency can be added by request. There are 3 very simple contracts. A base contract 'Orders' generates either a sell order contract: 'Sell_eth', or a buy order contract: 'Buy_eth'. Each new sell or buy order  grants 'ownership' to the contract initiator. She can 'selfdestruct' the contract to herself and change price and volume.
+This is a market for ether. There are 3 very simple contracts.
 
 Here is the code that generates a new sell contract from Orders.sol:
 
@@ -49,7 +49,4 @@ The 'owner' of the sell contract receives the currency from the buyer ```_buyer`
 
 To add an order fill out the fields below the table and click 'add new buy/sell order'. To change price or volume click on the table row and if you are the 'owner' of the contract appropriate fields will be displayed. If you are not the 'owner' the fields displayed allow buying from or selling to the contract. The fields may take a few seconds to appear. If there are no pending transactions the contract can be terminated and ether returned.
 
-A barebones working example on MAIN NETWORK is here:
-https://ethmarket.hashbase.io or dat://8bb51dd8cd4ae38db264bd7ee16c2b1a135a6cce3587b742d684e3fd014c18da.
-Of course you will need the metamask browser extension or equivilant to interact with the contracts.
 
