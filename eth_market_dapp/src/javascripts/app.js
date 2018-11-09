@@ -17,7 +17,7 @@ const orders_abi = require('../../build/contracts/orders.json').abi;
 // usable abstractions, which we'll use through the code below.
 var account;
 var fiat_curr; //fiat currency
-var orders_addr = '0x21cfe47ab87da70227de94e0942675a71521d8a7';
+var orders_addr = '';
 var Sell_eth;
 var Buy_eth;
 var Orders;
