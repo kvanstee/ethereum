@@ -2,11 +2,11 @@
 
 LIVE ON MAINNET at ethmarket@hashbase.io
 
-This is a decentralised exchange (DEX) for ether and a few fiat currencies. There are 3 very simple contracts: Orders.sol, Selleth.sol and Buyeth.sol;
+This is a decentralised exchange (DEX) for ether and a few fiat currencies. There are 3 very simple contracts: Orders.sol, Selleth.sol and Buyeth.sol.
 
-The maker, via Orders, produces a contract all of her own and controls the amount of ether in the contract and the ether price. The personal contract can be terminated and all funds in the contract returned. The mother contract Orders does not hold any ether (or anything else). 
+The maker, via Orders, produces a contract all of her own and controls the amount of ether in the contract and the ether price. The personal contract can be terminated and all funds in the contract returned. The mother contract, Orders, does not hold any ether (or any other currency). 
 
-To enable a trustless transaction each party will include  a returnable deposit in the payment to the contract equal to the contract amount. Thus a sell action will require twice the transaction value and a buy action requires a deposit of the contract amount. To make a sell contract for an amount ether will require twice the amount to initiate. Of course the extra is the maker's deposit.
+To enable a trustless transaction each party will include  a returnable deposit in the payment to the contract equal to the contract amount. A sell action will require twice the transaction value and a buy action requires a deposit of the contract amount. To make a sell contract for an amount of ether will require twice the amount to initiate and a buy contract will require a deposit of the amount of ether that is wanted to buy.
 
 Here is the code that generates a new sell contract from Orders.sol:
 
@@ -17,7 +17,7 @@ function newSellOrder(uint price) public payable {
     LogNewSellOrder(order);    
   }
 ```
-```price``` is wei per smallest fiat currency unit such as a cent. Thus more than $100 value of ether is required to create the sell order and more than $50 to create the buy order.
+```price``` is wei per smallest fiat currency unit such as a cent. At least $100 value of ether is required to create the sell order and at least $50 to create the buy order.
 
 Here is the constructor of Sell_eth.sol:
 
