@@ -9,7 +9,6 @@ contract Orders {
   event LogNewBuyOrder(bytes3 indexed currency, address buyorder);
   event LogRemoveSellOrder(address indexed sellorder);
   event LogRemoveBuyOrder(address indexed buyorder);   
-  event LogNewMessage(address indexed to, string message);
 
   function newSellOrder(bytes3 curr, uint price) public payable {
     require(msg.value/price >= 10000);
@@ -29,10 +28,6 @@ contract Orders {
 
   function removeBuyOrder() public {
     emit LogRemoveBuyOrder(msg.sender);
-  }
-
-  function message(address to, string new_message) public {
-    emit LogNewMessage(to, new_message);
   }
 
   function() public {revert();}

@@ -1,4 +1,4 @@
-const WebpackMonitor = require('webpack-monitor');
+//const WebpackMonitor = require('webpack-monitor');
 const path = require('path');
 const webpack = require('webpack');
 const fs = require('fs');
@@ -18,10 +18,10 @@ module.exports = [
     },
     plugins: [
       new webpack.optimize.OccurrenceOrderPlugin(),
-      new WebpackMonitor({
+      /*new WebpackMonitor({
         capture: true,
         launch: true,
-      }),
+      }),*/
     ],
     output: {
       filename: 'bundle.js',

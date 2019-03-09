@@ -1,7 +1,7 @@
 * {
   box-sizing: border-box;
   font-weight: 300;
-  font-size: .95rem;
+ /* font-size: .95rem;*/
 }
 
 body {
@@ -29,10 +29,12 @@ input {
 select {
   font-size: 48px;
 }
+
 h1 {
   color: black;
   font-size: 45px;
 }
+
 h2 {
   color: black;
   font-size: 32px;
