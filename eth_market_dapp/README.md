@@ -1,26 +1,30 @@
-# eth_market_dapp
+# eth_market_dapp 
 
+LIVE ON MAINNET at ethmarket@hashbase.io
 
-This is a market for ether. There are 3 very simple contracts.
+This is a decentralised exchange (DEX) for ether and a few fiat currencies. There are 3 very simple contracts: Orders.sol, Selleth.sol and Buyeth.sol;
+
+The maker, via Orders, produces a contract all of her own and controls the amount of ether in the contract and the ether price. The personal contract can be terminated and all funds in the contract returned. The mother contract Orders does not hold any ether (or anything else). 
+
+To enable a trustless transaction each party will include  a returnable deposit in the payment to the contract equal to the contract amount. Thus a sell action will require twice the transaction value and a buy action requires a deposit of the contract amount. To make a sell contract for an amount ether will require twice the amount to initiate. Of course the extra is the maker's deposit.
 
 Here is the code that generates a new sell contract from Orders.sol:
 
 ```
 function newSellOrder(uint price) public payable {
     require(msg.value/2 >= price*5000);
-    address order =(new Sell_eth).value(msg.value)(curr, price, msg.sender, this);
+    address order =(new Sell_eth).value(msg.value)(price, msg.sender, this);
     LogNewSellOrder(order);    
   }
 ```
 ```price``` is wei per smallest fiat currency unit such as a cent. Thus more than $100 value of ether is required to create the sell order and more than $50 to create the buy order.
- 
+
 Here is the constructor of Sell_eth.sol:
 
 ```
-function Sell_eth(bytes3 _curr, uint _price, address _seller, address _orders) payable {
+constructor(uint _price, address _seller, address _orders) payable {
     orders = Orders(_orders);
     seller = _seller;
-    curr = _curr;
     price = _price;
     pending = 0;
     weiForSale = msg.value / 2;
@@ -29,9 +33,7 @@ function Sell_eth(bytes3 _curr, uint _price, address _seller, address _orders) p
 
 The new sell order has the msg.value of the Order function call ```newSellOrder()``` transferred directly to the ```msg.value``` of the Sell_eth contract constructor ```Sell_eth()```. 
 
-The constructor variable ```_orders``` is supplied by the newSellOrder variable ```this``` which is the orders contract address. This allows the new sell contract to communicate with the mother contract (orders) basically to emit a ```LogRemoveSellORder``` event.  
-
-To enable a trustless transaction each party will include  a returnable deposit in the payment to the contract equal to the contract amount. Thus a sell action will require twice the transaction value and a buy action requires a deposit of the contract amount. For example: in the above code ```weiForSale``` is half the ```msg.value```. A buyer will send currency to the seller who will confirm receipt because her deposit will be released. This confirmation will also send 2 times the transaction value to the buyer (sale + deposit). A contract cannot be terminated while the 'pending' variable > 0. For simplicity the same address cannot have more than one pending transaction in a particular contract.
+The constructor variable ```_orders``` is supplied by the newSellOrder variable ```this``` which is the orders contract address. This allows the new sell contract to communicate with the mother contract (Orders) basically to emit a ```LogRemoveSellORder``` event.  
   
 There are five functions that allow wei to flow from the sell and buy contracts. Two are calls to ```selfdestruct()```. Only the Sell_eth contract has a push external call:
 
@@ -45,8 +47,8 @@ function confirmReceived(address _buyer) public onlySeller payable {
         LogCashReceived(_buyer, seller);
     }
 ```
-The 'owner' of the sell contract receives the currency from the buyer ```_buyer``` and calls the ```confirmReceived()``` function transferring purchase plus deposit to the buyer.
+The 'owner' of the sell contract receives fiat currency from the buyer ```_buyer``` and calls the ```confirmReceived()``` function transferring purchase plus deposit to the buyer.
 
-To add an order fill out the fields below the table and click 'add new buy/sell order'. To change price or volume click on the table row and if you are the 'owner' of the contract appropriate fields will be displayed. If you are not the 'owner' the fields displayed allow buying from or selling to the contract. The fields may take a few seconds to appear. If there are no pending transactions the contract can be terminated and ether returned.
+To add an order fill out the fields below the table and click 'add new buy/sell order'. To change price or volume click on the table row and if you are the 'owner' of the contract appropriate fields will be displayed. If you are not the 'owner' the fields displayed allow buying from or selling to the contract. If there are no pending transactions the contract can be terminated and ether returned. Apart from gas costs there are no transaction fees.
 
 
