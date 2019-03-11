@@ -1,4 +1,4 @@
-pragma solidity ^0.4.21;
+pragma solidity >=0.4.22 <0.6.0;
 
 import "./Orders.sol";
 
@@ -6,7 +6,7 @@ contract Sell_eth {
     Orders orders;
     uint weiForSale;
     uint price; //wei per smallest currency unit (eg. cent)
-    address seller;
+    address payable seller;
     mapping(address => uint) sales;
     uint8 pending;
     modifier onlySeller() {require(msg.sender == seller);  _;}
@@ -16,7 +16,7 @@ contract Sell_eth {
     event LogSalePending(address indexed _seller, address indexed _buyer, uint value, uint _price);
     event LogCashReceived(address indexed _buyer, address indexed _seller);
 
-    constructor(uint _price, address _seller, address _orders) public payable {
+    constructor(uint _price, address payable _seller, address _orders) public payable {
         orders = Orders(_orders);
         seller = _seller;
         price = _price;
@@ -34,7 +34,7 @@ contract Sell_eth {
         emit LogSalePending(seller, msg.sender, msg.value, price);
     }
 
-    function confirmReceived(address _buyer) public onlySeller payable {
+    function confirmReceived(address payable _buyer) public  onlySeller {
         require(sales[_buyer] > 0 && pending > 0);
         uint amt = sales[_buyer];
         sales[_buyer] = 0;
@@ -58,14 +58,14 @@ contract Sell_eth {
     function retr_funds() public onlySeller payable {
         require(pending == 0);
         orders.removeSellOrder();
-        selfdestruct(seller);
+        selfdestruct(address(seller));
     }
     
     function get_vars() view public returns(uint, uint) {
         return (weiForSale, price);
     }
 
-    function is_party() view public returns(string) {
+    function is_party() view public returns(string memory) {
         if (sales[msg.sender] > 0) return "buyer";
         else if (seller == msg.sender) return "seller";
     }

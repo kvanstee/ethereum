@@ -1,4 +1,4 @@
-pragma solidity ^0.4.21;
+pragma solidity >=0.4.22 <0.6.0;
 
 import "./Sell_eth.sol";
 import "./Buy_eth.sol";
@@ -9,17 +9,16 @@ contract Orders {
   event LogNewBuyOrder(bytes3 indexed currency, address buyorder);
   event LogRemoveSellOrder(address indexed sellorder);
   event LogRemoveBuyOrder(address indexed buyorder);   
-
   function newSellOrder(bytes3 curr, uint price) public payable {
     require(msg.value/price >= 10000);
-    address order =(new Sell_eth).value(msg.value)(price, msg.sender, this);
-    emit LogNewSellOrder(curr, order);    
+    Sell_eth newselleth = (new Sell_eth).value(msg.value)(price, msg.sender, address(this));
+    emit LogNewSellOrder(curr, address(newselleth));    
   }
 
   function newBuyOrder(bytes3 curr, uint price) public payable {
     require(msg.value/price >= 5000);
-    address order =(new Buy_eth).value(msg.value)(price, msg.sender, this);
-    emit LogNewBuyOrder(curr, order);
+    Buy_eth newbuyeth =(new Buy_eth).value(msg.value)(price, msg.sender, address(this));
+    emit LogNewBuyOrder(curr, address(newbuyeth));
   }
 
   function removeSellOrder() public {  
@@ -30,6 +29,6 @@ contract Orders {
     emit LogRemoveBuyOrder(msg.sender);
   }
 
-  function() public {revert();}
+  function() external {revert();}
 }
 
