@@ -12,6 +12,7 @@
   "author": "kvanstee+sethmcguire",
   "license": "",
   "dependencies": {
+    "@makerdao/dai": "^0.11.4",
     "css-loader": "^0.28.11",
     "express": "^4.16.2",
     "https": "^1.0.0",
@@ -42,6 +43,7 @@
     "nodemon": "^1.12.1",
     "truffle-contract": "^1.1.6",
     "web3": "^0.18.2",
+    "webpack-command": "^0.4.2",
     "webpack-monitor": "^1.0.14"
   }
 }

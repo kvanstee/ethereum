@@ -6,7 +6,7 @@ window.$ = window.jQuery = jQuery;
 var Mustache = require('./libs/mustache.js');
 var deparam = require ('./libs/deparam.js');
 
-//import { default as Web3} from 'web3';
+import { default as Web3} from 'web3';
 
 // Import our contract artifacts and turn them into usable abstractions.
 const selleth_abi = require('../../build/contracts/selleth.json').abi;
@@ -17,11 +17,12 @@ const orders_abi = require('../../build/contracts/orders.json').abi;
 // usable abstractions, which we'll use through the code below.
 var account;
 var fiat_curr; //fiat currency
-var orders_addr = '0x2abc27595ce8e46dd0f4698ec1c658957520180b';
+//var orders_addr = '0x2abc27595ce8e46dd0f4698ec1c658957520180b';
+var orders_addr = '0x56C9ce4eC929Ae9855fb7055a6B274E661366DEE';
 var Sell_eth;
 var Buy_eth;
 var Orders;
-var startBlock = '';
+var startBlock = '0';
 window.App = {
   start: function(_account) {
     var self = this;
