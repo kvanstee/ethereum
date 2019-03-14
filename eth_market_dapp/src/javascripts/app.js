@@ -6,7 +6,7 @@ window.$ = window.jQuery = jQuery;
 var Mustache = require('./libs/mustache.js');
 var deparam = require ('./libs/deparam.js');
 
-import { default as Web3} from 'web3';
+//import { default as Web3} from 'web3';
 
 // Import our contract artifacts and turn them into usable abstractions.
 const selleth_abi = require('../../build/contracts/selleth.json').abi;
@@ -18,11 +18,12 @@ const orders_abi = require('../../build/contracts/orders.json').abi;
 var account;
 var fiat_curr; //fiat currency
 //var orders_addr = '0x2abc27595ce8e46dd0f4698ec1c658957520180b';
-var orders_addr = '0x56C9ce4eC929Ae9855fb7055a6B274E661366DEE';
+//var orders_addr = '0x56C9ce4eC929Ae9855fb7055a6B274E661366DEE';
+var orders_addr = '0x64eA4B84BAb5c81B35123252bbddbd483AC81ea6';
 var Sell_eth;
 var Buy_eth;
 var Orders;
-var startBlock = '0';
+var startBlock = '7.36e6';
 window.App = {
   start: function(_account) {
     var self = this;
@@ -591,7 +592,7 @@ window.addEventListener('load', async function() {
     try {
       // Request account access if needed
       await ethereum.enable();
-      // Acccounts now exposed
+      console.log("Acccounts now exposed");
       //web3.eth.sendTransaction({/* ... */});
     } catch (error) {
       // User denied account access...
@@ -601,18 +602,13 @@ window.addEventListener('load', async function() {
   // Legacy dapp browsers...
   else if (window.web3) {
     window.web3 = new Web3(web3.currentProvider);
-    // Acccounts always exposed
+    console.log("Acccounts always exposed");
     //web3.eth.sendTransaction({/* ... */});
   }
     // Non-dapp browsers...
   else {
     console.log('Non-Ethereum browser detected. You should consider trying MetaMask!');
-  }
- /* if (typeof web3 !== 'undefined') {
-    //console.warn("Using web3 detected from external source. If you find that your accounts don't appear or you have 0 MetaCoin, ensure you've configured that source properly. If using MetaMask, see the following link. Feel free to delete this warning. :) http://truffleframework.com/tutorials/truffle-and-metamask")
-    // Use Mist/MetaMask's provider
-    window.web3 = new Web3(web3.currentProvider);
-  } else {
+  } /*else {
     console.warn("No web3 detected. Falling back to http://localhost:8545.");
     // fallback - use your fallback strategy (local node / hosted node + in-dapp id mgmt / fail)
     window.web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
