@@ -1,4 +1,4 @@
-pragma solidity ^0.4.21;
+pragma solidity >=0.4.22 <0.6.0;
 
 import "./Orders.sol";
 
@@ -6,7 +6,7 @@ contract Buy_eth {
     Orders orders;
     uint weiToBuy;
     uint price; //wei per smallest currency unit (eg. cent)   
-    address buyer;
+    address payable buyer;
     mapping(address => uint) sales;
     uint8 pending;
     modifier onlyBuyer() {require(msg.sender == buyer);  _;}
@@ -16,7 +16,11 @@ contract Buy_eth {
     event LogSalePending(address indexed _buyer, address indexed _seller, uint value, uint _price);
     event LogCashReceived(address indexed _seller, address indexed _buyer);
 
+<<<<<<< HEAD
     function Buy_eth(uint _price, address _buyer, address _orders) public payable {
+=======
+    constructor(uint _price, address payable _buyer, address _orders) public payable {
+>>>>>>> solc-5+
         orders = Orders(_orders);
         buyer = _buyer;
         price = _price;
@@ -67,7 +71,7 @@ contract Buy_eth {
         return (weiToBuy, price);
     }
 
-    function is_party() view public returns(string) {
+    function is_party() view public returns(string memory) {
         if (buyer == msg.sender) return "buyer";
         else if (sales[msg.sender] > 0) return "seller";
     }

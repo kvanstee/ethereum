@@ -17,11 +17,13 @@ const orders_abi = require('../../build/contracts/orders.json').abi;
 // usable abstractions, which we'll use through the code below.
 var account;
 var fiat_curr; //fiat currency
-var orders_addr = '0x2abc27595ce8e46dd0f4698ec1c658957520180b';
+//var orders_addr = '0x2abc27595ce8e46dd0f4698ec1c658957520180b';
+//var orders_addr = '0x56C9ce4eC929Ae9855fb7055a6B274E661366DEE';
+var orders_addr = '0x64eA4B84BAb5c81B35123252bbddbd483AC81ea6';
 var Sell_eth;
 var Buy_eth;
 var Orders;
-
+var startBlock = '7.36e6';
 window.App = {
   start: function(_account) {
     var self = this;
@@ -36,7 +38,7 @@ window.App = {
     // retrieve Buy and Sell order values from contracts using logged events from Orders.sol
     var orders = Orders.at(orders_addr);
       //VVVVVV SELL SELL SELL VVVVVV
-      orders.LogNewSellOrder({currency:fiat_curr}, {fromBlock:5.2e6}, function(err, result) {
+      orders.LogNewSellOrder({currency:fiat_curr}, {fromBlock:startBlock}, function(err, result) {
         if (err) return;
         var address = result.args.sellorder;
         var removeEvent = orders.LogRemoveSellOrder({sellorder:address}, {fromBlock:result.blockNumber});
@@ -55,7 +57,7 @@ window.App = {
                 selleth.is_party.call({from:account}, function(err, party) {
 		  if (err) return;
                   if (party === "seller") {
-                    selleth.LogSalePending({}, {fromBlock:5.2e6}, function(err,res) {
+                    selleth.LogSalePending({}, {fromBlock:startBlock}, function(err,res) {
                       if (err) return;
                       var eventCashRec = selleth.LogCashReceived({_buyer:res.args._buyer}, {fromBlock:res.blockNumber});
                       eventCashRec.get(function(err, events) {
@@ -67,7 +69,7 @@ window.App = {
 		    });
                   } else if (party === "buyer") {
                   //there must be only one pending here: the last
-                    var eventPend = selleth.LogSalePending({_buyer:account}, {fromBlock:5.2e6});
+                    var eventPend = selleth.LogSalePending({_buyer:account}, {fromBlock:startBlock});
                     eventPend.get(function(err, eventsPending) {
                       if (err) return;
              	      var lastEvent = eventsPending[eventsPending.length-1];
@@ -101,7 +103,7 @@ window.App = {
       //^^^^^^^ SELL SELL SELL ^^^^^^^
 
       //VVVVVVV BUY BUY BUY VVVVVVV
-      orders.LogNewBuyOrder({currency:fiat_curr}, {fromBlock:5.2e6}, function(err, result) {
+      orders.LogNewBuyOrder({currency:fiat_curr}, {fromBlock:startBlock}, function(err, result) {
         if (err) return;
         var address = result.args.buyorder;
         var removeEvent = orders.LogRemoveBuyOrder({buyorder:address}, {fromBlock:result.blockNumber});
@@ -120,7 +122,7 @@ window.App = {
                 buyeth.is_party.call({from:account}, function(err, party) {
 		  if (err) return;
                   if (party === "buyer") {
-		    buyeth.LogSalePending({}, {fromBlock:5.2e6}, function(err,res) {
+		    buyeth.LogSalePending({}, {fromBlock:startBlock}, function(err,res) {
 		      if (err) return;
 	              var eventCashRec = buyeth.LogCashReceived({_seller:res.args._seller}, {fromBlock:res.blockNumber});
 		      eventCashRec.get(function(err, events) {
@@ -145,7 +147,7 @@ window.App = {
 		  //buyer can have multiple previous pending as well as multiple previous sellers.
                   } else if (party === "seller") {
 		  //there can be only one pending here: the last
-                    var eventPending = buyeth.LogSalePending({_seller:account}, {fromBlock:5.2e6});
+                    var eventPending = buyeth.LogSalePending({_seller:account}, {fromBlock:startBlock});
                     eventPending.get(function(err,eventsPending) {
                       if (err) return;
                       self.writePending("buy_contract", "seller", eventsPending[eventsPending.length-1]);
@@ -590,7 +592,7 @@ window.addEventListener('load', async function() {
     try {
       // Request account access if needed
       await ethereum.enable();
-      // Acccounts now exposed
+      console.log("Acccounts now exposed");
       //web3.eth.sendTransaction({/* ... */});
     } catch (error) {
       // User denied account access...
@@ -600,18 +602,13 @@ window.addEventListener('load', async function() {
   // Legacy dapp browsers...
   else if (window.web3) {
     window.web3 = new Web3(web3.currentProvider);
-    // Acccounts always exposed
+    console.log("Acccounts always exposed");
     //web3.eth.sendTransaction({/* ... */});
   }
     // Non-dapp browsers...
   else {
     console.log('Non-Ethereum browser detected. You should consider trying MetaMask!');
-  }
- /* if (typeof web3 !== 'undefined') {
-    //console.warn("Using web3 detected from external source. If you find that your accounts don't appear or you have 0 MetaCoin, ensure you've configured that source properly. If using MetaMask, see the following link. Feel free to delete this warning. :) http://truffleframework.com/tutorials/truffle-and-metamask")
-    // Use Mist/MetaMask's provider
-    window.web3 = new Web3(web3.currentProvider);
-  } else {
+  } /*else {
     console.warn("No web3 detected. Falling back to http://localhost:8545.");
     // fallback - use your fallback strategy (local node / hosted node + in-dapp id mgmt / fail)
     window.web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));

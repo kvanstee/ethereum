@@ -1,6 +1,7 @@
 # eth_market_dapp 
 
 LIVE ON MAINNET at ethmarket@hashbase.io
+The contract at address: 0x64eA4B84BAb5c81B35123252bbddbd483AC81ea6 can be verified at https://etherscan.io/address/0x64eA4B84BAb5c81B35123252bbddbd483AC81ea6#code
 
 This is a decentralised exchange (DEX) for ether and a few fiat currencies. There are 3 very simple contracts: Orders.sol, Selleth.sol and Buyeth.sol.
 
