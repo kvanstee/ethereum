@@ -12,11 +12,11 @@ To enable a trustless transaction each party will include  a returnable deposit 
 Here is the code that generates a new sell contract from Orders.sol:
 
 ```
-function newSellOrder(uint price) public payable {
-    require(msg.value/2 >= price*5000);
-    address order =(new Sell_eth).value(msg.value)(price, msg.sender, this);
-    LogNewSellOrder(order);    
-  }
+function newSellOrder(bytes3 curr, uint price) public payable {
+    require(msg.value/price >= 10000);
+    Sell_eth newselleth = (new Sell_eth).value(msg.value)(price, msg.sender, address(this));
+    emit LogNewSellOrder(curr, address(newselleth));    
+}
 ```
 ```price``` is wei per smallest fiat currency unit such as a cent. At least $100 value of ether is required to create the sell order and at least $50 to create the buy order.
 
@@ -39,7 +39,7 @@ The constructor variable ```_orders``` is supplied by the newSellOrder variable 
 There are five functions that allow wei to flow from the sell and buy contracts. Two are calls to ```selfdestruct()```. Only the Sell_eth contract has a push external call:
 
 ```
-function confirmReceived(address _buyer) public onlySeller payable {
+function confirmReceived(address payable _buyer) public onlySeller payable {
         require(sales[_buyer] > 0 && pending > 0);
         uint amt = sales[_buyer];
         sales[_buyer] = 0;
