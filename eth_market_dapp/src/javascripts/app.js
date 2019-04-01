@@ -9,9 +9,9 @@ var deparam = require ('./libs/deparam.js');
 //import { default as Web3} from 'web3';
 
 // Import our contract artifacts and turn them into usable abstractions.
-const selleth_abi = require('../../build/contracts/sellethabi.json').abi;
-const buyeth_abi = require('../../build/contracts/buyethabi.json').abi;
-const orders_abi = require('../../build/contracts/ordersabi.json').abi;
+const selleth_abi = require('../../build/contracts/sellethabi.json');
+const buyeth_abi = require('../../build/contracts/buyethabi.json');
+const orders_abi = require('../../build/contracts/ordersabi.json');
 
 
 // usable abstractions, which we'll use through the code below.
