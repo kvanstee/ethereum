@@ -50,8 +50,10 @@ function confirmReceived(address payable _buyer) public onlySeller payable {
 The 'owner' of the sell contract receives fiat currency from the buyer ```_buyer``` and calls the ```confirmReceived()``` function transferring purchase plus deposit to the buyer.
 
 To add an order fill out the fields below the table and click 'add new buy/sell order'. To change price or volume click on the table row and if you are the 'owner' of the contract appropriate fields will be displayed. If you are not the 'owner' the fields displayed allow buying from or selling to the contract. If there are no pending transactions the contract can be terminated and ether returned. Apart from gas costs there are no transaction fees.
-
 LIVE ON MAINNET at ethmarket@hashbase.io
+
+##Communication
+See https://github.com/kvanstee/ethereum/issues first.
 I propose that each maker creats an IRC channel called `the first 5 digits of the contract's address after 0x` on `freenode` and negotiating the fiat transfer from there. Another possibility is telegram. 
 
 
